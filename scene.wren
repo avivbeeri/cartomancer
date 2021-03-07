@@ -1,19 +1,15 @@
-import "graphics" for ImageData, Color, Canvas
+import "graphics" for ImageData, Canvas, Color
 import "input" for Keyboard
 import "math" for Vec, M
 
-import "./display" for Display
-import "./tilesheet" for Tilesheet
-import "./keys" for InputGroup, Actions
+import "./core/display" for Display
+import "./keys" for InputGroup, InputActions
 
-import "./core/director" for RealTimeStrategy, TurnBasedStrategy, EnergyStrategy
-import "./core/world" for World, Zone
 import "./core/scene" for Scene
-import "./core/map" for TileMap, Tile
+import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./menu" for Menu
 import "./events" for CollisionEvent, MoveEvent
-import "./player" for PlayerData
 import "./actions" for MoveAction, SleepAction
 import "./entities" for Player, Dummy
 
@@ -30,28 +26,15 @@ var STATIC = false
 
 class WorldScene is Scene {
   construct new(args) {
+    // Args are currently unused.
+
     _camera = Vec.new()
     _moving = false
     _tried = false
     _ui = []
-    _world = World.new(EnergyStrategy.new())
 
-
-    var zone = _world.pushZone(Zone.new())
-    var player = zone.addEntity("player", Player.new())
-    _playerData = PlayerData.new()
-    player["data"] = _playerData
-
-    var dummy = zone.addEntity(Dummy.new())
-    dummy.pos = Vec.new(-1, 0)
-
-    dummy = zone.addEntity(Dummy.new())
-    dummy.pos = Vec.new(-1, 4)
-
-    zone.map = TileMap.init()
-    zone.map[0, 0] = Tile.new({ "floor": "grass" })
-    zone.map[0, 1] = Tile.new({ "floor": "solid", "solid": true })
-    zone.map[10, 0] = Tile.new({ "floor": "solid", "solid": true })
+    _world = args[0]
+    var player = _world.active.getEntityByTag("player")
 
     _camera.x = player.pos.x * 8
     _camera.y = player.pos.y * 8
@@ -76,9 +59,9 @@ class WorldScene is Scene {
 
 
     // Overzone interaction
-    if (Actions.interact.justPressed) {
+    if (InputActions.interact.justPressed) {
       _ui.add(Menu.new(_zone, [
-        "Cook", "relax",
+        "Cook", null,
         "Sleep", SleepAction.new(),
         "Cancel", "cancel"
       ]))
@@ -88,24 +71,32 @@ class WorldScene is Scene {
 
     if (!player.action && !_tried) {
       var move = Vec.new()
-      if (Actions.left.firing) {
+      if (InputActions.left.firing) {
         move.x = -1
-      } else if (Actions.right.firing) {
+      } else if (InputActions.right.firing) {
         move.x = 1
-      } else if (Actions.up.firing) {
+      } else if (InputActions.up.firing) {
         move.y = -1
-      } else if (Actions.down.firing) {
+      } else if (InputActions.down.firing) {
         move.y = 1
       }
       if (move.length > 0) {
         player.action = MoveAction.new(move)
       }
     }
-    pressed = Actions.directions.any {|key| key.down }
+    pressed = InputActions.directions.any {|key| key.down }
 
     _world.update()
+    if (InputActions.inventory.justPressed) {
+      var dummy = _zone.addEntity(Dummy.new())
+      dummy.pos = Vec.new(0, 0)
+    }
     for (event in _zone.events) {
-      if (event is MoveEvent) {
+      if (event is EntityAddedEvent) {
+        System.print("Entity %(event.id) was added")
+      } else if (event is EntityRemovedEvent) {
+        System.print("Entity %(event.id) was removed")
+      } else if (event is MoveEvent) {
         if (event.target is Player) {
           _moving = true
           _ui.add(CameraLerp.new(this, event.target.pos * 8))
@@ -125,7 +116,7 @@ class WorldScene is Scene {
     var player = _zone.getEntityByTag("player")
     var X_OFFSET = 4
     var sprites = StandardSpriteSet
-    Canvas.cls()
+    Canvas.cls(Display.bg)
 
     var cx = (Canvas.width - X_OFFSET - 20) / 2
     var cy = Canvas.height / 2 - 4
@@ -164,15 +155,18 @@ class WorldScene is Scene {
     for (entity in _zone.entities) {
       var sx = entity.pos.x * 8 + X_OFFSET
       var sy = entity.pos.y * 8
-      if (STATIC && entity is Player) {
+      if (entity is Player) {
+        if (!STATIC) {
+          continue
+        }
         // We draw this
         if (_moving) {
           sprites["playerWalk"][F].draw(sx, sy)
         } else {
           sprites["playerStand"][F].draw(sx, sy)
         }
-      } else if (entity is Dummy) {
-        Canvas.print("D", sx, sy, Display.fg)
+      } else {
+        Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }
     }
     // Put a background on the player for readability
@@ -180,7 +174,7 @@ class WorldScene is Scene {
       Canvas.offset()
       var tile = _zone.map[player.pos]
       if (tile["floor"] || _zone["floor"]) {
-        Canvas.rectfill(cx, cy, 8, 8, _invert ? Display.fg : Display.bg)
+        Canvas.rectfill(cx, cy, 8, 8, Display.bg)
       }
       // Draw player in screen center
       if (_moving) {
@@ -190,17 +184,12 @@ class WorldScene is Scene {
       }
     }
 
-
     for (ui in _ui) {
       var block = ui.draw()
       if (block) {
         break
       }
     }
-
-    // Draw UI overlay
-    Canvas.rectfill(x, 0, 20, Canvas.height, Display.fg)
-    Canvas.line(x+1, 0, x+1, Canvas.height, Display.bg)
   }
 
   world { _world }
