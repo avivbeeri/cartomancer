@@ -1,15 +1,17 @@
 import "graphics" for Canvas, Color
 import "random" for Random
 import "input" for Keyboard, Mouse
-import "math" for Vec
+import "math" for Vec, M
+import "./adt" for Stack
+import "./graph"
 
 var RNG = Random.new(1)
 
 var DEATH_LIMIT = 3
 var BIRTH_LIMIT = 4
 
-var WIDTH = 48
-var HEIGHT = 48
+var WIDTH = 96
+var HEIGHT = 96
 var LIVE_CHANCE = 0.45
 
 class WorldMap {
@@ -125,20 +127,30 @@ class Main {
   }
 }
 
-class Stack {
-  construct new() {
-    _list = []
-  }
-  isEmpty { _list.isEmpty }
+class LineUtils {
+  static line(p0, p1) {
+    var points = [p0]
+    var dx = p1.x - p0.x
+    var dy = p1.y - p0.y
+    var n = M.max(dx.abs, dy.abs).floor
+    var divN = (n == 0) ? 0.0 : (1.0 / n)
+    var xstep = dx * divN
+    var ystep = dy * divN
+    var x = p0.x
+    var y = p0.y
 
-  push(v) {
-    _list.add(v)
-  }
+    for (step in 0...n) {
+      x = x + xstep
+      y = y + ystep
+      points.add(Vec.new(x.round, y.round))
+    }
 
-  pop() {
-    return _list.removeAt(-1)
+    return points
   }
 }
 
+System.print(LineUtils.line(Vec.new(0, 1), Vec.new(7, 1)))
+
 
 var Game = Main.new()
+
