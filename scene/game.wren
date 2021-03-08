@@ -3,15 +3,14 @@ import "input" for Keyboard
 import "math" for Vec, M
 
 import "./core/display" for Display
-import "./keys" for InputGroup, InputActions
-
 import "./core/scene" for Scene
 import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
+import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
 import "./events" for CollisionEvent, MoveEvent
 import "./actions" for MoveAction, SleepAction
-import "./entities" for Player, Dummy
+import "./entity/all" for Player, Dummy
 
 import "./sprites" for StandardSpriteSet
 import "./effects" for CameraLerp

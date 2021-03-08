@@ -1,0 +1,52 @@
+import "input" for Keyboard
+import "graphics" for Canvas, Color
+import "math" for Vec
+
+import "./core/world" for World, Zone
+import "./core/map" for TileMap, Tile
+import "./core/scene" for Scene
+import "./core/director" for
+  RealTimeStrategy,
+  TurnBasedStrategy,
+  EnergyStrategy
+
+import "./entity/all" for Player, Dummy
+import "./scene/game" for WorldScene
+
+class WorldGenerator {
+  static generate() {
+    // World generation code
+    var world = World.new(EnergyStrategy.new())
+
+    var zone = world.pushZone(Zone.new(TileMap.init()))
+    zone.map[0, 0] = Tile.new({ "floor": "grass" })
+    zone.map[0, 1] = Tile.new({ "floor": "solid", "solid": true })
+    zone.map[10, 0] = Tile.new({ "floor": "solid", "solid": true })
+
+    var player = zone.addEntity("player", Player.new())
+
+    var dummy = zone.addEntity(Dummy.new())
+    dummy.pos = Vec.new(-1, 0)
+
+    dummy = zone.addEntity(Dummy.new())
+    dummy.pos = Vec.new(-1, 4)
+    return world
+  }
+}
+
+
+
+class StartScene is Scene {
+  construct new(args) {}
+
+  update() {
+    if (Keyboard["space"].justPressed) {
+      game.push(WorldScene, [ WorldGenerator.generate() ])
+      return
+    }
+  }
+
+  draw() {
+    Canvas.print("Press SPACE to begin", 0, 0, Color.white)
+  }
+}
