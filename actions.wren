@@ -96,6 +96,8 @@ class MoveAction is Action {
         result = ActionResult.success
       } else if (_succeed) {
         result = ActionResult.alternate(Action.none)
+      } else {
+        result = ActionResult.failure
       }
     }
 

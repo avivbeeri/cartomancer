@@ -36,7 +36,7 @@ class WorldGenerator {
     System.print(zone.map[-3, -3].data)
 
     var player = zone.addEntity("player", Player.new())
-    player.pos = Vec.new(1, 1)
+    player.pos = Vec.new(4, 4)
 
     var dummy = zone.addEntity(Dummy.new())
     dummy.pos = Vec.new(2, 2)
@@ -63,6 +63,7 @@ class StartScene is Scene {
   }
 
   draw() {
+    Canvas.cls()
     Canvas.print("Press SPACE to begin", 0, 0, Color.white)
   }
 }
