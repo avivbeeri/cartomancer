@@ -22,6 +22,8 @@ var F = 0
 // Is the view static?
 var STATIC = false
 
+var SCALE = 2
+var TILE_SIZE = 8 * SCALE
 
 class WorldScene is Scene {
   construct new(args) {
@@ -35,8 +37,8 @@ class WorldScene is Scene {
     _world = args[0]
     var player = _world.active.getEntityByTag("player")
 
-    _camera.x = player.pos.x * 8
-    _camera.y = player.pos.y * 8
+    _camera.x = player.pos.x * TILE_SIZE
+    _camera.y = player.pos.y * TILE_SIZE
   }
 
   update() {
@@ -98,7 +100,7 @@ class WorldScene is Scene {
       } else if (event is MoveEvent) {
         if (event.target is Player) {
           _moving = true
-          _ui.add(CameraLerp.new(this, event.target.pos * 8))
+          _ui.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
       } else if (event is CollisionEvent) {
         _tried = true
@@ -131,8 +133,8 @@ class WorldScene is Scene {
       for (dx in -xRange...xRange) {
         var x = player.pos.x + dx
         var y = player.pos.y + dy
-        var sx = x * 8 + X_OFFSET
-        var sy = y * 8
+        var sx = x * TILE_SIZE + X_OFFSET
+        var sy = y * TILE_SIZE
         var tile = _zone.map[x, y]
         if (tile["floor"] == "blank") {
           // Intentionally do nothing
@@ -140,7 +142,7 @@ class WorldScene is Scene {
           var list = sprites[tile["floor"]]
           list[0].draw(sx, sy)
         } else if (tile["floor"] == "solid") {
-          Canvas.rectfill(sx, sy, 8, 8, Display.fg)
+          Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, Display.fg)
         } else if (tile["floor"] == "door") {
           var list = sprites[tile["floor"]]
           list[0].draw(sx, sy)
@@ -152,8 +154,8 @@ class WorldScene is Scene {
     }
 
     for (entity in _zone.entities) {
-      var sx = entity.pos.x * 8 + X_OFFSET
-      var sy = entity.pos.y * 8
+      var sx = entity.pos.x * TILE_SIZE + X_OFFSET
+      var sy = entity.pos.y * TILE_SIZE
       if (entity is Player) {
         if (!STATIC) {
           continue
@@ -173,7 +175,7 @@ class WorldScene is Scene {
       Canvas.offset()
       var tile = _zone.map[player.pos]
       if (tile["floor"] || _zone["floor"]) {
-        Canvas.rectfill(cx, cy, 8, 8, Display.bg)
+        Canvas.rectfill(cx, cy, TILE_SIZE, TILE_SIZE, Display.bg)
       }
       // Draw player in screen center
       if (_moving) {

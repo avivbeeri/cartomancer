@@ -15,7 +15,7 @@ class CameraLerp is Ui {
     return _alpha >= 1 || dist <= speed
   }
 
-  speed { 1 / 30 }
+  speed { 1 / 60 }
 
   update() {
     _alpha = _alpha + speed

@@ -1,6 +1,6 @@
 import "./core/tilesheet" for Tilesheet
 
-var Sheet = Tilesheet.new("res/img/camp-tiles.png", 8)
+var Sheet = Tilesheet.new("res/img/camp-tiles.png", 8, 2)
 
 var FireTiles = [ Sheet.getTile(10), Sheet.getTile(11) ]
 var PlayerStandTiles = [ Sheet.getTile(0), Sheet.getTile(1) ]
