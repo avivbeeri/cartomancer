@@ -24,10 +24,10 @@ class Tilesheet {
     _scale = scale
   }
 
-  draw(s, x, y) { draw(s, x, y, Display.fg, Color.none) }
+  draw(s, x, y) { draw(s, x, y, null, null) }
   draw(s, x, y, fg, bg) { getTile(s, fg, bg).draw(x, y) }
 
-  getTile(s) { getTile(s, Display.fg, Color.none) }
+  getTile(s) { getTile(s, null, null) }
   getTile(s, fg, bg) {
     var sy = (s / _width).floor * _tSize
     var sx = (s % _width).floor * _tSize
@@ -35,7 +35,7 @@ class Tilesheet {
     return _image.transform({
       "srcX": sx, "srcY": sy,
       "srcW": _tSize, "srcH": _tSize,
-      "mode": "MONO",
+      "mode": fg ? "MONO" : "RGBA",
       "scaleX": _scale,
       "scaleY": _scale,
       "foreground": fg,

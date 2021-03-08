@@ -22,7 +22,12 @@ var EMPTY_TILE = Tile.new()
 class TileMap {
   construct init() {
     _tiles = {}
+    _default = {}
   }
+
+  default { _default }
+  default=(v) { _default = v }
+
 
   clearAll() { _tiles = {} }
   clear(vec) { clear(vec.x, vec.y) }
@@ -49,8 +54,9 @@ class TileMap {
     var sectionY = y >> SECTION_SHIFT
     var pair = Elegant.pair(sectionX, sectionY)
     var section = _tiles[pair]
-    if (section == null) {
-      section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new() }.toList
+    if (!section) {
+      section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new(_default) }.toList
+      System.print("New section %(x),%(y)")
     }
     var subX = x & SECTION_MASK
     var subY = y & SECTION_MASK
@@ -63,7 +69,7 @@ class TileMap {
     var pair = Elegant.pair(sectionX, sectionY)
     var section = _tiles[pair]
     if (!section) {
-      section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new() }.toList
+      section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new(_default) }.toList
     }
     var subX = x & SECTION_MASK
     var subY = y & SECTION_MASK

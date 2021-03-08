@@ -1,5 +1,6 @@
 import "math" for Vec
 import "./core/world" for DataObject
+import "./core/action" for Action
 
 class Entity is DataObject {
   construct new() {
@@ -46,7 +47,7 @@ class Entity is DataObject {
   notify(ctx, event) { event }
   getAction() { update() }
 
-  update() {}
+  update() { Action.none }
   draw() {}
 
   toString { "%(this.type.name) (id: %(_id))" }

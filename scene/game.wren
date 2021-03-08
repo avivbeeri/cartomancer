@@ -10,7 +10,7 @@ import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
 import "./events" for CollisionEvent, MoveEvent
 import "./actions" for MoveAction, SleepAction
-import "./entity/all" for Player, Dummy
+import "./entity/all" for Player, Dummy, Collectible
 
 import "./sprites" for StandardSpriteSet
 import "./effects" for CameraLerp
@@ -22,7 +22,7 @@ var F = 0
 // Is the view static?
 var STATIC = false
 
-var SCALE = 2
+var SCALE = 4
 var TILE_SIZE = 8 * SCALE
 
 class WorldScene is Scene {
@@ -47,6 +47,7 @@ class WorldScene is Scene {
 
     T = T + (1/60)
     F = (T * 2).floor % 2
+
 
     if (_ui.count > 0) {
       _ui[0].update()
@@ -136,11 +137,8 @@ class WorldScene is Scene {
         var sx = x * TILE_SIZE + X_OFFSET
         var sy = y * TILE_SIZE
         var tile = _zone.map[x, y]
-        if (tile["floor"] == "blank") {
+        if (tile["floor"] == "blank" || tile["floor"] == "void") {
           // Intentionally do nothing
-        } else if (tile["floor"] == "grass") {
-          var list = sprites[tile["floor"]]
-          list[0].draw(sx, sy)
         } else if (tile["floor"] == "solid") {
           Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, Display.fg)
         } else if (tile["floor"] == "door") {
@@ -149,6 +147,56 @@ class WorldScene is Scene {
         } else if (_zone["floor"] == "void") {
           var list = sprites["void"]
           list[0].draw(sx, sy)
+        } else {
+          // figure out neighbours
+          var index = 0
+          // Up
+          var testTile
+
+          testTile = _zone.map[x, y - 1]["floor"]
+          if (testTile == "wall" || testTile == "void") {
+            index = index + 1
+          }
+          // Right
+          testTile = _zone.map[x+1, y]["floor"]
+          if (testTile == "wall" || testTile == "void") {
+            index = index + 2
+          }
+          //Down
+          testTile = _zone.map[x, y+1]["floor"]
+          if (testTile == "wall" || testTile == "void") {
+            index = index + 4
+          }
+          // Left
+          testTile = _zone.map[x - 1, y]["floor"]
+          if (testTile == "wall" || testTile == "void") {
+            index = index + 8
+          }
+
+          if (index == 15) {
+            testTile = _zone.map[x - 1, y - 1]["floor"]
+            if (testTile == "tile") {
+              index = 15
+            }
+            testTile = _zone.map[x + 1, y - 1]["floor"]
+            if (testTile == "tile") {
+              index = 16
+            }
+            testTile = _zone.map[x + 1, y + 1]["floor"]
+            if (testTile == "tile") {
+              index = 17
+            }
+            testTile = _zone.map[x - 1, y + 1]["floor"]
+            if (testTile == "tile") {
+              index = 18
+            }
+          }
+
+
+          Canvas.print(index, sx, sy, Color.green)
+
+          var list = sprites["wall"]
+          list[index].draw(sx, sy)
         }
       }
     }
@@ -166,6 +214,8 @@ class WorldScene is Scene {
         } else {
           sprites["playerStand"][F].draw(sx, sy)
         }
+      } else if (entity is Collectible) {
+        sprites["card"][0].draw(sx, sy - F * 2)
       } else {
         Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }
@@ -174,9 +224,12 @@ class WorldScene is Scene {
     if (!STATIC) {
       Canvas.offset()
       var tile = _zone.map[player.pos]
+      // 1-bit clarity system
+      /*
       if (tile["floor"] || _zone["floor"]) {
         Canvas.rectfill(cx, cy, TILE_SIZE, TILE_SIZE, Display.bg)
       }
+      */
       // Draw player in screen center
       if (_moving) {
         sprites["playerWalk"][F].draw(cx, cy)

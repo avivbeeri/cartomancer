@@ -19,7 +19,7 @@ class Display {
   }
 
   static init_() {
-    var scale = 3
+    var scale = 2
     // Window.lockstep = true
     Window.resize(Canvas.width * scale, Canvas.height * scale)
   }

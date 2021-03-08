@@ -5,6 +5,7 @@ import "./actions" for MoveAction
 class Dummy is Entity {
   construct new() {
     super()
+    this["health"] = 1
   }
 
   update() {

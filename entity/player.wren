@@ -6,7 +6,7 @@ class Player is Entity {
     super()
     _action = null
     this["#speed"] = 6
-    this["data"] = PlayerData.new()
+    this["health"] = 1
   }
 
   action { _action }
