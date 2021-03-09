@@ -215,9 +215,10 @@ class WorldScene is Scene {
         }
         // We draw this
         if (_moving) {
-          sprites["playerWalk"][F].draw(sx, sy)
+          var s = (T * 5).floor % 2
+          sprites["playerWalk"][s].draw(sx, sy)
         } else {
-          sprites["playerStand"][F].draw(sx, sy)
+          sprites["playerStand"][s].draw(sx, sy)
         }
       } else if (entity is Collectible) {
         sprites["card"][0].draw(sx, sy - F * 2)
