@@ -1,7 +1,6 @@
-import "./core/action" for Action, ActionResult
 import "math" for M, Vec
+import "./core/action" for Action, ActionResult
 import "./events" for CollisionEvent, MoveEvent
-import "./entity/collectible" for Collectible
 
 class LogAction is Action {
   construct new() {
@@ -76,7 +75,8 @@ class MoveAction is Action {
         if (occupying.count > 0) {
           solid = solid || occupying.any {|entity| entity.has("solid") }
           target = occupying.any {|entity| entity.has("health") }
-          collectible = occupying.any {|entity| entity is Collectible}
+          System.print(Collectible)
+          collectible = occupying.any {|entity| entity is Collectible }
         }
       }
       if (solid || target || collectible) {
@@ -132,12 +132,20 @@ class PickupAction is Action {
   perform() {
     var target = source.pos + _dir
     var occupying = ctx.getEntitiesAtTile(target.x, target.y).where {|entity| entity != source }
-    occupying
+    var collectibles = occupying
     .where{|entity| entity is Collectible }
-    .each {|entity| ctx.removeEntity(entity) }
-    // TODO: Add entity to inventory
-    // Fire event
+
+
+    collectibles.each {|entity|
+      source["inventory"].add(entity.item)
+      ctx.removeEntity(entity)
+    }
+
+    // TODO: Fire event
+
     return ActionResult.success
   }
 
 }
+
+import "./entity/collectible" for Collectible
