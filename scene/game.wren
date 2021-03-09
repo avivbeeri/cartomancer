@@ -9,11 +9,10 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
 import "./events" for CollisionEvent, MoveEvent, GameEndEvent
-import "./actions" for MoveAction, SleepAction
+import "./actions" for MoveAction, SleepAction, RestAction
 import "./entity/all" for Player, Dummy, Collectible
 
 import "./sprites" for StandardSpriteSet
-import "./effects" for CameraLerp
 
 // Timer variables
 var T = 0
@@ -33,6 +32,7 @@ class WorldScene is Scene {
     _moving = false
     _tried = false
     _ui = []
+    _diageticUi = []
 
     _world = args[0]
     var player = _world.active.getEntityByTag("player")
@@ -42,6 +42,23 @@ class WorldScene is Scene {
     _lastPosition = player.pos
   }
 
+  updateAllUi() {
+    var uiList
+    if (!_diageticUi.isEmpty) {
+      uiList = _diageticUi
+    } else if (!_ui.isEmpty) {
+      uiList = _ui
+    }
+    if (uiList) {
+      uiList[0].update()
+      if (uiList[0].finished) {
+        uiList.removeAt(0)
+      }
+      return true
+    }
+    return false
+  }
+
   update() {
     _zone = _world.active
     T = T + (1/60)
@@ -49,13 +66,10 @@ class WorldScene is Scene {
 
     var player = _zone.getEntityByTag("player")
 
-    if (_ui.count > 0) {
-      _ui[0].update()
-      if (_ui[0].finished) {
-        _ui.removeAt(0)
-      }
+    if (updateAllUi()) {
       return
     }
+
     _moving = false
     var pressed = false
 
@@ -72,18 +86,22 @@ class WorldScene is Scene {
 
 
       if (!player.action && !_tried) {
-        var move = Vec.new()
-        if (InputActions.left.firing) {
-          move.x = -1
-        } else if (InputActions.right.firing) {
-          move.x = 1
-        } else if (InputActions.up.firing) {
-          move.y = -1
-        } else if (InputActions.down.firing) {
-          move.y = 1
-        }
-        if (move.length > 0) {
-          player.action = MoveAction.new(move)
+        if (InputActions.rest.firing) {
+          player.action = RestAction.new()
+        } else {
+          var move = Vec.new()
+          if (InputActions.left.firing) {
+            move.x = -1
+          } else if (InputActions.right.firing) {
+            move.x = 1
+          } else if (InputActions.up.firing) {
+            move.y = -1
+          } else if (InputActions.down.firing) {
+            move.y = 1
+          }
+          if (move.length > 0) {
+            player.action = MoveAction.new(move)
+          }
         }
       }
     }
@@ -103,6 +121,12 @@ class WorldScene is Scene {
       } else if (event is GameEndEvent) {
         var result = event.won ? "won" : "lost"
         System.print("The game has ended. You have %(result).")
+        if (event.won) {
+          _ui.add(SuccessMessage.new(this))
+        } else {
+          // TOOD: Add more context about cause of failure
+          _ui.add(FailureMessage.new(this))
+        }
       } else if (event is MoveEvent) {
         if (event.target is Player) {
           _moving = true
@@ -226,9 +250,18 @@ class WorldScene is Scene {
         Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }
     }
+
+    for (ui in _diageticUi) {
+      var block = ui.draw()
+      if (block) {
+        break
+      }
+    }
+
+    Canvas.offset()
+
     // Put a background on the player for readability
     if (player && !STATIC) {
-      Canvas.offset()
       var tile = _zone.map[player.pos]
       // 1-bit clarity system
       /*
@@ -244,6 +277,13 @@ class WorldScene is Scene {
       }
     }
 
+    if (player) {
+      var inv = player["inventory"]
+      for (i in 0...inv.count) {
+        Canvas.print(inv[i], 0, i * 8, Color.white)
+      }
+    }
+
     for (ui in _ui) {
       var block = ui.draw()
       if (block) {
@@ -256,3 +296,6 @@ class WorldScene is Scene {
   camera { _camera }
   camera=(v) { _camera = v }
 }
+
+// These need to be down here for safety
+import "./effects" for CameraLerp, SuccessMessage, FailureMessage

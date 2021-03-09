@@ -1,4 +1,4 @@
-import "graphics" for ImageData, Color, Canvas
+import "graphics" for ImageData, Color, Canvas, Font
 import "dome" for Window
 
 class Display {
@@ -17,6 +17,34 @@ class Display {
     __bg = Color.hex(config["background"])
     init_()
   }
+
+  static printCentered(text, y, color, font) { printCentered(text, y, color, font, null) }
+  static printCentered(text, y, color, font, maxWidth) {
+    if (maxWidth == null) {
+      var area = Font[font].getArea(text)
+      Canvas.print(text, (Canvas.width - area.x)/2, y, color, font)
+      return area
+    } else {
+      var words = text.split(" ")
+      var area = Font[font].getArea(text)
+      var startWidth = area.x
+      var newLine = []
+       while (area.x > maxWidth && words.count > 1) {
+        newLine.add(words.removeAt(-1))
+        text = words.join(" ")
+        area = Font[font].getArea(text)
+      }
+
+      Canvas.print(text, (Canvas.width - area.x)/2, y, color, font)
+
+      if (startWidth - area.x > maxWidth) {
+        printCentered(newLine.join(" "), y + area.y, color, font, maxWidth)
+      } else {
+        printCentered(newLine.join(" "), y + area.y, color, font, null)
+      }
+    }
+  }
+
 
   static init_() {
     var scale = 2

@@ -25,7 +25,7 @@ class ParcelMain {
     _scene.draw()
   }
 
-  push(scene) { push(scene, null) }
+  push(scene) { push(scene, []) }
   push(scene, args) {
     _scene = scene.new(args)
     _scene.game = this

@@ -30,6 +30,9 @@ var INTERACT_KEY = InputGroup.new([
 var INVENTORY_KEY = InputGroup.new([
   Keyboard["i"]
 ])
+var REST_KEY = InputGroup.new([
+  Keyboard["r"]
+])
 
 
 var DIR_KEYS = [ UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY ]
@@ -43,6 +46,7 @@ class InputActions {
   static down { DOWN_KEY }
   static left { LEFT_KEY }
   static right { RIGHT_KEY }
+  static rest { REST_KEY }
   static inventory { INVENTORY_KEY }
   static interact { INTERACT_KEY }
   static confirm { CONFIRM_KEY }

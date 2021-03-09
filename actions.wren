@@ -11,8 +11,8 @@ class LogAction is Action {
     System.print("You make journal notes")
     return ActionResult.success
   }
-
 }
+
 class SleepAction is Action {
   cost { 2 }
   construct new() {
@@ -22,6 +22,12 @@ class SleepAction is Action {
   perform() {
     System.print("You sleep, and awaken refreshed.")
     return ActionResult.alternate(LogAction.new())
+  }
+}
+
+class RestAction is Action {
+  construct new() {
+    super()
   }
 }
 
@@ -85,7 +91,6 @@ class MoveAction is Action {
       if (target) {
         result = ActionResult.alternate(AttackAction.new(_dir))
       } else if (collectible) {
-        System.print("Collectible found")
         result = ActionResult.alternate(PickupAction.new(_dir))
       }
     }
