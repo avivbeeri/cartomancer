@@ -92,7 +92,11 @@ class WorldScene is Scene {
       Canvas.print("Hand:", 0, y - 8, Color.white)
       var index = 0
       for (card in hand) {
-        if (Mouse["left"].justPressed && mouse.y >= y && mouse.y < y + 8 && mouse.x < card.name.count * 8) {
+        var text = "%(card.name)"
+        if ((index+1) <= InputActions.options.count) {
+          text = "%(index+1): %(card.name)"
+        }
+        if (((index+1) < InputActions.options.count && InputActions.options[index+1].justPressed) || (Mouse["left"].justPressed && mouse.y >= y && mouse.y < y + 8 && mouse.x < text.count * 8)) {
           player.action = PlayCardAction.new(index)
         }
         y = y + 8
@@ -320,13 +324,19 @@ class WorldScene is Scene {
       var mouse = Mouse.pos
       y = Canvas.height - (hand.count + 2 + deck.count) * 8
       Canvas.print("Hand:", 0, y - 8, Color.white)
+      var i = 1
       for (card in hand) {
-        if (mouse.y >= y && mouse.y < y + 8 && mouse.x < card.name.count * 8) {
-          Canvas.print(card.name, 0, y, Color.darkgreen)
+        var text = "%(card.name)"
+        if (i < InputActions.options.count) {
+          text = "%(i): %(card.name)"
+        }
+        if (mouse.y >= y && mouse.y < y + 8 && mouse.x < (text.count) * 8) {
+          Canvas.print(text, 0, y, Color.darkgreen)
         } else {
-          Canvas.print(card.name, 0, y, Color.white)
+          Canvas.print(text, 0, y, Color.white)
         }
         y = y + 8
+        i = i + 1
       }
     }
 

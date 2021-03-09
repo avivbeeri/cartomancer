@@ -41,6 +41,22 @@ class WorldGenerator {
       Card.new("Sword"),
       Card.new("Shield"),
       Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
+      Card.new("Wind"),
       Card.new("Wind")
 
     ]

@@ -34,14 +34,17 @@ var REST_KEY = InputGroup.new([
   Keyboard["r"]
 ])
 
-
+var OPTION_KEYS = (0..9).map {|i| Keyboard[i.toString]}.toList
 var DIR_KEYS = [ UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY ]
 // Set frequency for smoother tile movement
 DIR_KEYS.each {|key| key.frequency = 1 }
 
 class InputActions {
+  // Grouped keys
   static directions { DIR_KEYS }
+  static options { OPTION_KEYS }
 
+  // Singular actions
   static up { UP_KEY }
   static down { DOWN_KEY }
   static left { LEFT_KEY }
