@@ -7,6 +7,7 @@ import "./core/director" for
   TurnBasedStrategy,
   EnergyStrategy
 import "./logic" for GameEndCheck
+import "./deck" for Deck, Card
 
 class WorldGenerator {
   static generate() {
@@ -33,6 +34,21 @@ class WorldGenerator {
 
     var player = zone.addEntity("player", Player.new())
     player.pos = Vec.new(4, 4)
+
+    player["discard"] = []
+    player["hand"] = [
+      Card.new("Sword"),
+      Card.new("Sword"),
+      Card.new("Shield"),
+      Card.new("Wind"),
+      Card.new("Wind")
+
+    ]
+    player["deck"] = Deck.new([
+      Card.new("Sword"),
+      Card.new("Shield"),
+      Card.new("Wind")
+    ]) // .shuffle()
 
     var dummy = zone.addEntity(Dummy.new())
     dummy.pos = Vec.new(2, 2)

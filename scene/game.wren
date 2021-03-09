@@ -1,5 +1,5 @@
 import "graphics" for ImageData, Canvas, Color
-import "input" for Keyboard
+import "input" for Keyboard, Mouse
 import "math" for Vec, M
 
 import "./core/display" for Display
@@ -9,7 +9,7 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
 import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent
-import "./actions" for MoveAction, SleepAction, RestAction
+import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction
 import "./entity/all" for Player, Dummy, Collectible
 
 import "./sprites" for StandardSpriteSet
@@ -84,6 +84,21 @@ class WorldScene is Scene {
         return
       }
 
+      // -------- DEBUG  BEGIN --------
+      var deck = player["deck"]
+      var hand = player["hand"]
+      var mouse = Mouse.pos
+      var y = Canvas.height - (hand.count + 2 + deck.count) * 8
+      Canvas.print("Hand:", 0, y - 8, Color.white)
+      var index = 0
+      for (card in hand) {
+        if (Mouse["left"].justPressed && mouse.y >= y && mouse.y < y + 8 && mouse.x < card.name.count * 8) {
+          player.action = PlayCardAction.new(index)
+        }
+        y = y + 8
+        index = index + 1
+      }
+      // ------ DEBUG --------
 
       if (!player.action && !_tried) {
         if (InputActions.rest.firing) {
@@ -291,6 +306,27 @@ class WorldScene is Scene {
       var inv = player["inventory"]
       for (i in 0...inv.count) {
         Canvas.print(inv[i], 0, i * 8, Color.white)
+      }
+
+      var deck = player["deck"]
+      var y = Canvas.height - deck.count * 8
+      Canvas.print("Deck:", 0, y - 8, Color.white)
+      for (card in deck) {
+        Canvas.print(card.name, 0, y, Color.white)
+        y = y + 8
+      }
+
+      var hand = player["hand"]
+      var mouse = Mouse.pos
+      y = Canvas.height - (hand.count + 2 + deck.count) * 8
+      Canvas.print("Hand:", 0, y - 8, Color.white)
+      for (card in hand) {
+        if (mouse.y >= y && mouse.y < y + 8 && mouse.x < card.name.count * 8) {
+          Canvas.print(card.name, 0, y, Color.darkgreen)
+        } else {
+          Canvas.print(card.name, 0, y, Color.white)
+        }
+        y = y + 8
       }
     }
 

@@ -159,4 +159,38 @@ class PickupAction is Action {
 
 }
 
+class PlayCardAction is Action {
+  construct new(handIndex) {
+    _handIndex = handIndex
+  }
+
+  perform() {
+    if (!source.has("hand")) {
+      // TODO: Assert?!
+      return ActionResult.failure
+    }
+
+    var hand = source["hand"]
+    var selectedCard = hand.removeAt(_handIndex)
+    var result = ActionResult.failure
+    if (selectedCard) {
+      result = ActionResult.alternate(selectedCard.action)
+      var discard = source["discard"]
+      discard.add(selectedCard)
+
+      // hand size should be a statistic
+      if (hand.count < 3) {
+        var deck = source["deck"]
+        var card = deck.drawCard()
+        if (card) {
+          System.print("Drew: %(card.name)")
+          hand.add(card)
+        }
+      }
+    }
+
+    return result
+  }
+}
+
 import "./entity/collectible" for Collectible
