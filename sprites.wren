@@ -13,6 +13,8 @@ var Card = RoomSheet.getTile(7)
 var FloorTile = RoomSheet.getTile(21)
 var WallTiles = (0...20).map {|i| RoomSheet.getTile(40 + i) }.toList
 
+var SwordTiles = (8..9).map {|i| RoomSheet.getTile(i) }.toList
+
 var StandardSpriteSet = {
   "fire": FireTiles,
   "playerStand": PlayerStandTiles,
@@ -20,6 +22,7 @@ var StandardSpriteSet = {
   "grass": [ GrassTile ],
   "floor": [ FloorTile ],
   "wall": WallTiles,
-  "card": [ Card ]
+  "card": [ Card ],
+  "sword": SwordTiles
 }
 

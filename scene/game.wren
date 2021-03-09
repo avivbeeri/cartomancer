@@ -8,7 +8,7 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
-import "./events" for CollisionEvent, MoveEvent, GameEndEvent
+import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent
 import "./actions" for MoveAction, SleepAction, RestAction
 import "./entity/all" for Player, Dummy, Collectible
 
@@ -132,9 +132,16 @@ class WorldScene is Scene {
           _moving = true
           _ui.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
+      } else if (event is AttackEvent) {
+        if (event.source is Player) {
+          _tried = true
+          _moving = false
+        }
       } else if (event is CollisionEvent) {
-        _tried = true
-        _moving = false
+        if (event.source is Player) {
+          _tried = true
+          _moving = false
+        }
       }
     }
     if (!pressed) {
@@ -244,6 +251,9 @@ class WorldScene is Scene {
         } else {
           sprites["playerStand"][s].draw(sx, sy)
         }
+
+      } else if (entity is Dummy) {
+        sprites["sword"][F].draw(sx, sy)
       } else if (entity is Collectible) {
         sprites["card"][0].draw(sx, sy - F * 2)
       } else {

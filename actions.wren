@@ -1,6 +1,6 @@
 import "math" for M, Vec
 import "./core/action" for Action, ActionResult
-import "./events" for CollisionEvent, MoveEvent
+import "./events" for CollisionEvent, MoveEvent, AttackEvent
 
 class LogAction is Action {
   construct new() {
@@ -64,7 +64,6 @@ class MoveAction is Action {
   */
 
   perform() {
-    System.print("moving")
     var old = source.pos * 1
     source.vel = _dir
     source.pos.x = source.pos.x + source.vel.x
@@ -81,7 +80,6 @@ class MoveAction is Action {
         if (occupying.count > 0) {
           solid = solid || occupying.any {|entity| entity.has("solid") }
           target = occupying.any {|entity| entity.has("health") }
-          System.print(Collectible)
           collectible = occupying.any {|entity| entity is Collectible }
         }
       }
@@ -105,6 +103,7 @@ class MoveAction is Action {
         result = ActionResult.failure
       }
     }
+    System.print(result)
 
     if (source.vel.length > 0) {
       source.vel = Vec.new()
@@ -121,8 +120,15 @@ class AttackAction is Action {
   }
   perform() {
     var target = source.pos + _dir
-    var occupying = ctx.getEntitiesAtTile(target.x, target.y).where {|entity| entity != source }
-    occupying.each {|entity| ctx.removeEntity(entity) }
+    var occupying = ctx.getEntitiesAtTile(target.x, target.y).where {|entity| entity != source && entity.has("health") }
+    occupying.each {|entity|
+      // TODO: incorporate attacker's statistics and combat calculations
+      entity["health"] = entity["health"] - 1
+      ctx.events.add(AttackEvent.new(source, entity))
+      if (entity["health"] <= 0) {
+        ctx.removeEntity(entity)
+      }
+    }
     return ActionResult.success
   }
 

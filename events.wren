@@ -31,3 +31,15 @@ class CollisionEvent is Event {
   target { _target }
   pos { _pos }
 }
+
+class AttackEvent is Event {
+
+  construct new(source, target) {
+    super()
+    _target = target
+    _source = source
+  }
+
+  source { _source }
+  target { _target }
+}
