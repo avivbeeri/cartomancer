@@ -2,18 +2,20 @@ import "./core/display" for Display
 
 
 class ParcelMain {
-  construct new() {}
   construct new(scene) {
-    push(scene)
+    _initial = scene
+    _args = []
   }
   construct new(scene, args) {
-    push(scene, args)
+    _initial = scene
+    _args = args
   }
 
   init() {
     import "json" for Json
     var config = Json.load("config.json")
     Display.setup(config["display"])
+    push(_initial, _args)
   }
 
   update() {

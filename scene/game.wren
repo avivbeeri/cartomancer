@@ -8,7 +8,7 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
-import "./events" for CollisionEvent, MoveEvent
+import "./events" for CollisionEvent, MoveEvent, GameEndEvent
 import "./actions" for MoveAction, SleepAction
 import "./entity/all" for Player, Dummy, Collectible
 
@@ -39,15 +39,15 @@ class WorldScene is Scene {
 
     _camera.x = player.pos.x * TILE_SIZE
     _camera.y = player.pos.y * TILE_SIZE
+    _lastPosition = player.pos
   }
 
   update() {
     _zone = _world.active
-    var player = _zone.getEntityByTag("player")
-
     T = T + (1/60)
     F = (T * 2).floor % 2
 
+    var player = _zone.getEntityByTag("player")
 
     if (_ui.count > 0) {
       _ui[0].update()
@@ -59,36 +59,38 @@ class WorldScene is Scene {
     _moving = false
     var pressed = false
 
-
-    // Overzone interaction
-    if (InputActions.interact.justPressed) {
-      _ui.add(Menu.new(_zone, [
-        "Cook", null,
-        "Sleep", SleepAction.new(),
-        "Cancel", "cancel"
-      ]))
-      return
-    }
-
-
-    if (!player.action && !_tried) {
-      var move = Vec.new()
-      if (InputActions.left.firing) {
-        move.x = -1
-      } else if (InputActions.right.firing) {
-        move.x = 1
-      } else if (InputActions.up.firing) {
-        move.y = -1
-      } else if (InputActions.down.firing) {
-        move.y = 1
+    if (player) {
+      // Overzone interaction
+      if (InputActions.interact.justPressed) {
+        _ui.add(Menu.new(_zone, [
+          "Cook", null,
+          "Sleep", SleepAction.new(),
+          "Cancel", "cancel"
+        ]))
+        return
       }
-      if (move.length > 0) {
-        player.action = MoveAction.new(move)
+
+
+      if (!player.action && !_tried) {
+        var move = Vec.new()
+        if (InputActions.left.firing) {
+          move.x = -1
+        } else if (InputActions.right.firing) {
+          move.x = 1
+        } else if (InputActions.up.firing) {
+          move.y = -1
+        } else if (InputActions.down.firing) {
+          move.y = 1
+        }
+        if (move.length > 0) {
+          player.action = MoveAction.new(move)
+        }
       }
     }
     pressed = InputActions.directions.any {|key| key.down }
 
     _world.update()
+    // TODO: remove this
     if (InputActions.inventory.justPressed) {
       var dummy = _zone.addEntity(Dummy.new())
       dummy.pos = Vec.new(0, 0)
@@ -98,6 +100,9 @@ class WorldScene is Scene {
         System.print("Entity %(event.id) was added")
       } else if (event is EntityRemovedEvent) {
         System.print("Entity %(event.id) was removed")
+      } else if (event is GameEndEvent) {
+        var result = event.won ? "won" : "lost"
+        System.print("The game has ended. You have %(result).")
       } else if (event is MoveEvent) {
         if (event.target is Player) {
           _moving = true
@@ -132,8 +137,8 @@ class WorldScene is Scene {
 
     for (dy in -yRange...yRange) {
       for (dx in -xRange...xRange) {
-        var x = player.pos.x + dx
-        var y = player.pos.y + dy
+        var x = _lastPosition.x + dx
+        var y = _lastPosition.y + dy
         var sx = x * TILE_SIZE + X_OFFSET
         var sy = y * TILE_SIZE
         var tile = _zone.map[x, y]
@@ -221,7 +226,7 @@ class WorldScene is Scene {
       }
     }
     // Put a background on the player for readability
-    if (!STATIC) {
+    if (player && !STATIC) {
       Canvas.offset()
       var tile = _zone.map[player.pos]
       // 1-bit clarity system

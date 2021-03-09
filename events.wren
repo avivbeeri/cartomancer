@@ -1,5 +1,14 @@
 import "./core/event" for Event
 
+class GameEndEvent is Event {
+  construct new(won) {
+    super()
+    _won = won
+  }
+
+  won { _won }
+}
+
 class MoveEvent is Event {
   construct new(target) {
     super()

@@ -59,8 +59,9 @@ class Zone is DataObject {
   parent=(v) { _parent = v }
 
   addEntity(tag, entity) {
-    _tagged[tag] = entity
-    return addEntity(entity)
+    addEntity(entity)
+    _tagged[tag] = entity.id
+    return entity
   }
 
   addEntity(entity) {
@@ -90,7 +91,7 @@ class Zone is DataObject {
     _events.add(EntityRemovedEvent.new(entity.id))
   }
 
-  getEntityByTag(tag) { _tagged[tag] }
+  getEntityByTag(tag) { getEntityById(_tagged[tag]) }
   getEntityById(id) {
     var ent = _entities.where {|entity| entity.id == id }
     if (ent.count == 1) {

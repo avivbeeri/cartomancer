@@ -15,7 +15,7 @@ class Director {
     // process entities
     processEntities()
 
-    world.postUpdate.each {|hook| hook.update() }
+    world.postUpdate.each {|hook| hook.update(world) }
     world.events.sort {|a, b| a.priority < b.priority}
   }
 
