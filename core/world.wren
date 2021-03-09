@@ -6,7 +6,11 @@ class World is DataObject {
     super()
     _worlds = []
     _strategy = strategy
+    _gameover = false
   }
+
+  gameover { _gameover }
+  gameover=(v) { _gameover = v }
 
   pushZone(world) {
     world.parent = this

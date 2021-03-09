@@ -12,6 +12,10 @@ class Director {
   update() {
     world.events.clear()
 
+    if (world.parent.gameover) {
+      return
+    }
+
     // process entities
     processEntities()
 
