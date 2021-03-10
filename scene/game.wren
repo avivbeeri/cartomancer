@@ -43,6 +43,8 @@ class WorldScene is Scene {
     _camera.x = player.pos.x * TILE_SIZE
     _camera.y = player.pos.y * TILE_SIZE
     _lastPosition = player.pos
+
+    _selected = null
   }
 
   updateAllUi() {
@@ -74,10 +76,11 @@ class WorldScene is Scene {
     }
 
     _moving = false
+
     var pressed = false
 
     if (player) {
-      // Overzone interaction
+      // Overzone menu / interaction
       if (InputActions.interact.justPressed) {
         _ui.add(Menu.new(_zone, [
           "Cook", null,
@@ -87,44 +90,31 @@ class WorldScene is Scene {
         return
       }
 
-      // -------- DEBUG  BEGIN --------
-      var deck = player["deck"]
+      // Play a card
       var hand = player["hand"]
       var mouse = Mouse.pos
       var handLeft = 5 + 59
       var maxHandWidth = 416 - (handLeft)
-      var top = CARD_UI_TOP + 4
-      var slots = getHandSlots(hand, handLeft, top + 8, maxHandWidth)
+      var slots = getHandSlots(hand, handLeft, CARD_UI_TOP + 12, maxHandWidth)
       var index = 0
+      var hover = null
       for (slot in slots) {
         var card = slot[0]
         var pos = slot[1]
         if (mouse.y >= pos.y && mouse.x >= pos.x && mouse.x < pos.z) {
+          hover = slot
           if (Mouse["left"].justPressed) {
             player.action = PlayCardAction.new(index)
           }
         }
-        index = index + 1
-      }
-
-      /*
-      var y = Canvas.height - (hand.count + 2 + deck.count) * 8
-      Canvas.print("Hand:", 0, y - 8, Color.white)
-      var index = 0
-      for (card in hand) {
-        var text = "%(card.name)"
-        if ((index+1) <= InputActions.options.count) {
-          text = "%(index+1): %(card.name)"
-        }
-        if (((index+1) < InputActions.options.count && InputActions.options[index+1].justPressed) || (Mouse["left"].justPressed && mouse.y >= y && mouse.y < y + 8 && mouse.x < text.count * 8)) {
+        if ((index+1) < InputActions.options.count && InputActions.options[index+1].justPressed) {
           player.action = PlayCardAction.new(index)
         }
-        y = y + 8
         index = index + 1
       }
-      */
-      // ------ DEBUG --------
+      _selected = hover
 
+      // Allow movement
       if (!player.action && !_tried) {
         if (InputActions.rest.firing) {
           player.action = RestAction.new()
@@ -347,20 +337,17 @@ class WorldScene is Scene {
       var maxHandWidth = 416 - (handLeft)
       var slots = getHandSlots(hand, handLeft, top + 8, maxHandWidth)
       var mouse = Mouse.pos
-      var selected = null
       for (slot in slots) {
         var card = slot[0]
         var pos = slot[1]
-        if (mouse.y >= pos.y && mouse.x >= pos.x && mouse.x < pos.z) {
-          Canvas.print(card.name, 0, 0, Color.white)
-          selected = slot
+        if (_selected && _selected[0] == card) {
         } else {
-          card.draw(pos.x, pos.y)
+         card.draw(pos.x, pos.y)
         }
       }
-      if (selected) {
-        var card = selected[0]
-        var pos =  selected[1]
+      if (_selected) {
+        var card = _selected[0]
+        var pos =  _selected[1]
         card.draw(pos.x, pos.y - 32)
       }
 
