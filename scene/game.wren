@@ -2,6 +2,8 @@ import "graphics" for ImageData, Canvas, Color
 import "input" for Keyboard, Mouse
 import "math" for Vec, M
 
+import "./palette" for EDG32
+
 import "./core/display" for Display
 import "./core/scene" for Scene
 import "./core/event" for EntityRemovedEvent, EntityAddedEvent
@@ -175,8 +177,10 @@ class WorldScene is Scene {
     var sprites = StandardSpriteSet
     Canvas.cls(Display.bg)
 
+    var CARD_UI_TOP = 224
+
     var cx = (Canvas.width - X_OFFSET - 20) / 2
-    var cy = Canvas.height / 2 - 4
+    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 2
     if (!STATIC) {
       Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
     }
@@ -312,17 +316,37 @@ class WorldScene is Scene {
         Canvas.print(inv[i], 0, i * 8, Color.white)
       }
 
+      Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32[28])
+      Canvas.line(0, CARD_UI_TOP, Canvas.width, CARD_UI_TOP, EDG32[29], 2)
+
       var deck = player["deck"]
-      var y = Canvas.height - deck.count * 8
+      Canvas.rect(5, CARD_UI_TOP + 4, 59, 89, EDG32[27])
+      if (!deck.isEmpty) {
+        var total = M.min(4, (deck.count / 3).ceil)
+        System.print("%(deck.count) - %(total)")
+        for (offset in 1..total) {
+          if (offset < total) {
+          sprites["cardback"]
+          .transform({ "mode": "MONO", "foreground": EDG32[3 + total - offset], "background": Color.none })
+          .draw(12 - offset, CARD_UI_TOP + 10 - offset)
+          } else {
+            sprites["cardback"].draw(12 - offset, CARD_UI_TOP + 10 - offset)
+          }
+        }
+      }
+
+      /*
+
       Canvas.print("Deck:", 0, y - 8, Color.white)
       for (card in deck) {
         Canvas.print(card.name, 0, y, Color.white)
         y = y + 8
       }
+      */
 
       var hand = player["hand"]
       var mouse = Mouse.pos
-      y = Canvas.height - (hand.count + 2 + deck.count) * 8
+      var y = Canvas.height - (hand.count + 2 + deck.count) * 8
       Canvas.print("Hand:", 0, y - 8, Color.white)
       var i = 1
       for (card in hand) {

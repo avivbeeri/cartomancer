@@ -1,5 +1,6 @@
 import "graphics" for Canvas, Color, Font
 import "input" for Keyboard
+import "./palette" for EDG32
 import "./core/scene" for Ui
 import "./core/display" for Display
 
@@ -36,8 +37,9 @@ class CameraLerp is Ui {
   }
 }
 
-var Bg = Color.hex("#ead4aa")
-var Red = Color.hex("#ff0044")
+
+var Bg = EDG32[2]
+var Red = EDG32[26]
 
 class SuccessMessage is Ui {
   construct new(ctx) {

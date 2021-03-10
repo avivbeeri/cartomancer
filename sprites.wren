@@ -1,3 +1,4 @@
+import "graphics" for ImageData
 import "./core/tilesheet" for Tilesheet
 
 var Sheet = Tilesheet.new("res/img/camp-tiles.png", 8, 4)
@@ -14,6 +15,7 @@ var FloorTile = RoomSheet.getTile(21)
 var WallTiles = (0...20).map {|i| RoomSheet.getTile(40 + i) }.toList
 
 var SwordTiles = (8..9).map {|i| RoomSheet.getTile(i) }.toList
+var CardBack = ImageData.loadFromFile("res/img/card-back-small.png")
 
 var StandardSpriteSet = {
   "fire": FireTiles,
@@ -23,6 +25,7 @@ var StandardSpriteSet = {
   "floor": [ FloorTile ],
   "wall": WallTiles,
   "card": [ Card ],
-  "sword": SwordTiles
+  "sword": SwordTiles,
+  "cardback": CardBack
 }
 

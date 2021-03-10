@@ -37,34 +37,25 @@ class WorldGenerator {
 
     player["discard"] = []
     player["hand"] = [
-      Card.new("Sword"),
-      Card.new("Sword"),
-      Card.new("Shield"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind"),
-      Card.new("Wind")
+      Card.new("Water"),
+      Card.new("Fire"),
+      Card.new("Earth"),
 
     ]
     player["deck"] = Deck.new([
       Card.new("Sword"),
       Card.new("Shield"),
+      Card.new("Lightning"),
+      Card.new("Dark"),
+      Card.new("Light"),
+      Card.new("Lightning"),
+      Card.new("Dark"),
+      Card.new("Light"),
+      Card.new("Lightning"),
+      Card.new("Dark"),
+      Card.new("Light"),
       Card.new("Wind")
-    ]) // .shuffle()
+    ]).shuffle()
 
     var dummy = zone.addEntity(Dummy.new())
     dummy.pos = Vec.new(2, 2)

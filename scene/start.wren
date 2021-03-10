@@ -1,5 +1,6 @@
 import "input" for Keyboard
 import "graphics" for Canvas, Color, Font
+import "./palette" for EDG32
 
 import "./core/scene" for Scene
 import "./core/display" for Display
@@ -18,8 +19,8 @@ class StartScene is Scene {
     Font.load("m5x7", "res/font/m5x7.ttf", 16)
     size = Font["m5x7"].getArea("Press SPACE to begin")
     _helpX = (Canvas.width - size.x) / 2
-    _gold = Color.hex("#feae34")
-    _purple = Color.hex("#68386c")
+    _gold = EDG32[10]
+    _purple = EDG32[27]
   }
 
   update() {
