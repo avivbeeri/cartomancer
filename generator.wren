@@ -39,7 +39,7 @@ class WorldGenerator {
     player["hand"] = [
       Card.new("Water"),
       Card.new("Fire"),
-      Card.new("Sword"),
+      Card.new("Sword", null, "res/img/cards/sword.png"),
     ]
     player["deck"] = Deck.new([
       Card.new("Light"),

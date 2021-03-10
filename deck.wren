@@ -14,15 +14,33 @@ class Card {
     _name = name
     _action = Action.none
   }
+  construct new(name, action) {
+    _name = name
+    _action = action || Action.none
+  }
+
+  construct new(name, action, imagePath) {
+    _name = name
+    _action = action || Action.none
+    _image = ImageData.loadFromFile(imagePath)
+  }
+
   name { _name }
   action { _action }
+  image { _image }
+  image=(v) { _image = v }
 
   draw(x, y) {
     Frame.draw(x, y)
-    Canvas.rectfill(x + 8, y + 8, 80, 19, EDG32[15])
+    Canvas.rectfill(x + 8, y + 8, 80, 19, EDG32[14])
+    Canvas.line(x + 8, y + 27, x + 87, y + 27, EDG32[15])
     var width = Font["quiver16"].getArea(name).x
     var textLeft = x + 8 + (80 - width) / 2
-    Canvas.print(name, textLeft, y + 10, EDG32[19], "quiver16")
+    Canvas.print(name, textLeft + 1, y + 10, EDG32[24], "quiver16")
+    Canvas.print(name, textLeft, y + 9, EDG32[19], "quiver16")
+    if (_image) {
+      _image.draw(x, y)
+    }
   }
 }
 
