@@ -1,4 +1,4 @@
-import "graphics" for ImageData, Canvas, Color
+import "graphics" for ImageData, Canvas, Color, Font
 import "input" for Keyboard, Mouse
 import "math" for Vec, M
 
@@ -14,7 +14,7 @@ import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent
 import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction
 import "./entity/all" for Player, Dummy, Collectible
 
-import "./sprites" for StandardSpriteSet
+import "./sprites" for StandardSpriteSet as Sprites
 
 // Timer variables
 var T = 0
@@ -25,6 +25,7 @@ var STATIC = false
 
 var SCALE = 4
 var TILE_SIZE = 8 * SCALE
+var CARD_UI_TOP = 224
 
 class WorldScene is Scene {
   construct new(args) {
@@ -90,6 +91,23 @@ class WorldScene is Scene {
       var deck = player["deck"]
       var hand = player["hand"]
       var mouse = Mouse.pos
+      var handLeft = 5 + 59
+      var maxHandWidth = 416 - (handLeft)
+      var top = CARD_UI_TOP + 4
+      var slots = getHandSlots(hand, handLeft, top + 8, maxHandWidth)
+      var index = 0
+      for (slot in slots) {
+        var card = slot[0]
+        var pos = slot[1]
+        if (mouse.y >= pos.y && mouse.x >= pos.x && mouse.x < pos.z) {
+          if (Mouse["left"].justPressed) {
+            player.action = PlayCardAction.new(index)
+          }
+        }
+        index = index + 1
+      }
+
+      /*
       var y = Canvas.height - (hand.count + 2 + deck.count) * 8
       Canvas.print("Hand:", 0, y - 8, Color.white)
       var index = 0
@@ -104,6 +122,7 @@ class WorldScene is Scene {
         y = y + 8
         index = index + 1
       }
+      */
       // ------ DEBUG --------
 
       if (!player.action && !_tried) {
@@ -174,10 +193,8 @@ class WorldScene is Scene {
     _zone = _world.active
     var player = _zone.getEntityByTag("player")
     var X_OFFSET = 4
-    var sprites = StandardSpriteSet
     Canvas.cls(Display.bg)
 
-    var CARD_UI_TOP = 224
 
     var cx = (Canvas.width - X_OFFSET - 20) / 2
     var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 2
@@ -201,10 +218,10 @@ class WorldScene is Scene {
         } else if (tile["floor"] == "solid") {
           Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, Display.fg)
         } else if (tile["floor"] == "door") {
-          var list = sprites[tile["floor"]]
+          var list = Sprites[tile["floor"]]
           list[0].draw(sx, sy)
         } else if (_zone["floor"] == "void") {
-          var list = sprites["void"]
+          var list = Sprites["void"]
           list[0].draw(sx, sy)
         } else {
           // figure out neighbours
@@ -254,7 +271,7 @@ class WorldScene is Scene {
 
           Canvas.print(index, sx, sy, Color.green)
 
-          var list = sprites["wall"]
+          var list = Sprites["wall"]
           list[index].draw(sx, sy)
         }
       }
@@ -270,15 +287,15 @@ class WorldScene is Scene {
         // We draw this
         if (_moving) {
           var s = (T * 5).floor % 2
-          sprites["playerWalk"][s].draw(sx, sy)
+          Sprites["playerWalk"][s].draw(sx, sy)
         } else {
-          sprites["playerStand"][s].draw(sx, sy)
+          Sprites["playerStand"][s].draw(sx, sy)
         }
 
       } else if (entity is Dummy) {
-        sprites["sword"][F].draw(sx, sy)
+        Sprites["sword"][F].draw(sx, sy)
       } else if (entity is Collectible) {
-        sprites["card"][0].draw(sx, sy - F * 2)
+        Sprites["card"][0].draw(sx, sy - F * 2)
       } else {
         Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }
@@ -304,9 +321,9 @@ class WorldScene is Scene {
       */
       // Draw player in screen center
       if (_moving) {
-        sprites["playerWalk"][F].draw(cx, cy)
+        Sprites["playerWalk"][F].draw(cx, cy)
       } else {
-        sprites["playerStand"][F].draw(cx, cy)
+        Sprites["playerStand"][F].draw(cx, cy)
       }
     }
 
@@ -320,32 +337,34 @@ class WorldScene is Scene {
       Canvas.line(0, CARD_UI_TOP, Canvas.width, CARD_UI_TOP, EDG32[29], 2)
 
       var deck = player["deck"]
-      Canvas.rect(5, CARD_UI_TOP + 4, 59, 89, EDG32[27])
-      if (!deck.isEmpty) {
-        var total = M.min(4, (deck.count / 3).ceil)
-        System.print("%(deck.count) - %(total)")
-        for (offset in 1..total) {
-          if (offset < total) {
-          sprites["cardback"]
-          .transform({ "mode": "MONO", "foreground": EDG32[3 + total - offset], "background": Color.none })
-          .draw(12 - offset, CARD_UI_TOP + 10 - offset)
-          } else {
-            sprites["cardback"].draw(12 - offset, CARD_UI_TOP + 10 - offset)
-          }
-        }
-      }
-
-      /*
-
-      Canvas.print("Deck:", 0, y - 8, Color.white)
-      for (card in deck) {
-        Canvas.print(card.name, 0, y, Color.white)
-        y = y + 8
-      }
-      */
+      var left = 5
+      var top = CARD_UI_TOP + 4
+      drawPile(deck, 5, top)
+      drawPile(player["discard"], 416, top)
 
       var hand = player["hand"]
+      var handLeft = 5 + 59
+      var maxHandWidth = 416 - (handLeft)
+      var slots = getHandSlots(hand, handLeft, top + 8, maxHandWidth)
       var mouse = Mouse.pos
+      var selected = null
+      for (slot in slots) {
+        var card = slot[0]
+        var pos = slot[1]
+        if (mouse.y >= pos.y && mouse.x >= pos.x && mouse.x < pos.z) {
+          Canvas.print(card.name, 0, 0, Color.white)
+          selected = slot
+        } else {
+          card.draw(pos.x, pos.y)
+        }
+      }
+      if (selected) {
+        var card = selected[0]
+        var pos =  selected[1]
+        card.draw(pos.x, pos.y - 32)
+      }
+
+/*
       var y = Canvas.height - (hand.count + 2 + deck.count) * 8
       Canvas.print("Hand:", 0, y - 8, Color.white)
       var i = 1
@@ -362,6 +381,7 @@ class WorldScene is Scene {
         y = y + 8
         i = i + 1
       }
+      */
     }
 
     for (ui in _ui) {
@@ -375,6 +395,58 @@ class WorldScene is Scene {
   world { _world }
   camera { _camera }
   camera=(v) { _camera = v }
+
+  drawPile(pile, left, top) {
+    var mouse = Mouse.pos
+    var width = 59
+    var height = 89
+    var border = 3
+    Canvas.rect(left, top, width, height, EDG32[27])
+    if (!pile.isEmpty) {
+      var total = M.min(4, (pile.count / 3).ceil)
+      for (offset in 1..total) {
+        if (offset < total) {
+        Sprites["cardback"]
+        .transform({ "mode": "MONO", "foreground": EDG32[3 + total - offset], "background": Color.none })
+        .draw(left + 7 - offset, top + 6 - offset)
+        } else {
+          Sprites["cardback"].draw(left + 7 - offset, top + 6 - offset)
+        }
+      }
+    }
+    if (mouse.x >= left && mouse.x < left + width && mouse.y >= top && mouse.y < top + height) {
+      var font = Font["m5x7"]
+      var area = font.getArea(pile.count.toString)
+
+      var textLeft = left + ((width - area.x) / 2)
+      var textTop = top + ((height - area.y) / 2)
+      Canvas.rectfill(textLeft - border, textTop - border, area.x + border * 2, area.y + border * 2, EDG32[21])
+      font.print(pile.count.toString, textLeft + 1, textTop - 2, EDG32[23])
+    }
+  }
+
+  getHandSlots(hand, handLeft, top, maxHandWidth) {
+      var cardWidth = 96
+      var spacingCount = M.max(0, hand.count - 1)
+      var spacing = 6
+      var handWidth = (hand.count * cardWidth) + spacingCount * spacing
+      var handStep
+      var adjust
+      if (handWidth < maxHandWidth) {
+        handStep = (handWidth / hand.count).floor
+        adjust = (maxHandWidth - handWidth) / 2
+      } else {
+        maxHandWidth = maxHandWidth - cardWidth
+        handStep = ((maxHandWidth) / (hand.count)).ceil
+        spacing = 0
+        adjust = handStep / 2
+      }
+
+      return (0...hand.count).map {|i|
+        var x = handLeft + adjust + handStep * i + spacing / 2
+        return [ hand[i], Vec.new(x, top, i < hand.count - 1 ? x + handStep : x + cardWidth, 160) ]
+      }
+  }
 }
 
 // These need to be down here for safety

@@ -13,6 +13,7 @@ import "./generator" for WorldGenerator
 class StartScene is Scene {
   construct new(args) {
     Font.load("quiver64", "res/font/Quiver.ttf", 64)
+    Font.load("quiver16", "res/font/Quiver.ttf", 16)
     var size = Font["quiver64"].getArea("Cartomancer")
     _x = (Canvas.width - size.x) / 2
     _y = 32

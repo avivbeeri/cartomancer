@@ -39,11 +39,11 @@ class WorldGenerator {
     player["hand"] = [
       Card.new("Water"),
       Card.new("Fire"),
-      Card.new("Earth"),
-
+      Card.new("Sword"),
     ]
     player["deck"] = Deck.new([
-      Card.new("Sword"),
+      Card.new("Light"),
+      Card.new("Earth"),
       Card.new("Shield"),
       Card.new("Lightning"),
       Card.new("Dark"),
@@ -53,7 +53,6 @@ class WorldGenerator {
       Card.new("Light"),
       Card.new("Lightning"),
       Card.new("Dark"),
-      Card.new("Light"),
       Card.new("Wind")
     ]).shuffle()
 

@@ -184,7 +184,7 @@ class PlayCardAction is Action {
         var card = deck.drawCard()
         if (card) {
           System.print("Drew: %(card.name)")
-          hand.add(card)
+          hand.insert(0, card)
         }
       }
     }
