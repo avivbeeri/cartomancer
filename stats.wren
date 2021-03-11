@@ -53,7 +53,7 @@ class Modifier {
     _id = id
     _add = add || {}
     _mult = mult || {}
-    _duration = duration
+    _duration = duration || null
     _positive = positive || false
   }
 
@@ -63,9 +63,15 @@ class Modifier {
   duration { _duration }
   positive { _positive }
 
-  tick() { _duration = _duration ? _duration - 1 : null }
-  done { _duration && _duration > 0 }
+  tick() {
+    _duration = _duration ? _duration - 1 : null
+  }
+  done { _duration && _duration <= 0 }
 
-  extend(n) { _duration = (_duration || 0) + n }
+  extend(n) {
+    if (_duration != null) {
+      _duration = (_duration  || 0) + n
+    }
+  }
 }
 

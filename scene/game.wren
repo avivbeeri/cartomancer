@@ -319,11 +319,20 @@ class WorldScene is Scene {
     }
 
     if (player) {
+      /*
       var inv = player["inventory"]
       for (i in 0...inv.count) {
         Canvas.print(inv[i], 0, i * 8, Color.white)
       }
+      */
 
+      // Draw the top bar (player stats, menu button, tabs?)
+      Canvas.rectfill(0, 0, Canvas.width, 20, EDG32[28])
+      var hp = player["stats"].get("hp")
+      var hpMax = player["stats"].get("hpMax")
+      Canvas.print("HP: %(hp)/%(hpMax)", 2, 2, EDG32[19], "m5x7")
+
+      // Draw the card shelf
       Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32[28])
       Canvas.line(0, CARD_UI_TOP, Canvas.width, CARD_UI_TOP, EDG32[29], 2)
 

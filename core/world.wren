@@ -73,12 +73,14 @@ class Zone is DataObject {
     _entities.add(entity)
     parent.strategy.onEntityAdd(entity)
 
+    /*
     if (_freeIds.count > 0) {
       entity.id = _freeIds.removeAt(-1)
     } else {
+      */
       entity.id = _nextId
       _nextId = _nextId + 1
-    }
+    // }
     _events.add(EntityAddedEvent.new(entity.id))
 
     return entity

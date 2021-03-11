@@ -82,7 +82,8 @@
       "target": "creature",
       "params": {
         "id": "thunder",
-        "add": { "hp": -1 }
+        "add": { "hp": -1 },
+        "responsible": "source"
       }
     }
   ]

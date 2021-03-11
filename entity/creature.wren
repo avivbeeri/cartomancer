@@ -11,7 +11,7 @@ class Creature is Entity {
       "atk": 1,
       "def": 0,
       "hp": 1,
-      "hp-max": 1,
+      "hpMax": 1,
       "speed": 6
     })
     this["inventory"] = []
@@ -19,16 +19,21 @@ class Creature is Entity {
 
   speed { this["stats"].get("speed") }
   endTurn() {
-    for (effect in this["activeEffects"]) {
+    var activeEffects = this["activeEffects"]
+    for (effect in activeEffects) {
       var modifier = effect[0]
       var targetId = effect[1]
       var target = ctx.getEntityById(targetId)
-      if (target) {
-        modifier.tick()
-        if (modifier.done) {
-          target["stats"].removeModifier(modifier.id)
-          ctx.events.add(LogEvent.new("%(target) is no longer affected by %(modifier.id)"))
-        }
+
+      modifier.tick()
+      if (modifier.done && target) {
+        target["stats"].removeModifier(modifier.id)
+        ctx.events.add(LogEvent.new("%(target) is no longer affected by %(modifier.id)"))
+      }
+
+      if (!target || modifier.done) {
+        var n = activeEffects.indexOf(effect)
+        activeEffects.removeAt(n)
       }
     }
     this["stats"].tick()
