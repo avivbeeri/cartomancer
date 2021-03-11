@@ -62,5 +62,6 @@ class Modifier {
   duration { _duration }
 
   tick() { _duration = _duration ? _duration - 1 : null }
+  extend(n) { _duration = (_duration || 0) + n }
 }
 

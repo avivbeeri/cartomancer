@@ -13,9 +13,10 @@ class CardActionFactory {
       var id = card.params["id"]
       var add = card.params["add"]
       var mult = card.params["mult"]
+      var responsible = card.params["responsible"]
       var duration = card.params["duration"]
       var modifier = Modifier.new(id, add, mult, duration)
-      return ApplyModifierAction.new(modifier, target)
+      return ApplyModifierAction.new(modifier, target, !responsible || responsible == "source")
     } else {
       Fiber.abort("Could not prepare unknown action %(card.action)")
     }

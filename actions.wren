@@ -215,19 +215,25 @@ class ApplyModifierAction is Action {
     super()
     _modifier = modifier
     _target = source
+    _responsible = source
   }
 
-  construct new(modifier, target) {
+  construct new(modifier, target, responsible) {
     super()
     _modifier = modifier
     _target = target
+    _responsible = responsible
   }
 
   perform() {
     if (_target.has("stats")) {
       ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
       _target["stats"].addModifier(_modifier)
-      source["activeEffects"].add([ _modifier, _target.id ])
+      var host = _responsible ? source : _target
+      host["activeEffects"].add([ _modifier, _target.id ])
+      if (host == source) {
+        _modifier.extend(1)
+      }
       return ActionResult.success
     }
     return ActionResult.failure
