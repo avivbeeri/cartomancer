@@ -35,7 +35,9 @@ class CardTargetSelector is Ui {
   finished { _done }
 
   update() {
-    if (InputActions.cancel.justPressed) {
+    var mouse = Mouse.pos
+    if ((Mouse["left"].justPressed && mouse.x >= 460 && mouse.x < 470 && mouse.y >= 22 && mouse.y < 33) ||
+      (InputActions.cancel.justPressed)) {
       _done = true
       return
     }
@@ -47,19 +49,25 @@ class CardTargetSelector is Ui {
     var X_OFFSET = 0
     var cx = (Canvas.width - X_OFFSET - 20) / 2
     var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
-    var mouse = Mouse.pos - (Vec.new(cx, cy) - _view.camera)
-    mouse.x = (mouse.x / TILE_SIZE).floor
-    mouse.y = (mouse.y / TILE_SIZE).floor
-    _mouseTile = mouse
-    for (i in 0..._targets.count) {
-      var target = _targets[i]
-      if (target.pos == _mouseTile) {
-        _current = i
-        break
+
+    _mouseTile = mouse - (Vec.new(cx, cy) - _view.camera)
+    _mouseTile.x = (_mouseTile.x / TILE_SIZE).floor
+    _mouseTile.y = (_mouseTile.y / TILE_SIZE).floor
+    var hover = false
+    if (ctx.map[_mouseTile]["floor"] != "void" && (_mouseTile.x - _player.pos.x).abs < 14 && (_mouseTile.y - _player.pos.y).abs < 10) {
+      for (i in 0..._targets.count) {
+        var target = _targets[i]
+        if (target.pos == _mouseTile) {
+          _current = i
+          hover = true
+          break
+        }
       }
+    } else {
+      _mouseTile = null
     }
 
-    if (InputActions.confirm.justPressed || Mouse["left"].justPressed) {
+    if (InputActions.confirm.justPressed || (Mouse["left"].justPressed && hover)) {
       _done = true
       _player.action = PlayCardAction.new(_index, _targets[_current])
       return
@@ -68,7 +76,7 @@ class CardTargetSelector is Ui {
     _current = _current % _targets.count
   }
 
-  draw() {
+  drawDiagetic() {
     var loc = Vec.new()
     for (y in -_range.._range) {
       for (x in -_range.._range) {
@@ -109,6 +117,16 @@ class CardTargetSelector is Ui {
         Canvas.rectfill(_mouseTile.x * TILE_SIZE, _mouseTile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, EDG32A[17])
       }
     }
+  }
+
+  draw() {
+    var mouse = Mouse.pos
+    var c = EDG32[20]
+    if (mouse.x >= 460 && mouse.x < 470 && mouse.y >= 22 && mouse.y < 33) {
+      c = EDG32[21]
+    }
+    Canvas.rectfill(460, 22, 10, 11, c)
+    Canvas.print("X", 461, 24, EDG32[19])
   }
 
 }

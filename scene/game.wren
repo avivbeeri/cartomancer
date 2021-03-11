@@ -293,7 +293,7 @@ class WorldScene is Scene {
     }
 
     for (ui in _diageticUi) {
-      var block = ui.draw()
+      var block = ui.drawDiagetic()
       if (block) {
         break
       }
@@ -380,6 +380,13 @@ class WorldScene is Scene {
         i = i + 1
       }
       */
+    }
+
+    for (ui in _diageticUi) {
+      var block = ui.draw()
+      if (block) {
+        break
+      }
     }
 
     for (ui in _ui) {
