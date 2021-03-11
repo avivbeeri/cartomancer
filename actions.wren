@@ -87,7 +87,7 @@ class MoveAction is Action {
         source.pos = old
       }
       if (target) {
-        result = ActionResult.alternate(AttackAction.new(_dir))
+        result = ActionResult.alternate(AttackAction.new(source.pos + _dir))
       } else if (collectible) {
         result = ActionResult.alternate(PickupAction.new(_dir))
       }
@@ -113,13 +113,19 @@ class MoveAction is Action {
 }
 
 class AttackAction is Action {
-  construct new(dir) {
+  construct new(location, kind) {
     super()
-    _dir = dir
-    _succeed = false
+    _location = location
+    _kind = kind
   }
+  construct new(location) {
+    super()
+    _location = location
+    _kind = "basic"
+  }
+
   perform() {
-    var location = source.pos + _dir
+    var location = _location
     var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity != source && entity.has("stats") }
     occupying.each {|target|
       // TODO: incorporate attacker's statistics and combat calculations
@@ -130,7 +136,7 @@ class AttackAction is Action {
 
       var damage = attack - defence
       target["stats"].decrease("hp", damage)
-      ctx.events.add(AttackEvent.new(source, target))
+      ctx.events.add(AttackEvent.new(source, target, _kind))
       ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
       ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
       if (currentHP - damage <= 0) {
@@ -147,7 +153,6 @@ class PickupAction is Action {
   construct new(dir) {
     super()
     _dir = dir
-    _succeed = false
   }
   perform() {
     var target = source.pos + _dir

@@ -19,7 +19,7 @@ class CardTargetSelector is Ui {
     _player = ctx.getEntityByTag("player")
     _pos = _player.pos
     _view = view
-    _range = 3
+    _range = card.params["range"]
     _targets = ctx.entities.where {|entity|
       return entity.has("types") &&
         entity["types"].contains(card.target) &&

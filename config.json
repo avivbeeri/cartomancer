@@ -28,6 +28,7 @@
       "tint": 25,
       "action": "applyModifier",
       "params": {
+        "range": 2,
         "id": "darkness",
         "add": { "def": -1 },
         "duration": 1,
@@ -78,12 +79,11 @@
       "id": "thunder",
       "name": "Thunder",
       "tint": 25,
-      "action": "applyModifier",
+      "action": "attack",
       "target": "creature",
       "params": {
-        "id": "thunder",
-        "add": { "hp": -1 },
-        "responsible": "source"
+        "range": 3,
+        "kind": "lightning"
       }
     }
   ]

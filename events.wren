@@ -35,14 +35,26 @@ class CollisionEvent is Event {
 
 class AttackEvent is Event {
 
-  construct new(source, target) {
+  construct new(source, target, kind) {
     super()
     _target = target
     _source = source
+    _kind = kind || "basic"
+    _success = true
+  }
+  construct new(source, target, kind, success) {
+    super()
+    _target = target
+    _source = source
+    _kind = kind || "basic"
+    _success = success || true
   }
 
   source { _source }
   target { _target }
+  kind { _kind }
+  success { _success }
+
 }
 
 class LogEvent is Event {
