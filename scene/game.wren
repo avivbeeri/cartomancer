@@ -162,9 +162,13 @@ class WorldScene is Scene {
           _ui.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
       } else if (event is AttackEvent) {
+        _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, Sprites["basicAttack"], 5))
         if (event.source is Player) {
           _tried = true
           _moving = false
+        }
+        if (event.target is Player) {
+          _diageticUi.add(Pause.new(this, 30))
         }
       } else if (event is LogEvent) {
         _log.print(event.text)
@@ -389,10 +393,12 @@ class WorldScene is Scene {
       }
     }
 
-    for (ui in _ui) {
-      var block = ui.draw()
-      if (block) {
-        break
+    if (_diageticUi.isEmpty) {
+      for (ui in _ui) {
+        var block = ui.draw()
+        if (block) {
+          break
+        }
       }
     }
   }
@@ -471,4 +477,9 @@ class WorldScene is Scene {
 }
 
 // These need to be down here for safety
-import "./effects" for CameraLerp, SuccessMessage, FailureMessage
+import "./effects" for
+  CameraLerp,
+  SuccessMessage,
+  FailureMessage,
+  Animation,
+  Pause

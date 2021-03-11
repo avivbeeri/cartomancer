@@ -81,5 +81,41 @@ class FailureMessage is Ui {
   }
 }
 
+class Pause is Ui {
+  construct new(ctx, time) {
+    super(ctx)
+    _end = time
+    _t = 0
+  }
+
+  finished { _t >= _end}
+  update() {
+    _t = _t + 1
+  }
+}
+
+class Animation is Ui {
+  construct new(ctx, location, sprites, frameTime) {
+    super(ctx)
+    _sprites = sprites
+    _frameTime = frameTime
+    _location = location
+    _t = 0
+    _end = frameTime * _sprites.count
+    // spritesheet/list
+  }
+
+  finished { _t >= _end}
+  update() {
+    _t = _t + 1
+  }
+  drawDiagetic() {
+    if (_t < _end) {
+      var f = (_t / _frameTime).floor
+      _sprites[f].draw(_location.x, _location.y)
+    }
+  }
+}
+
 import "./generator" for WorldGenerator
 import "./scene/game" for WorldScene

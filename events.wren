@@ -7,6 +7,7 @@ class GameEndEvent is Event {
   }
 
   won { _won }
+  priority { 3 }
 }
 
 class MoveEvent is Event {
