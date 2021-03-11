@@ -1,5 +1,6 @@
 import "math" for M, Vec
 import "graphics" for Canvas
+import "input" for Mouse
 import "./core/display" for Display
 import "./core/scene" for Ui
 import "./core/action" for Action
@@ -7,13 +8,17 @@ import "./keys" for InputActions
 import "./actions" for PlayCardAction
 import "./palette" for EDG32, EDG32A
 
+var scale = 1
+var TILE_SIZE = 16 * scale
+
 class CardTargetSelector is Ui {
-  construct new(ctx, card, handIndex) {
+  construct new(ctx, view, card, handIndex) {
     super(ctx)
     _done = false
     _index = handIndex
     _player = ctx.getEntityByTag("player")
     _pos = _player.pos
+    _view = view
     _range = 3
     _targets = ctx.entities.where {|entity|
       return entity.has("types") &&
@@ -24,6 +29,7 @@ class CardTargetSelector is Ui {
     if (_targets.count > 0) {
       _current = _current % _targets.count
     }
+    _mouseTile = null
   }
 
   finished { _done }
@@ -33,14 +39,32 @@ class CardTargetSelector is Ui {
       _done = true
       return
     }
-    if (InputActions.confirm.justPressed) {
+    if (InputActions.nextTarget.justPressed) {
+      _current = _current + 1
+    }
+
+    var CARD_UI_TOP = 224
+    var X_OFFSET = 0
+    var cx = (Canvas.width - X_OFFSET - 20) / 2
+    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
+    var mouse = Mouse.pos - (Vec.new(cx, cy) - _view.camera)
+    mouse.x = (mouse.x / TILE_SIZE).floor
+    mouse.y = (mouse.y / TILE_SIZE).floor
+    _mouseTile = mouse
+    for (i in 0..._targets.count) {
+      var target = _targets[i]
+      if (target.pos == _mouseTile) {
+        _current = i
+        break
+      }
+    }
+
+    if (InputActions.confirm.justPressed || Mouse["left"].justPressed) {
       _done = true
       _player.action = PlayCardAction.new(_index, _targets[_current])
       return
     }
-    if (InputActions.nextTarget.justPressed) {
-      _current = _current + 1
-    }
+
     _current = _current % _targets.count
   }
 
@@ -52,17 +76,17 @@ class CardTargetSelector is Ui {
         loc.y = y
         if (loc.manhattan <= _range) {
           var tile = loc + _player.pos
-          Canvas.rectfill(tile.x * 32, tile.y * 32, 32, 32, EDG32A[29])
+          Canvas.rectfill(tile.x * TILE_SIZE, tile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, EDG32A[29])
         }
       }
     }
     // Draw targeting recticle
     if (_targets.count > 0) {
       var target = _targets[_current]
-      var left = (target.pos.x) * 32 - 4
-      var top = (target.pos.y) * 32 - 4
-      var right = (target.pos.x + target.size.x) * 32 + 4
-      var bottom = (target.pos.y + target.size.y) * 32 + 4
+      var left = (target.pos.x) * TILE_SIZE - 4
+      var top = (target.pos.y) * TILE_SIZE - 4
+      var right = (target.pos.x + target.size.x) * TILE_SIZE + 4
+      var bottom = (target.pos.y + target.size.y) * TILE_SIZE + 4
       // top left
       Canvas.line(left, top, left + (right - left) / 3, top, EDG32[7], 3)
       Canvas.line(left, top, left, top + (bottom - top) / 3, EDG32[7], 3)
@@ -79,6 +103,11 @@ class CardTargetSelector is Ui {
       // bottom right
       Canvas.line(right, bottom, right - (right - left) / 3, bottom, EDG32[7], 3)
       Canvas.line(right, bottom, right, bottom - (bottom - top) / 3, EDG32[7], 3)
+
+      if (_mouseTile) {
+        // Mouse selector
+        Canvas.rectfill(_mouseTile.x * TILE_SIZE, _mouseTile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, EDG32A[17])
+      }
     }
   }
 

@@ -24,7 +24,7 @@ var F = 0
 // Is the view static?
 var STATIC = false
 
-var SCALE = 4
+var SCALE = 2
 var TILE_SIZE = 8 * SCALE
 var CARD_UI_TOP = 224
 
@@ -188,7 +188,7 @@ class WorldScene is Scene {
 
 
     var cx = (Canvas.width - X_OFFSET - 20) / 2
-    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 2
+    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
     if (!STATIC) {
       Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
     }
@@ -331,6 +331,7 @@ class WorldScene is Scene {
       var hp = player["stats"].get("hp")
       var hpMax = player["stats"].get("hpMax")
       Canvas.print("HP: %(hp)/%(hpMax)", 2, 2, EDG32[19], "m5x7")
+      Canvas.line(0, 20, Canvas.width, 20, EDG32[29], 2)
 
       // Draw the card shelf
       Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32[28])
@@ -456,7 +457,7 @@ class WorldScene is Scene {
       player.action = PlayCardAction.new(index)
     } else {
       // get inputs
-      _diageticUi.add(CardTargetSelector.new(_zone, card, index))
+      _diageticUi.add(CardTargetSelector.new(_zone, this, card, index))
       return slots[index]
     }
   }

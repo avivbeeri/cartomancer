@@ -23,9 +23,11 @@ class WorldGenerator {
     // -------------------
 
     zone.map.default = { "solid": false, "floor": "void" }
-    for (y in 0...9) {
-      for (x in 0...9) {
-        if (x == 0 || x == 8 || y == 0 || y == 8) {
+    var width = 18
+    var height = 18
+    for (y in 0..height) {
+      for (x in 0..width) {
+        if (x == 0 || x == width || y == 0 || y == width) {
           zone.map[x, y] = Tile.new({ "floor": "wall", "solid": true })
         } else {
           zone.map[x, y] = Tile.new({ "floor": "tile" })
