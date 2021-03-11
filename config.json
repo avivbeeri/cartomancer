@@ -5,5 +5,13 @@
     "foreground": "#FFFFFF",
     "background": "#181425",
     "title": "Cartomancer"
-  }
+  },
+  "cards": [
+    {
+      "id": "sword",
+      "name": "Sword",
+      "tint": 17,
+      "image": "res/img/cards/sword.png"
+    }
+  ]
 }

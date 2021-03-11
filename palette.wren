@@ -35,4 +35,9 @@ var edg32colors = [
 ]
 
 var EDG32 = edg32colors.map {|hex| Color.hex(hex) }.toList
+var EDG32A = edg32colors.map {|hex|
+  var c = Color.hex(hex)
+  c.a = 115
+  return c
+}.toList
 

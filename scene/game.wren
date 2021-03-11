@@ -2,7 +2,7 @@ import "graphics" for ImageData, Canvas, Color, Font
 import "input" for Keyboard, Mouse
 import "math" for Vec, M
 
-import "./palette" for EDG32
+import "./palette" for EDG32, EDG32A
 
 import "./core/display" for Display
 import "./core/scene" for Scene
@@ -182,7 +182,7 @@ class WorldScene is Scene {
   draw() {
     _zone = _world.active
     var player = _zone.getEntityByTag("player")
-    var X_OFFSET = 4
+    var X_OFFSET = 0//4
     Canvas.cls(Display.bg)
 
 
@@ -329,8 +329,8 @@ class WorldScene is Scene {
       var deck = player["deck"]
       var left = 5
       var top = CARD_UI_TOP + 4
-      drawPile(deck, 5, top)
-      drawPile(player["discard"], 416, top)
+      drawPile(deck, 5, top, false)
+      drawPile(player["discard"], 416, top, true)
 
       var hand = player["hand"]
       var handLeft = 5 + 59
@@ -383,7 +383,7 @@ class WorldScene is Scene {
   camera { _camera }
   camera=(v) { _camera = v }
 
-  drawPile(pile, left, top) {
+  drawPile(pile, left, top, shade) {
     var mouse = Mouse.pos
     var width = 59
     var height = 89
@@ -409,6 +409,9 @@ class WorldScene is Scene {
       var textTop = top + ((height - area.y) / 2)
       Canvas.rectfill(textLeft - border, textTop - border, area.x + border * 2, area.y + border * 2, EDG32[21])
       font.print(pile.count.toString, textLeft + 1, textTop - 2, EDG32[23])
+    }
+    if (shade) {
+      Canvas.rectfill(left+1, top+1, width-2, height-2, EDG32A[27])
     }
   }
 

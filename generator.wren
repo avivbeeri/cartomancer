@@ -8,6 +8,7 @@ import "./core/director" for
   EnergyStrategy
 import "./logic" for GameEndCheck
 import "./deck" for Deck, Card
+import "./core/config" for Config
 
 class WorldGenerator {
   static generate() {
@@ -17,9 +18,6 @@ class WorldGenerator {
     var zone = world.pushZone(Zone.new(TileMap.init()))
     zone.postUpdate.add(GameEndCheck)
     zone.map.default = { "solid": false, "floor": "void" }
-    // zone.map[0, 0] = Tile.new({ "floor": "grass" })
-    // zone.map[0, 1] = Tile.new({ "floor": "solid", "solid": true })
-    // zone.map[10, 0] = Tile.new({ "floor": "solid", "solid": true })
     for (y in 0...9) {
       for (x in 0...9) {
         if (x == 0 || x == 8 || y == 0 || y == 8) {
@@ -39,7 +37,7 @@ class WorldGenerator {
     player["hand"] = [
       Card.new("Water"),
       Card.new("Fire"),
-      Card.new("Sword", null, "res/img/cards/sword.png"),
+      Card.new(Config["cards"][0])
     ]
     player["deck"] = Deck.new([
       Card.new("Light"),
