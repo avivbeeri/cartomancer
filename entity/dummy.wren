@@ -2,28 +2,18 @@ import "math" for Vec
 import "./core/entity" for Entity
 import "./actions" for MoveAction
 import "./stats" for StatGroup
+import "./entity/creature" for Creature
 
-class Dummy is Entity {
+class Dummy is Creature {
   construct new() {
     super()
-    this["types"] = [ "creature", "enemy" ]
-    this["stats"] = StatGroup.new({
-      "atk": 1,
-      "def": 1,
-      "hp": 1,
-      "hp-max": 1,
-      "speed": 1
-    })
+    this["types"].add("enemy")
+    this["stats"].set("def", 1)
+    this["stats"].set("speed", 1)
   }
-
-  speed { this["stats"].get("speed") }
 
   update() {
     return MoveAction.new(Vec.new(1, 0), true)
-  }
-
-  endTurn() {
-    this["stats"].tick()
   }
 }
 
