@@ -31,6 +31,9 @@ class Entity is DataObject {
   priority=(v) { _priority = v }
   priority { _priority }
 
+  // May not always be used, can be override
+  speed { 1 }
+
   move() {
     // pos = pos + vel
     pos.x = pos.x + vel.x

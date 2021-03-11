@@ -33,6 +33,9 @@ var INVENTORY_KEY = InputGroup.new([
 var REST_KEY = InputGroup.new([
   Keyboard["r"]
 ])
+var TARGET_KEY = InputGroup.new([
+  Keyboard["tab"]
+])
 
 var OPTION_KEYS = (0..9).map {|i| Keyboard[i.toString]}.toList
 var DIR_KEYS = [ UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY ]
@@ -54,4 +57,5 @@ class InputActions {
   static interact { INTERACT_KEY }
   static confirm { CONFIRM_KEY }
   static cancel { CANCEL_KEY }
+  static nextTarget { TARGET_KEY }
 }

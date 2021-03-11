@@ -11,12 +11,14 @@
       "id": "sword",
       "name": "Sword",
       "tint": 17,
-      "image": "res/img/cards/sword.png"
+      "image": "res/img/cards/sword.png",
+      "target": "self"
     },
     {
       "id": "darkness",
       "name": "Dark",
-      "tint": 25
+      "tint": 25,
+      "target": "creature"
     },
     {
       "id": "light",

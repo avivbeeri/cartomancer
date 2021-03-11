@@ -16,7 +16,8 @@ class Card {
       "name": _name,
       "action": _action,
       "image": _imagePath,
-      "tint": _tintIndex
+      "tint": _tintIndex,
+      "target": _target
     })
   }
   construct new(data) {
@@ -30,6 +31,7 @@ class Card {
       }
       _tintIndex = data["tint"] || 19
       _tint = EDG32A[_tintIndex]
+      _target = data["target"]
     } else {
       _name = data
       _action = Action.none
@@ -41,6 +43,9 @@ class Card {
   action { _action }
   image { _image }
   image=(v) { _image = v }
+  requiresInput {
+    return _target && _target != "self"
+  }
 
   draw(x, y) {
     x = x.round

@@ -10,9 +10,12 @@ class Dummy is Entity {
       "atk": 1,
       "def": 1,
       "hp": 1,
-      "hp-max": 1
+      "hp-max": 1,
+      "speed": 1
     })
   }
+
+  speed { this["stats"].get("speed") }
 
   update() {
     return MoveAction.new(Vec.new(1, 0), true)

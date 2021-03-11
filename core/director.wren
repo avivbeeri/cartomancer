@@ -65,7 +65,7 @@ class EnergyStrategy is Director {
   }
 
   gainEnergy(actor) {
-    actor.priority = actor.priority + (actor["#speed"] || 1)
+    actor.priority = actor.priority + (actor.speed || 1)
     actor.priority = M.min(actor.priority, threshold)
   }
 

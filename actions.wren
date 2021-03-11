@@ -170,7 +170,15 @@ class PickupAction is Action {
 
 class PlayCardAction is Action {
   construct new(handIndex) {
+    super()
     _handIndex = handIndex
+    _target = null
+  }
+
+  construct new(handIndex, target) {
+    super()
+    _handIndex = handIndex
+    _target = target
   }
 
   perform() {
@@ -201,5 +209,29 @@ class PlayCardAction is Action {
     return result
   }
 }
+
+class ApplyModifierAction is Action {
+  construct new(modifier) {
+    super()
+    _modifier = modifier
+    _target = source
+  }
+
+  construct new(modifier, target) {
+    super()
+    _modifier = modifier
+    _target = target
+  }
+
+  perform() {
+    if (_target.has("stats")) {
+      ctx.events.add(LogEvent.new("%(source) inflicted %(modifier.id) on %(target)"))
+      _target["stats"].addModifier(_modifier)
+      return ActionResult.success
+    }
+    return ActionResult.failure
+  }
+}
+
 
 import "./entity/collectible" for Collectible

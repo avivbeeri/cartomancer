@@ -6,17 +6,19 @@ class Player is Entity {
   construct new() {
     super()
     _action = null
-    this["#speed"] = 6
     this["stats"] = StatGroup.new({
       "atk": 1,
       "def": 0,
       "hp": 1,
       "hp-max": 1,
       "mana": 0,
-      "mana-max": 0
+      "mana-max": 0,
+      "speed": 6
     })
     this["inventory"] = []
   }
+
+  speed { this["stats"].get("speed") }
 
   action { _action }
   action=(v) {

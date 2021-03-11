@@ -9,7 +9,7 @@ import "./core/scene" for Scene
 import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
-import "./menu" for Menu
+import "./menu" for Menu, CardTargetSelector
 import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent
 import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction
 import "./entity/all" for Player, Dummy, Collectible
@@ -106,11 +106,13 @@ class WorldScene is Scene {
         if (mouse.y >= pos.y && mouse.x >= pos.x && mouse.x < pos.z) {
           hover = slot
           if (Mouse["left"].justPressed) {
-            player.action = PlayCardAction.new(index)
+            playCard(slots, index)
           }
         }
+
         if ((index+1) < InputActions.options.count && InputActions.options[index+1].justPressed) {
-          player.action = PlayCardAction.new(index)
+          hover = slot
+          playCard(slots, index)
         }
         index = index + 1
       }
@@ -141,10 +143,6 @@ class WorldScene is Scene {
 
     _world.update()
     // TODO: remove this
-    if (InputActions.inventory.justPressed) {
-      var dummy = _zone.addEntity(Dummy.new())
-      dummy.pos = Vec.new(0, 0)
-    }
     for (event in _zone.events) {
       if (event is EntityAddedEvent) {
         System.print("Entity %(event.id) was added")
@@ -440,6 +438,20 @@ class WorldScene is Scene {
         var x = handLeft + adjust + handStep * i + spacing / 2
         return [ hand[i], Vec.new(x, top, i < hand.count - 1 ? x + handStep : x + cardWidth, 160) ]
       }
+  }
+
+  playCard(slots, index) {
+    var player = _world.active.getEntityByTag("player")
+    var card = slots.toList[index][0]
+    if (!card.requiresInput) {
+      System.print("no input needed")
+      player.action = PlayCardAction.new(index)
+    } else {
+      // get inputs
+      System.print("input needed")
+      _diageticUi.add(CardTargetSelector.new(_zone, card, index))
+      return
+    }
   }
 }
 
