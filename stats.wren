@@ -36,7 +36,7 @@ class StatGroup {
 
   tick() {
     for (modifier in _mods.values) {
-      if (modifier.duration == 0) {
+      if (modifier.done) {
         removeModifier(modifier.id)
       }
     }
@@ -64,6 +64,7 @@ class Modifier {
   positive { _positive }
 
   tick() { _duration = _duration ? _duration - 1 : null }
+  done { _duration && _duration > 0 }
 
   extend(n) { _duration = (_duration || 0) + n }
 }

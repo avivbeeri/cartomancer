@@ -13,5 +13,15 @@ class GameEndCheck {
     }
   }
 }
+
+class RemoveDefeated {
+  static update(ctx) {
+    ctx.entities
+    .where {|entity| entity.has("stats") && entity["stats"].get("hp") <= 0 }
+    .each {|entity| ctx.removeEntity(entity) }
+  }
+
+}
+
 import "./events" for GameEndEvent
 import "./entity/collectible" for Collectible

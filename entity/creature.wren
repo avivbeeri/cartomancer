@@ -25,7 +25,7 @@ class Creature is Entity {
       var target = ctx.getEntityById(targetId)
       if (target) {
         modifier.tick()
-        if (modifier.duration == 0) {
+        if (modifier.done) {
           target["stats"].removeModifier(modifier.id)
           ctx.events.add(LogEvent.new("%(target) is no longer affected by %(modifier.id)"))
         }

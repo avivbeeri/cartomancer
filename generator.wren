@@ -7,7 +7,7 @@ import "./core/director" for
   RealTimeStrategy,
   TurnBasedStrategy,
   EnergyStrategy
-import "./logic" for GameEndCheck
+import "./logic" for GameEndCheck, RemoveDefeated
 import "./deck" for Deck, Card
 import "./core/config" for Config
 
@@ -17,7 +17,11 @@ class WorldGenerator {
     var world = World.new(EnergyStrategy.new())
 
     var zone = world.pushZone(Zone.new(TileMap.init()))
+    // Order is important!!
+    zone.postUpdate.add(RemoveDefeated)
     zone.postUpdate.add(GameEndCheck)
+    // -------------------
+
     zone.map.default = { "solid": false, "floor": "void" }
     for (y in 0...9) {
       for (x in 0...9) {

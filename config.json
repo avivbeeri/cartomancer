@@ -58,7 +58,16 @@
     {
       "id": "shield",
       "name": "Shield",
-      "tint": 25
+      "tint": 25,
+      "action": "applyModifier",
+      "target": "self",
+      "params": {
+        "id": "shield",
+        "add": { "def": 1 },
+        "duration": 3,
+        "positive": true,
+        "responsible": "source"
+      }
     },
     {
       "id": "water",
@@ -68,7 +77,13 @@
     {
       "id": "thunder",
       "name": "Thunder",
-      "tint": 25
+      "tint": 25,
+      "action": "applyModifier",
+      "target": "creature",
+      "params": {
+        "id": "thunder",
+        "add": { "hp": -1 }
+      }
     }
   ]
 }
