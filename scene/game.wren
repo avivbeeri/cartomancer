@@ -10,11 +10,12 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu
-import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent
+import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent
 import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction
 import "./entity/all" for Player, Dummy, Collectible
 
 import "./sprites" for StandardSpriteSet as Sprites
+import "./log" for Log
 
 // Timer variables
 var T = 0
@@ -30,6 +31,7 @@ var CARD_UI_TOP = 224
 class WorldScene is Scene {
   construct new(args) {
     // Args are currently unused.
+    _log = Log.new()
 
     _camera = Vec.new()
     _moving = false
@@ -167,6 +169,8 @@ class WorldScene is Scene {
           _tried = true
           _moving = false
         }
+      } else if (event is LogEvent) {
+        _log.print(event.text)
       } else if (event is CollisionEvent) {
         if (event.source is Player) {
           _tried = true

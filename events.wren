@@ -43,3 +43,11 @@ class AttackEvent is Event {
   source { _source }
   target { _target }
 }
+
+class LogEvent is Event {
+  construct new(text) {
+    super()
+    _text = text
+  }
+  text { _text }
+}

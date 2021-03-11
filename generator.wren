@@ -35,10 +35,8 @@ class WorldGenerator {
     player.pos = Vec.new(4, 4)
 
     player["discard"] = []
-    player["hand"] = [
-      Card.new("Water"),
-    ]
     player["deck"] = Deck.new(Config["cards"].map {|data| Card.new(data) }).shuffle()
+    player["hand"] = player["deck"].drawCards(3)
 
     var dummy = zone.addEntity(Dummy.new())
     dummy.pos = Vec.new(2, 2)

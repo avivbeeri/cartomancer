@@ -14,6 +14,8 @@ class StatGroup {
 
   base(stat) { _base[stat] }
   set(stat, value) { _base[stat] = value }
+  decrease(stat, by) { _base[stat] = _base[stat] - by }
+  increase(stat, by) { _base[stat] = _base[stat] + by }
 
   get(stat) {
     var value = _base[stat]

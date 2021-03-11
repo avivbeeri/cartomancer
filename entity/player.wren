@@ -1,12 +1,20 @@
 import "core/entity" for Entity
 import "core/dataobject" for DataObject
+import "./stats" for StatGroup
 
 class Player is Entity {
   construct new() {
     super()
     _action = null
     this["#speed"] = 6
-    this["health"] = 1
+    this["stats"] = StatGroup.new({
+      "atk": 1,
+      "def": 0,
+      "hp": 1,
+      "hp-max": 1,
+      "mana": 0,
+      "mana-max": 0
+    })
     this["inventory"] = []
   }
 

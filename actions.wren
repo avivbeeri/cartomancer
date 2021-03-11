@@ -1,6 +1,6 @@
 import "math" for M, Vec
 import "./core/action" for Action, ActionResult
-import "./events" for CollisionEvent, MoveEvent, AttackEvent
+import "./events" for CollisionEvent, MoveEvent, AttackEvent, LogEvent
 
 class LogAction is Action {
   construct new() {
@@ -79,7 +79,7 @@ class MoveAction is Action {
         var occupying = getOccupying(source.pos)
         if (occupying.count > 0) {
           solid = solid || occupying.any {|entity| entity.has("solid") }
-          target = occupying.any {|entity| entity.has("health") }
+          target = occupying.any {|entity| entity.has("stats") }
           collectible = occupying.any {|entity| entity is Collectible }
         }
       }
@@ -119,14 +119,23 @@ class AttackAction is Action {
     _succeed = false
   }
   perform() {
-    var target = source.pos + _dir
-    var occupying = ctx.getEntitiesAtTile(target.x, target.y).where {|entity| entity != source && entity.has("health") }
-    occupying.each {|entity|
+    var location = source.pos + _dir
+    var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity != source && entity.has("stats") }
+    occupying.each {|target|
       // TODO: incorporate attacker's statistics and combat calculations
-      entity["health"] = entity["health"] - 1
-      ctx.events.add(AttackEvent.new(source, entity))
-      if (entity["health"] <= 0) {
-        ctx.removeEntity(entity)
+
+      var currentHP = target["stats"].base("hp")
+      var defence = target["stats"].get("def")
+      var attack = source["stats"].get("atk")
+
+      var damage = attack - defence
+      target["stats"].decrease("hp", damage)
+      ctx.events.add(AttackEvent.new(source, target))
+      ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
+      ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
+      if (currentHP - damage <= 0) {
+        ctx.events.add(LogEvent.new("%(target) was defeated."))
+        ctx.removeEntity(target)
       }
     }
     return ActionResult.success
