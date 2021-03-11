@@ -1,5 +1,6 @@
 import "math" for Vec
 
+import "./stats"
 import "./core/world" for World, Zone
 import "./core/map" for TileMap, Tile
 import "./core/director" for
