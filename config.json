@@ -12,6 +12,46 @@
       "name": "Sword",
       "tint": 17,
       "image": "res/img/cards/sword.png"
+    },
+    {
+      "id": "darkness",
+      "name": "Dark",
+      "tint": 25
+    },
+    {
+      "id": "light",
+      "name": "Light",
+      "tint": 25
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "tint": 25
+    },
+    {
+      "id": "wind",
+      "name": "Wind",
+      "tint": 25
+    },
+    {
+      "id": "earth",
+      "name": "Earth",
+      "tint": 25
+    },
+    {
+      "id": "shield",
+      "name": "Shield",
+      "tint": 25
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "tint": 25
+    },
+    {
+      "id": "thunder",
+      "name": "Thunder",
+      "tint": 25
     }
   ]
 }

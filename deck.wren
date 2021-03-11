@@ -7,43 +7,34 @@ var Frame = ImageData.loadFromFile("res/img/card-frame.png")
 
 // TODO: unfix the seed
 var RNG = Random.new(0)
-
 var DefaultTint = EDG32A[24]
 
 class Card {
+  copy {
+    return Card.new({
+      "id": _id,
+      "name": _name,
+      "action": _action,
+      "image": _imagePath,
+      "tint": _tintIndex
+    })
+  }
   construct new(data) {
     if (data is Map) {
       _id = data["id"]
       _name = data["name"]
       _action = action || Action.none
-      _image = ImageData.loadFromFile(data["image"])
-      var color = EDG32A[data["tint"] || 19]
-      _tint = Color.rgb(color.r, color.g, color.b, 115)
+      _imagePath = data["image"]
+      if (_imagePath) {
+        _image = ImageData.loadFromFile(_imagePath)
+      }
+      _tintIndex = data["tint"] || 19
+      _tint = EDG32A[_tintIndex]
     } else {
       _name = data
       _action = Action.none
       _tint = DefaultTint
     }
-  }
-  construct new(name, action) {
-    _name = name
-    _action = action || Action.none
-    _tint = DefaultTint
-  }
-
-  construct new(name, action, imagePath) {
-    _name = name
-    _action = action || Action.none
-    _image = ImageData.loadFromFile(imagePath)
-    _tint = DefaultTint
-  }
-
-  construct new(name, action, imagePath, tintIndex) {
-    _name = name
-    _action = action || Action.none
-    _image = ImageData.loadFromFile(imagePath)
-    var tint = EDG32[tintIndex || 17]
-    _tint = Color.rgb(tint.r, tint.g, tint.b, 115)
   }
 
   name { _name }
@@ -53,11 +44,11 @@ class Card {
 
   draw(x, y) {
     Frame.draw(x, y)
-    Canvas.rectfill(x + 8, y + 8, 80, 144, _tint)
-    Canvas.rectfill(x + 8, y + 8, 80, 19, EDG32[14])
-    Canvas.line(x + 8, y + 27, x + 87, y + 27, EDG32[15])
+    Canvas.rectfill(x + 7, y + 8, 80, 144, _tint)
+    Canvas.rectfill(x + 7, y + 8, 80, 19, EDG32[14])
+    Canvas.line(x + 7, y + 27, x + 86, y + 27, EDG32[15])
     var width = Font["quiver16"].getArea(name).x
-    var textLeft = x + 8 + (80 - width) / 2
+    var textLeft = x + 7 + (80 - width) / 2
     Canvas.print(name, textLeft + 1, y + 10, EDG32[24], "quiver16")
     Canvas.print(name, textLeft, y + 9, EDG32[19], "quiver16")
     if (_image) {

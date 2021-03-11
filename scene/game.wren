@@ -401,6 +401,9 @@ class WorldScene is Scene {
         }
       }
     }
+    if (shade) {
+      Canvas.rectfill(left+1, top+1, width-2, height-2, EDG32A[27])
+    }
     if (mouse.x >= left && mouse.x < left + width && mouse.y >= top && mouse.y < top + height) {
       var font = Font["m5x7"]
       var area = font.getArea(pile.count.toString)
@@ -409,9 +412,6 @@ class WorldScene is Scene {
       var textTop = top + ((height - area.y) / 2)
       Canvas.rectfill(textLeft - border, textTop - border, area.x + border * 2, area.y + border * 2, EDG32[21])
       font.print(pile.count.toString, textLeft + 1, textTop - 2, EDG32[23])
-    }
-    if (shade) {
-      Canvas.rectfill(left+1, top+1, width-2, height-2, EDG32A[27])
     }
   }
 
