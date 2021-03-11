@@ -191,7 +191,7 @@ class PlayCardAction is Action {
     var selectedCard = hand.removeAt(_handIndex)
     var result = ActionResult.failure
     if (selectedCard) {
-      result = ActionResult.alternate(selectedCard.action)
+      result = ActionResult.alternate(CardActionFactory.prepare(selectedCard, _target))
       var discard = source["discard"]
       discard.add(selectedCard)
 
@@ -225,7 +225,7 @@ class ApplyModifierAction is Action {
 
   perform() {
     if (_target.has("stats")) {
-      ctx.events.add(LogEvent.new("%(source) inflicted %(modifier.id) on %(target)"))
+      ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
       _target["stats"].addModifier(_modifier)
       return ActionResult.success
     }
@@ -233,5 +233,5 @@ class ApplyModifierAction is Action {
   }
 }
 
-
 import "./entity/collectible" for Collectible
+import "./factory" for CardActionFactory

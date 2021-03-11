@@ -3,6 +3,7 @@ import "graphics" for ImageData, Canvas, Font, Color
 import "./core/action" for Action
 import "./palette" for EDG32, EDG32A
 
+
 var Frame = ImageData.loadFromFile("res/img/card-frame.png")
 
 // TODO: unfix the seed
@@ -17,14 +18,16 @@ class Card {
       "action": _action,
       "image": _imagePath,
       "tint": _tintIndex,
-      "target": _target
+      "target": _target,
+      "params": _params
     })
   }
   construct new(data) {
     if (data is Map) {
       _id = data["id"]
       _name = data["name"]
-      _action = action || Action.none
+      _action = data["action"]
+      _params = data["params"]
       _imagePath = data["image"]
       if (_imagePath) {
         _image = ImageData.loadFromFile(_imagePath)
@@ -41,6 +44,7 @@ class Card {
 
   name { _name }
   action { _action }
+  params { _params }
   image { _image }
   image=(v) { _image = v }
   requiresInput {

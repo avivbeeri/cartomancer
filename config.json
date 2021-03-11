@@ -18,6 +18,11 @@
       "id": "darkness",
       "name": "Dark",
       "tint": 25,
+      "action": "applyModifier",
+      "params": {
+        "id": "darkness",
+        "add": { "speed": 5 }
+      },
       "target": "creature"
     },
     {
