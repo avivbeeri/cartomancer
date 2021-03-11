@@ -33,6 +33,14 @@ class StatGroup {
   print(stat) {
     return "%(stat)>%(base(stat)):%(get(stat))"
   }
+
+  tick() {
+    for (modifier in _mods.values) {
+      if (modifier.duration == 0) {
+        removeModifier(modifier.id)
+      }
+    }
+  }
 }
 
 /**
@@ -41,14 +49,18 @@ class StatGroup {
   Multipliers are a "percentage change", so +0.5 adds 50% of base to the value.
 */
 class Modifier {
-  construct new(id, add, mult) {
+  construct new(id, add, mult, duration) {
     _id = id
     _add = add || {}
     _mult = mult || {}
+    _duration = duration
   }
 
   id { _id }
   add { _add }
   mult { _mult }
+  duration { _duration }
+
+  tick() { _duration = _duration ? _duration - 1 : null }
 }
 

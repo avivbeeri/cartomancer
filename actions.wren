@@ -227,6 +227,7 @@ class ApplyModifierAction is Action {
     if (_target.has("stats")) {
       ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
       _target["stats"].addModifier(_modifier)
+      source["activeEffects"].add([ _modifier, _target.id ])
       return ActionResult.success
     }
     return ActionResult.failure

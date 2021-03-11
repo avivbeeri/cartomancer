@@ -21,7 +21,8 @@
       "action": "applyModifier",
       "params": {
         "id": "darkness",
-        "add": { "def": -1 }
+        "add": { "def": -1 },
+        "duration": 2
       },
       "target": "creature"
     },
