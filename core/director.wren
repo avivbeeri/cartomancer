@@ -47,6 +47,7 @@ class RealTimeStrategy is Director {
           break
         }
       }
+      action.source.endTurn()
     }
   }
   onEntityAdd(entity) {
@@ -102,6 +103,7 @@ class EnergyStrategy is Director {
       action = result.alternate
     }
     actor.priority = 0
+    actor.endTurn()
     advance()
   }
 
@@ -151,6 +153,7 @@ class TurnBasedStrategy is Director  {
       }
       action = result.alternate
     }
+    actor.endTurn()
     advance()
   }
 
