@@ -12,7 +12,15 @@
       "name": "Sword",
       "tint": 17,
       "image": "res/img/cards/sword.png",
-      "target": "self"
+      "action": "applyModifier",
+      "target": "self",
+      "params": {
+        "id": "sword",
+        "add": { "atk": 1 },
+        "duration": 3,
+        "positive": true,
+        "responsible": "source"
+      }
     },
     {
       "id": "darkness",

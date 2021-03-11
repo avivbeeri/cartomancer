@@ -191,6 +191,15 @@ class PlayCardAction is Action {
     var selectedCard = hand.removeAt(_handIndex)
     var result = ActionResult.failure
     if (selectedCard) {
+
+      if (!_target) {
+        // Auto-select target
+        // based on card data
+        if (selectedCard.target == "self") {
+          _target = source
+        }
+      }
+
       result = ActionResult.alternate(CardActionFactory.prepare(selectedCard, _target))
       var discard = source["discard"]
       discard.add(selectedCard)
@@ -227,7 +236,11 @@ class ApplyModifierAction is Action {
 
   perform() {
     if (_target.has("stats")) {
-      ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
+      if (_modifier.positive) {
+        ctx.events.add(LogEvent.new("%(_target) gained %(_modifier.id)!"))
+      } else {
+        ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
+      }
       _target["stats"].addModifier(_modifier)
       var host = _responsible ? source : _target
       host["activeEffects"].add([ _modifier, _target.id ])

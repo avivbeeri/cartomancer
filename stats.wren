@@ -49,19 +49,22 @@ class StatGroup {
   Multipliers are a "percentage change", so +0.5 adds 50% of base to the value.
 */
 class Modifier {
-  construct new(id, add, mult, duration) {
+  construct new(id, add, mult, duration, positive) {
     _id = id
     _add = add || {}
     _mult = mult || {}
     _duration = duration
+    _positive = positive || false
   }
 
   id { _id }
   add { _add }
   mult { _mult }
   duration { _duration }
+  positive { _positive }
 
   tick() { _duration = _duration ? _duration - 1 : null }
+
   extend(n) { _duration = (_duration || 0) + n }
 }
 
