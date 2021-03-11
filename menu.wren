@@ -15,8 +15,15 @@ class CardTargetSelector is Ui {
     _player = ctx.getEntityByTag("player")
     _pos = _player.pos
     _range = 3
-    _targets = ctx.entities.where {|entity| (entity.pos - _player.pos).manhattan <= _range }.toList
-    _current = (_targets[0].id == _player.id) ? 1 : 0
+    _targets = ctx.entities.where {|entity|
+      return entity.has("types") &&
+        entity["types"].contains(card.target) &&
+        (entity.pos - _player.pos).manhattan <= _range
+    }.toList
+    _current = (_targets.count > 1 && _targets[0].id == _player.id) ? 1 : 0
+    if (_targets.count > 0) {
+      _current = _current % _targets.count
+    }
   }
 
   finished { _done }
@@ -38,7 +45,6 @@ class CardTargetSelector is Ui {
   }
 
   draw() {
-    var target = _targets[_current]
     var loc = Vec.new()
     for (y in -_range.._range) {
       for (x in -_range.._range) {
@@ -51,27 +57,31 @@ class CardTargetSelector is Ui {
       }
     }
     // Draw targeting recticle
-    var left = (target.pos.x) * 32 - 4
-    var top = (target.pos.y) * 32 - 4
-    var right = (target.pos.x + target.size.x) * 32 + 4
-    var bottom = (target.pos.y + target.size.y) * 32 + 4
-    // top left
-    Canvas.line(left, top, left + (right - left) / 3, top, EDG32[7], 3)
-    Canvas.line(left, top, left, top + (bottom - top) / 3, EDG32[7], 3)
+    if (_targets.count > 0) {
+      var target = _targets[_current]
+      var left = (target.pos.x) * 32 - 4
+      var top = (target.pos.y) * 32 - 4
+      var right = (target.pos.x + target.size.x) * 32 + 4
+      var bottom = (target.pos.y + target.size.y) * 32 + 4
+      // top left
+      Canvas.line(left, top, left + (right - left) / 3, top, EDG32[7], 3)
+      Canvas.line(left, top, left, top + (bottom - top) / 3, EDG32[7], 3)
 
 
-    // bottom left
-    Canvas.line(left, bottom, left + (right - left) / 3, bottom, EDG32[7], 3)
-    Canvas.line(left, bottom, left, bottom - (bottom - top) / 3, EDG32[7], 3)
+      // bottom left
+      Canvas.line(left, bottom, left + (right - left) / 3, bottom, EDG32[7], 3)
+      Canvas.line(left, bottom, left, bottom - (bottom - top) / 3, EDG32[7], 3)
 
-    // top right
-    Canvas.line(right, top, right - (right - left) / 3, top, EDG32[7], 3)
-    Canvas.line(right, top, right, top + (bottom - top) / 3, EDG32[7], 3)
+      // top right
+      Canvas.line(right, top, right - (right - left) / 3, top, EDG32[7], 3)
+      Canvas.line(right, top, right, top + (bottom - top) / 3, EDG32[7], 3)
 
-    // bottom right
-    Canvas.line(right, bottom, right - (right - left) / 3, bottom, EDG32[7], 3)
-    Canvas.line(right, bottom, right, bottom - (bottom - top) / 3, EDG32[7], 3)
+      // bottom right
+      Canvas.line(right, bottom, right - (right - left) / 3, bottom, EDG32[7], 3)
+      Canvas.line(right, bottom, right, bottom - (bottom - top) / 3, EDG32[7], 3)
+    }
   }
+
 }
 
 class Menu is Ui {

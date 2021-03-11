@@ -1,3 +1,5 @@
+import "math" for M
+
 class StatGroup {
   construct new(statMap) {
     _base = statMap
@@ -25,7 +27,7 @@ class StatGroup {
       total = total + (mod.add[stat] || 0)
       multiplier = multiplier + (mod.mult[stat] || 0)
     }
-    return total + total * multiplier
+    return M.max(0, total + total * multiplier)
   }
 
   print(stat) {

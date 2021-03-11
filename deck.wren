@@ -47,6 +47,7 @@ class Card {
   params { _params }
   image { _image }
   image=(v) { _image = v }
+  target { _target }
   requiresInput {
     return _target && _target != "self"
   }

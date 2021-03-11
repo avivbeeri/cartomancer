@@ -111,8 +111,7 @@ class WorldScene is Scene {
         }
 
         if ((index+1) < InputActions.options.count && InputActions.options[index+1].justPressed) {
-          hover = slot
-          playCard(slots, index)
+          hover = playCard(slots, index)
         }
         index = index + 1
       }
@@ -442,15 +441,14 @@ class WorldScene is Scene {
 
   playCard(slots, index) {
     var player = _world.active.getEntityByTag("player")
-    var card = slots.toList[index][0]
+    slots = slots.toList
+    var card = slots[index][0]
     if (!card.requiresInput) {
-      System.print("no input needed")
       player.action = PlayCardAction.new(index)
     } else {
       // get inputs
-      System.print("input needed")
       _diageticUi.add(CardTargetSelector.new(_zone, card, index))
-      return
+      return slots[index]
     }
   }
 }

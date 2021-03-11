@@ -6,6 +6,7 @@ class Player is Entity {
   construct new() {
     super()
     _action = null
+    this["types"] = [ "creature" ]
     this["stats"] = StatGroup.new({
       "atk": 1,
       "def": 0,

@@ -6,6 +6,7 @@ import "./stats" for StatGroup
 class Dummy is Entity {
   construct new() {
     super()
+    this["types"] = [ "creature", "enemy" ]
     this["stats"] = StatGroup.new({
       "atk": 1,
       "def": 1,
