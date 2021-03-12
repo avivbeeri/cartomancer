@@ -8,6 +8,8 @@ import "./keys" for InputActions
 import "./actions" for PlayCardAction
 import "./palette" for EDG32, EDG32A
 
+import "./widgets" for Button
+
 var scale = 1
 var TILE_SIZE = 16 * scale
 
@@ -30,14 +32,14 @@ class CardTargetSelector is Ui {
       _current = _current % _targets.count
     }
     _mouseTile = null
+    _closeButton = Button.new("X", Vec.new(460, 22), Vec.new(15, 15))
   }
 
   finished { _done }
 
   update() {
     var mouse = Mouse.pos
-    if ((Mouse["left"].justPressed && mouse.x >= 460 && mouse.x < 470 && mouse.y >= 22 && mouse.y < 33) ||
-      (InputActions.cancel.justPressed)) {
+    if (_closeButton.update().clicked || InputActions.cancel.justPressed) {
       _done = true
       return
     }
@@ -120,13 +122,7 @@ class CardTargetSelector is Ui {
   }
 
   draw() {
-    var mouse = Mouse.pos
-    var c = EDG32[20]
-    if (mouse.x >= 460 && mouse.x < 470 && mouse.y >= 22 && mouse.y < 33) {
-      c = EDG32[21]
-    }
-    Canvas.rectfill(460, 22, 10, 11, c)
-    Canvas.print("X", 461, 24, EDG32[19])
+    _closeButton.draw()
   }
 
 }
