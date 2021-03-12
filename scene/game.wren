@@ -303,6 +303,22 @@ class WorldScene is Scene {
       }
     }
 
+
+    if (player && !STATIC) {
+      // The player is diagetic, but we get the best draw results in
+      // absolute space for the moment
+      Canvas.offset()
+      var tile = _zone.map[player.pos]
+      // Draw player in screen center
+      if (_moving) {
+        Sprites["playerWalk"][F].draw(cx, cy)
+      } else {
+        Sprites["playerStand"][F].draw(cx, cy)
+      }
+      // Reset the camera
+      Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
+    }
+
     for (ui in _diageticUi) {
       var block = ui.drawDiagetic()
       if (block) {
@@ -311,17 +327,6 @@ class WorldScene is Scene {
     }
 
     Canvas.offset()
-
-    // Put a background on the player for readability
-    if (player && !STATIC) {
-      var tile = _zone.map[player.pos]
-      // Draw player in screen center
-      if (_moving) {
-        Sprites["playerWalk"][F].draw(cx, cy)
-      } else {
-        Sprites["playerStand"][F].draw(cx, cy)
-      }
-    }
 
     if (player) {
       // Draw the top bar (player stats, menu button, tabs?)

@@ -89,26 +89,28 @@ class CardTargetSelector is Ui {
     // Draw targeting recticle
     if (_targets.count > 0) {
       var target = _targets[_current]
-      var left = (target.pos.x) * TILE_SIZE - 4
-      var top = (target.pos.y) * TILE_SIZE - 4
+      var left = (target.pos.x) * TILE_SIZE - 5
+      var top = (target.pos.y) * TILE_SIZE - 5
       var right = (target.pos.x + target.size.x) * TILE_SIZE + 4
       var bottom = (target.pos.y + target.size.y) * TILE_SIZE + 4
+      var vThird = ((bottom - top) / 3).round
+      var hThird = ((bottom - top) / 3).round
       // top left
-      Canvas.line(left, top, left + (right - left) / 3, top, EDG32[7], 3)
-      Canvas.line(left, top, left, top + (bottom - top) / 3, EDG32[7], 3)
+      Canvas.line(left, top, left + hThird, top, EDG32[7], 3)
+      Canvas.line(left, top, left, top + vThird, EDG32[7], 3)
 
 
       // bottom left
-      Canvas.line(left, bottom, left + (right - left) / 3, bottom, EDG32[7], 3)
-      Canvas.line(left, bottom, left, bottom - (bottom - top) / 3, EDG32[7], 3)
+      Canvas.line(left, bottom, left + hThird, bottom, EDG32[7], 3)
+      Canvas.line(left, bottom, left, bottom - vThird, EDG32[7], 3)
 
       // top right
-      Canvas.line(right, top, right - (right - left) / 3, top, EDG32[7], 3)
-      Canvas.line(right, top, right, top + (bottom - top) / 3, EDG32[7], 3)
+      Canvas.line(right, top, right - hThird, top, EDG32[7], 3)
+      Canvas.line(right, top, right, top + vThird, EDG32[7], 3)
 
       // bottom right
-      Canvas.line(right, bottom, right - (right - left) / 3, bottom, EDG32[7], 3)
-      Canvas.line(right, bottom, right, bottom - (bottom - top) / 3, EDG32[7], 3)
+      Canvas.line(right, bottom, right - hThird, bottom, EDG32[7], 3)
+      Canvas.line(right, bottom, right, bottom - vThird, EDG32[7], 3)
 
       if (_mouseTile) {
         // Mouse selector
