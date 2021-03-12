@@ -6,7 +6,7 @@ import "./core/scene" for Scene
 import "./core/display" for Display
 
 import "./scene/game" for WorldScene
-import "./generator" for WorldGenerator
+import "./generator" for BSPGenerator as WorldGenerator
 
 
 

@@ -175,5 +175,5 @@ class CardDialog is Ui {
   }
 }
 
-import "./generator" for WorldGenerator
+import "./generator" for BSPGenerator as WorldGenerator
 import "./scene/game" for WorldScene

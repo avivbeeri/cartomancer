@@ -6,11 +6,9 @@ import "./rng" for RNG
 
 var Frame = ImageData.loadFromFile("res/img/card-frame.png")
 
-// TODO: unfix the seed
 var DefaultTint = EDG32A[24]
 
 class Card {
-
   static [id] {
     if (!__cards) {
       __cards = {}

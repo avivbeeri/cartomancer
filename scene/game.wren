@@ -48,7 +48,6 @@ class WorldScene is Scene {
     _camera.x = player.pos.x * TILE_SIZE
     _camera.y = player.pos.y * TILE_SIZE
     _lastPosition = player.pos
-
     _selected = null
 
     _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 12))
@@ -64,6 +63,9 @@ class WorldScene is Scene {
     F = (T * 2).floor % 2
 
     var player = _zone.getEntityByTag("player")
+    if (player) {
+      _lastPosition = player.pos
+    }
 
     if (updateAllUi()) {
       return
