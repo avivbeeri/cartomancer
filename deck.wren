@@ -1,16 +1,39 @@
-import "random" for Random
 import "graphics" for ImageData, Canvas, Font, Color
 import "./core/action" for Action
 import "./palette" for EDG32, EDG32A
+import "./rng" for RNG
 
 
 var Frame = ImageData.loadFromFile("res/img/card-frame.png")
 
 // TODO: unfix the seed
-var RNG = Random.new(0)
 var DefaultTint = EDG32A[24]
 
 class Card {
+
+  static [id] {
+    if (!__cards) {
+      __cards = {}
+    }
+    return __cards[id]
+  }
+
+  static put(card) {
+    if (!__cards) {
+      __cards = {}
+    }
+    __cards[card.id] = card
+    System.print(card)
+    return card
+  }
+
+  static all {
+    if (!__cards) {
+      __cards = {}
+    }
+    return __cards.values
+  }
+
   copy {
     return Card.new({
       "id": _id,
@@ -42,6 +65,7 @@ class Card {
     }
   }
 
+  id { _id }
   name { _name }
   action { _action }
   params { _params }
@@ -111,3 +135,4 @@ class Deck {
     _cards.insert(0, card)
   }
 }
+

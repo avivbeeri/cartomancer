@@ -41,7 +41,10 @@ class WorldGenerator {
     player.pos = Vec.new(4, 4)
 
     player["discard"] = []
-    player["deck"] = Deck.new(Config["cards"].map {|data| Card.new(data) }).shuffle()
+    Config["cards"].each {|data|
+      Card.put(Card.new(data))
+    }
+    player["deck"] = Deck.new(Card.all).shuffle()
     player["hand"] = player["deck"].drawCards(3)
 
     var dummy = zone.addEntity(Dummy.new())
@@ -50,7 +53,7 @@ class WorldGenerator {
     //dummy = zone.addEntity(Dummy.new())
     // dummy.pos = Vec.new(-1, 4)
 
-    var card = zone.addEntity(Collectible.new("card"))
+    var card = zone.addEntity(Collectible.new("card:thunder"))
     card.pos = Vec.new(5, 5)
     return world
   }

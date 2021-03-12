@@ -120,7 +120,7 @@ class AttackAction is Action {
       ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
       if (currentHP - damage <= 0) {
         ctx.events.add(LogEvent.new("%(target) was defeated."))
-        ctx.removeEntity(target)
+        // ctx.removeEntity(target)
       }
     }
     return ActionResult.success
@@ -141,7 +141,14 @@ class PickupAction is Action {
 
 
     collectibles.each {|entity|
-      source["inventory"].add(entity.item)
+      var item = entity.item.split(":")
+      var kind = item[0]
+      var id = item[1]
+      if (kind == "card") {
+        source["hand"].add(Card[id])
+      } else {
+        source["inventory"].add(entity.item)
+      }
       ctx.removeEntity(entity)
     }
 
@@ -276,3 +283,4 @@ class MultiAction is Action {
 
 import "./entity/collectible" for Collectible
 import "./factory" for CardActionFactory
+import "./deck" for Card

@@ -1,3 +1,5 @@
+import "./rng" for RNG
+
 class GameEndCheck {
   static update(ctx) {
     if (ctx.parent.gameover) {
@@ -18,7 +20,15 @@ class RemoveDefeated {
   static update(ctx) {
     ctx.entities
     .where {|entity| entity.has("stats") && entity["stats"].get("hp") <= 0 }
-    .each {|entity| ctx.removeEntity(entity) }
+    .each {|entity|
+      ctx.removeEntity(entity)
+      if (entity.has("loot")) {
+        System.print(entity["loot"])
+        var loot = RNG.sample(entity["loot"])
+        var lootEntity = ctx.addEntity(Collectible.new(loot))
+        lootEntity.pos = entity.pos
+      }
+    }
   }
 
 }

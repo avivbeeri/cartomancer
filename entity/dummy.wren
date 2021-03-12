@@ -8,6 +8,7 @@ class Dummy is Creature {
   construct new() {
     super()
     this["types"].add("enemy")
+    this["loot"] = ["card:shield"]
     this["stats"].set("def", 1)
     this["stats"].set("speed", 1)
   }
