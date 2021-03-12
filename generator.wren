@@ -1,4 +1,5 @@
-import "math" for Vec
+import "math" for Vec, M
+import "core/elegant" for Elegant
 
 import "./core/world" for World, Zone
 import "./core/map" for TileMap, Tile
@@ -16,9 +17,9 @@ Config["cards"].each {|data|
   Card.put(Card.new(data))
 }
 
-class BSPGenerator {
+class GrowthGenerator {
   static generate() {
-    return BSPGenerator.init().generate()
+    return GrowthGenerator.init().generate()
   }
 
   construct init() {}
@@ -30,7 +31,7 @@ class BSPGenerator {
 
     var world = World.new(EnergyStrategy.new())
     var zone = world.pushZone(Zone.new(TileMap.init()))
-    zone.map.default = { "solid": false, "floor": "void" }
+    // zone.map.default = { "solid": false, "floor": "void" }
 
     // Order is important!!
     zone.postUpdate.add(RemoveDefeated)
@@ -39,87 +40,107 @@ class BSPGenerator {
 
 
     // Level dimensions in tiles
+    // 1-2) General constraints
+    var maxRoomSize = 15
+    var minRoomSize = 6
 
-    // var mapWidth = 40
-    // var mapHeight = 27
-    var mapWidth = 30
-    var mapHeight = 30
-    var minSize = 4
-
-
-    // How are we dividing the space?
-    // "h" - rooms are left-right
-    // "v" - rooms are up-down
-    var rooms = [ Vec.new(0, 0, mapWidth, mapHeight) ]
     var doors = []
-    for (i in 0...3) {
-      var newRooms = []
-      while (!rooms.isEmpty) {
-        var room = rooms.removeAt(0)
-        var width = room.z
-        var height = room.w
-        var split = RNG.float() < 0.5 ? "v" : "h"
-        if (width > height && width / height >= 1.25) {
-            split = "h"
-        } else if (height > width && height / width >= 1.25) {
-            split = "v"
+
+    // 3) A single room in the world (Library)
+    // var rooms = [ Vec.new(0, 0, 7, 7) ]
+    var rooms = [ Vec.new(25, -1, 8, 14)]
+
+    while(rooms.count < 1) {
+
+      // 4) Pass begins: Pick a base for this pass at random from existing rooms.
+      var base = RNG.sample(rooms)
+      // 5) Select a wall to grow from
+      var dir = RNG.int(0, 4) // 0->4, left->up->right->down
+      dir = 2
+      // 6)Make a new room
+      var newRoom = Vec.new(
+        0, 0,
+        RNG.int(minRoomSize, maxRoomSize),
+        RNG.int(minRoomSize, maxRoomSize)
+      )
+      // 7) Place the room on the wall of the base
+      if (dir == 0) {
+        // left
+        var offset = RNG.int(2 - newRoom.w, base.w - 3)
+        newRoom.x = base.x - newRoom.z + 1
+        newRoom.y = base.y + offset
+        // 8-9) Check room for valid space compared to other rooms.
+        var hit = false
+        for (room in rooms) {
+          if (room == base) {
+            // Colliding with the base is intentional. ignore this hit.
+            continue
+          }
+          if (overlap(newRoom, room)) {
+            hit = true
+            break
+          }
         }
-        if ((split == "h" ? width : height) <= minSize) {
-          newRooms.add(room)
+        if (hit) {
           continue
         }
-        var splitPos = doors.isEmpty ? RNG.int(minSize, (width * 0.65).floor) : null
-        if (split == "h") {
-          var tries = 0
-          while (splitPos == null && tries < 4) {
-            var candidate = RNG.int(minSize, (width * 0.85).floor)
-            var wall = Vec.new(room.x + candidate, room.y, room.x + candidate, room.y + height)
-            System.print(wall)
+        rooms.add(newRoom)
 
-            for (door in doors) {
-              if (!(door.x == wall.x && door.y == wall.y) && !(door.x == wall.z && door.y == wall.w)) {
-                splitPos = candidate
-                break
-              }
-            }
-            tries = tries + 1
+
+        // 10) Place a door in the overlapping range
+        var doorTop = M.max(newRoom.y, base.y)
+        var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
+        var doorRange = RNG.int(doorTop, doorBottom - 1)
+        System.print("%(doorTop) <-> %(doorBottom)")
+        doors.add(Vec.new(base.x, doorRange))
+      } else if (dir == 1) {
+      } else if (dir == 2) {
+        // right
+        var offset = RNG.int(2 - newRoom.w, base.w - 3)
+        newRoom.x = base.x + base.z - 1
+        newRoom.y = base.y + offset
+        // 8-9) Check room for valid space compared to other rooms.
+        var hit = false
+        for (room in rooms) {
+          if (room == base) {
+            // Colliding with the base is intentional. ignore this hit.
+            continue
           }
-
-          newRooms.add(Vec.new(room.x, room.y, splitPos, height))
-          newRooms.add(Vec.new(room.x + splitPos, room.y, width - splitPos, height))
-          doors.add(Vec.new(room.x + splitPos, RNG.int(room.y + 1, height - 1)))
-        } else {
-          var tries = 0
-          while (splitPos == null && tries < 4) {
-            var candidate = RNG.int(minSize, (height * 0.85).floor)
-            var wall = Vec.new(room.x, room.y + candidate, room.x + width, room.y + candidate)
-            System.print(wall)
-
-            for (door in doors) {
-              if (!(door.x == wall.x && door.y == wall.y) && !(door.x == wall.z && door.y == wall.w)) {
-                splitPos = candidate
-                break
-              }
-            }
-            tries = tries + 1
+          if (overlap(newRoom, room)) {
+            hit = true
+            break
           }
-          splitPos = RNG.int(minSize, (height * 0.65).floor)
-          newRooms.add(Vec.new(room.x, room.y, width, splitPos))
-          newRooms.add(Vec.new(room.x, room.y + splitPos, width, height - splitPos))
-          doors.add(Vec.new(RNG.int(room.x + 1, width - 1), room.y + splitPos))
         }
+        if (hit) {
+          continue
+        }
+        rooms.add(newRoom)
+
+
+        // 10) Place a door in the overlapping range
+        var doorTop = M.max(newRoom.y, base.y)
+        var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
+        var doorRange = RNG.int(doorTop, doorBottom - 1)
+        System.print("%(doorTop) <-> %(doorBottom)")
+        doors.add(Vec.new(newRoom.x, doorRange))
+      } else if (dir == 3){
+      } else {
+        // Safety assert
+        Fiber.abort("Tried to grow from bad direction")
       }
-      rooms = newRooms
-      System.print(doors)
     }
+    System.print(rooms)
+
+
+
     for (room in rooms) {
       var wx = room.x
       var wy = room.y
       var width = wx + room.z
       var height = wy + room.w
-      for (y in wy..height) {
-        for (x in wx..width) {
-          if (x == wx || x == width || y == wy || y == height) {
+      for (y in wy...height) {
+        for (x in wx...width) {
+          if (x == wx || x == width - 1 || y == wy || y == height - 1) {
             zone.map[x, y] = Tile.new({ "floor": "solid", "solid": true })
           } else {
             zone.map[x, y] = Tile.new({ "floor": "void" })
@@ -131,12 +152,19 @@ class BSPGenerator {
       zone.map[door.x, door.y] = Tile.new({ "floor": "void" })
     }
     var pos = null
-    var start = RNG.sample(rooms)
+    var start = rooms[0]
 
     var player = zone.addEntity("player", Player.new())
     player.pos = Vec.new(start.x + 1, start.y + 1)
 
     return world
+  }
+
+  overlap(r1, r2) {
+    return r1.x < r2.x + r2.z &&
+           r1.x + r1.z > r2.x &&
+           r1.y < r2.y + r2.w &&
+           r1.y + r1.w > r2.y
   }
 }
 
@@ -181,6 +209,3 @@ class TestGenerator {
 }
 
 import "./entity/all" for Player, Dummy, Collectible
-
-
-
