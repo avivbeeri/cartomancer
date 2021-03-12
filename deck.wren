@@ -34,21 +34,11 @@ class Card {
     return __cards.values
   }
 
-  copy {
-    return Card.new({
-      "id": _id,
-      "name": _name,
-      "action": _action,
-      "image": _imagePath,
-      "tint": _tintIndex,
-      "target": _target,
-      "params": _params
-    })
-  }
   construct new(data) {
     if (data is Map) {
       _id = data["id"]
       _name = data["name"]
+      _description = data["description"]
       _action = data["action"]
       _params = data["params"]
       _imagePath = data["image"]
@@ -67,6 +57,7 @@ class Card {
 
   id { _id }
   name { _name }
+  description { _description }
   action { _action }
   params { _params }
   image { _image }

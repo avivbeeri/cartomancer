@@ -95,11 +95,17 @@ class WorldScene is Scene {
           hover = slot
           if (Mouse["left"].justPressed) {
             playCard(slots, index)
+          } else if (Mouse["right"].justPressed) {
+            displayCardDescription(card.id)
           }
         }
 
         if ((index+1) < InputActions.options.count && InputActions.options[index+1].justPressed) {
-          hover = playCard(slots, index)
+          if (InputActions.shift.down) {
+            displayCardDescription(card.id)
+          } else {
+            hover = playCard(slots, index)
+          }
         }
         index = index + 1
       }
@@ -439,6 +445,11 @@ class WorldScene is Scene {
       }
   }
 
+
+  displayCardDescription(cardId) {
+    _ui.add(CardDialog.new(this, cardId))
+  }
+
   playCard(slots, index) {
     var player = _world.active.getEntityByTag("player")
     slots = slots.toList
@@ -480,4 +491,5 @@ import "./effects" for
   SuccessMessage,
   FailureMessage,
   Animation,
+  CardDialog,
   Pause

@@ -36,6 +36,9 @@ var REST_KEY = InputGroup.new([
 var TARGET_KEY = InputGroup.new([
   Keyboard["tab"]
 ])
+var SHIFT_KEY = InputGroup.new([
+  Keyboard["left shift"], Keyboard["right shift"]
+])
 
 var OPTION_KEYS = (0..9).map {|i| Keyboard[i.toString]}.toList
 var DIR_KEYS = [ UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY ]
@@ -58,4 +61,6 @@ class InputActions {
   static confirm { CONFIRM_KEY }
   static cancel { CANCEL_KEY }
   static nextTarget { TARGET_KEY }
+  static shift { SHIFT_KEY }
+
 }

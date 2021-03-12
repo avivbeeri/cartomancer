@@ -1,8 +1,12 @@
 import "graphics" for Canvas, Color, Font
-import "input" for Keyboard
+import "math" for Vec
+import "input" for Mouse
+import "./keys" for InputActions
 import "./palette" for EDG32
 import "./core/scene" for Ui
 import "./core/display" for Display
+
+import "./deck" for Card
 
 
 class CameraLerp is Ui {
@@ -48,7 +52,7 @@ class SuccessMessage is Ui {
   finished { false }
 
   update() {
-    if (Keyboard["space"].justPressed) {
+    if (InputActions.confirm.justPressed) {
       ctx.game.push(WorldScene, [ WorldGenerator.generate() ])
     }
   }
@@ -68,7 +72,7 @@ class FailureMessage is Ui {
   }
   finished { false }
   update() {
-    if (Keyboard["space"].justPressed) {
+    if (InputActions.confirm.justPressed) {
       ctx.game.push(WorldScene, [ WorldGenerator.generate() ])
     }
   }
@@ -114,6 +118,37 @@ class Animation is Ui {
       var f = (_t / _frameTime).floor
       _sprites[f].draw(_location.x, _location.y)
     }
+  }
+}
+class CardDialog is Ui {
+  construct new(ctx, cardId) {
+    super(ctx)
+    _card = Card[cardId]
+    _done = false
+  }
+  finished { _done }
+  update() {
+    _done = InputActions.cancel.justPressed
+  }
+
+  draw() {
+    var y = 0
+
+    var w = Canvas.width / 4
+    var h = Canvas.height / 2
+    h = Mouse.y
+    Canvas.rectfill(0, y, w, h, EDG32[19])
+    y = y + 8
+    Canvas.print(_card.name, 8, y, EDG32[25])
+    y = y + 8
+    // Canvas.print(_card.description, 8, y, EDG32[25])
+    Display.print(_card.description, {
+      "position": Vec.new(0, y),
+      "font": "m5x7",
+      "align": "right",
+      "size": Vec.new(w, h),
+      "overflow": true
+    })
   }
 }
 

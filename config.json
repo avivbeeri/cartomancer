@@ -10,6 +10,7 @@
     {
       "id": "sword",
       "name": "Sword",
+      "description": "This mighty blade will make you more lethal.",
       "tint": 17,
       "image": "res/img/cards/sword.png",
       "action": "applyModifier",
@@ -25,6 +26,7 @@
     {
       "id": "darkness",
       "name": "Dark",
+      "description": "Harness the darkness to disorient your foes.",
       "tint": 25,
       "action": "applyModifier",
       "params": {
@@ -59,6 +61,7 @@
     {
       "id": "shield",
       "name": "Shield",
+      "description": "Few can penetrate this shield's legendary protection.",
       "tint": 25,
       "action": "applyModifier",
       "target": "self",
