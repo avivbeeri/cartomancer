@@ -51,7 +51,6 @@ class BSPGenerator {
     // "h" - rooms are left-right
     // "v" - rooms are up-down
     var rooms = [ Vec.new(0, 0, mapWidth, mapHeight) ]
-    var splitPos
     var doors = []
     for (i in 0...3) {
       var newRooms = []
@@ -69,12 +68,41 @@ class BSPGenerator {
           newRooms.add(room)
           continue
         }
+        var splitPos = doors.isEmpty ? RNG.int(minSize, (width * 0.65).floor) : null
         if (split == "h") {
-          splitPos = RNG.int(minSize, (width * 0.65).floor)
+          var tries = 0
+          while (splitPos == null && tries < 4) {
+            var candidate = RNG.int(minSize, (width * 0.85).floor)
+            var wall = Vec.new(room.x + candidate, room.y, room.x + candidate, room.y + height)
+            System.print(wall)
+
+            for (door in doors) {
+              if (!(door.x == wall.x && door.y == wall.y) && !(door.x == wall.z && door.y == wall.w)) {
+                splitPos = candidate
+                break
+              }
+            }
+            tries = tries + 1
+          }
+
           newRooms.add(Vec.new(room.x, room.y, splitPos, height))
           newRooms.add(Vec.new(room.x + splitPos, room.y, width - splitPos, height))
           doors.add(Vec.new(room.x + splitPos, RNG.int(room.y + 1, height - 1)))
         } else {
+          var tries = 0
+          while (splitPos == null && tries < 4) {
+            var candidate = RNG.int(minSize, (height * 0.85).floor)
+            var wall = Vec.new(room.x, room.y + candidate, room.x + width, room.y + candidate)
+            System.print(wall)
+
+            for (door in doors) {
+              if (!(door.x == wall.x && door.y == wall.y) && !(door.x == wall.z && door.y == wall.w)) {
+                splitPos = candidate
+                break
+              }
+            }
+            tries = tries + 1
+          }
           splitPos = RNG.int(minSize, (height * 0.65).floor)
           newRooms.add(Vec.new(room.x, room.y, width, splitPos))
           newRooms.add(Vec.new(room.x, room.y + splitPos, width, height - splitPos))
