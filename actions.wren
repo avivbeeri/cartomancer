@@ -1,6 +1,10 @@
 import "math" for M, Vec
 import "./core/action" for Action, ActionResult
-import "./events" for CollisionEvent, MoveEvent, AttackEvent, LogEvent
+import "./events" for CollisionEvent,
+  CommuneEvent,
+  MoveEvent,
+  AttackEvent,
+  LogEvent
 
 import "./combat" for Attack
 
@@ -15,8 +19,37 @@ class LogAction is Action {
   }
 }
 
+class CommuneAction is Action {
+  construct new() {
+    super()
+  }
+
+  perform() {
+    if (source.has("stats") &&
+        source["stats"].has("mana")) {
+
+      if (source["stats"].get("mana") < source["stats"].get("manaMax")) {
+        // TODO: Assert?!
+        ctx.events.add(CommuneEvent.new(source, false))
+        return ActionResult.failure
+      }
+      source["stats"].set("mana", -1)
+    }
+
+    var discard = source["discard"]
+    var deck = source["deck"]
+    deck.addToBottom(discard)
+    deck.shuffle()
+    source["discard"] = []
+
+    source["hand"] = deck.drawCards(3)
+    ctx.events.add(CommuneEvent.new(source, true))
+
+    return ActionResult.success
+  }
+}
+
 class SleepAction is Action {
-  cost { 2 }
   construct new() {
     super()
   }
@@ -107,6 +140,17 @@ class AttackAction is Action {
   }
 
   perform() {
+    if (source.has("stats") &&
+        source["stats"].has("mana")) {
+
+      if (source["stats"].get("mana") <= 0) {
+        // TODO: Assert?!
+        return ActionResult.failure
+      }
+      source["stats"].decrease("mana", 1)
+    }
+
+
     var location = _location
     var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity.has("stats") }
     occupying.each {|target|
@@ -173,10 +217,12 @@ class PlayCardAction is Action {
   }
 
   perform() {
-    if (!source.has("hand")) {
+    if (!source.has("hand") || source.has("stats") && source["stats"].get("mana") <= 0) {
       // TODO: Assert?!
       return ActionResult.failure
     }
+
+    source["stats"].decrease("mana", 2)
 
     var hand = source["hand"]
     var selectedCard = hand.removeAt(_handIndex)

@@ -18,9 +18,14 @@ class StatGroup {
   set(stat, value) { _base[stat] = value }
   decrease(stat, by) { _base[stat] = _base[stat] - by }
   increase(stat, by) { _base[stat] = _base[stat] + by }
+  increase(stat, by, maxStat) { _base[stat] = M.mid(0, _base[stat] + by, _base[maxStat]) }
 
+  has(stat) { _base[stat] }
   get(stat) {
     var value = _base[stat]
+    if (value == null) {
+      Fiber.abort("Stat %(stat) does not exist")
+    }
     var multiplier = 0
     var total = value || 0
     for (mod in _mods.values) {

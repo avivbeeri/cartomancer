@@ -10,6 +10,7 @@ import "./core/director" for
 import "./logic" for GameEndCheck, RemoveDefeated
 import "./deck" for Deck, Card
 import "./core/config" for Config
+import "./rng" for RNG
 
 class WorldGenerator {
   static generate() {
@@ -44,7 +45,7 @@ class WorldGenerator {
     Config["cards"].each {|data|
       Card.put(Card.new(data))
     }
-    player["deck"] = Deck.new(Card.all).shuffle()
+    player["deck"] = Deck.new(RNG.sample(Card.all, 3)).shuffle()
     player["hand"] = player["deck"].drawCards(3)
 
     var dummy = zone.addEntity(Dummy.new())

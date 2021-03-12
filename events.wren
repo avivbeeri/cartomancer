@@ -64,3 +64,13 @@ class LogEvent is Event {
   }
   text { _text }
 }
+
+class CommuneEvent is Event {
+  construct new(source, success) {
+    super()
+    _source = source
+    _success = success
+  }
+  source { _source }
+  success { _success }
+}

@@ -119,11 +119,30 @@ class Deck {
     return _cards.take(n).toList
   }
 
+  // Add one or a sequence of cards to the bottom.
+  // This is like putting the deck on top of the pile of cards
   addToBottom(card) {
-    _cards.add(card)
+    if (card is Sequence) {
+      _cards.addAll(card)
+    } else {
+      _cards.add(card)
+    }
   }
+
+  // Add one or a sequence of cards to the top.
+  // This is like putting the pile of cards on top of the deck
+  // UNTESTED
   addToTop(card) {
-    _cards.insert(0, card)
+    if (card is Sequence) {
+      var newCards = card.toList
+      var insertPoint = 0
+      for (card in newCards) {
+        _cards.insert(insertPoint, card)
+        insertPoint = insertPoint + 1
+      }
+    } else {
+      _cards.insert(0, card)
+    }
   }
 }
 

@@ -10,12 +10,14 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu, CardTargetSelector
-import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent
-import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction
+import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent
+import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction, CommuneAction
 import "./entity/all" for Player, Dummy, Collectible
 
 import "./sprites" for StandardSpriteSet as Sprites
 import "./log" for Log
+
+import "./widgets" for Button
 
 // Timer variables
 var T = 0
@@ -48,6 +50,8 @@ class WorldScene is Scene {
     _lastPosition = player.pos
 
     _selected = null
+
+    _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 12))
   }
 
 
@@ -78,6 +82,9 @@ class WorldScene is Scene {
           "Cancel", "cancel"
         ]))
         return
+      }
+      if (_reshuffleButton.update().clicked) {
+        player.action = CommuneAction.new()
       }
 
       // Play a card
@@ -151,6 +158,12 @@ class WorldScene is Scene {
         } else {
           // TOOD: Add more context about cause of failure
           _ui.add(FailureMessage.new(this))
+        }
+      } else if (event is CommuneEvent) {
+        if (event.success) {
+          System.print("You communed with the cards and their magic is restored.")
+        } else {
+          System.print("You cannot commune right now.")
         }
       } else if (event is MoveEvent) {
         if (event.target is Player) {
@@ -341,7 +354,11 @@ class WorldScene is Scene {
       Canvas.rectfill(0, 0, Canvas.width, 20, EDG32[28])
       var hp = player["stats"].get("hp")
       var hpMax = player["stats"].get("hpMax")
+      var mana = player["stats"].get("mana")
+      var manaMax = player["stats"].get("manaMax")
       Canvas.print("HP: %(hp)/%(hpMax)", 2, 2, EDG32[19], "m5x7")
+      var hpArea = Font["m5x7"].getArea("HP: %(hp)/%(hpMax)")
+      Canvas.print("Mana: %(mana)/%(manaMax)", 2 + hpArea.x + 8, 2, EDG32[19], "m5x7")
       Canvas.line(0, 20, Canvas.width, 20, EDG32[29], 2)
 
       // Draw the card shelf
@@ -366,6 +383,10 @@ class WorldScene is Scene {
         } else {
          card.draw(pos.x, pos.y)
         }
+      }
+
+      if (deck.isEmpty && hand.isEmpty) {
+        _reshuffleButton.draw()
       }
 
       if (_selected) {

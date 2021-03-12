@@ -8,7 +8,7 @@ class Player is Creature {
     super()
     _action = null
     this["stats"].set("mana", 0)
-    this["stats"].set("mana-max", 0)
+    this["stats"].set("manaMax", 5)
   }
 
   action { _action }
@@ -20,6 +20,11 @@ class Player is Creature {
     var action = _action
     _action = null
     return action
+  }
+
+  endTurn() {
+    super.endTurn()
+    this["stats"].increase("mana", 1, "manaMax")
   }
 }
 

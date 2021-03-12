@@ -33,7 +33,8 @@ class Button is Widget {
       c = EDG32[22]
     }
     Canvas.rectfill(_pos.x, _pos.y, _size.x, _size.y, c)
-    Canvas.print("X", _pos.x+4, _pos.y+4, EDG32[19])
+    var x = _pos.x + (_size.x - (_text.count * 8)) / 2
+    Canvas.print(_text, _pos.x+4, _pos.y+4, EDG32[19])
   }
 }
 
