@@ -2,6 +2,8 @@ import "math" for M, Vec
 import "./core/action" for Action, ActionResult
 import "./events" for CollisionEvent, MoveEvent, AttackEvent, LogEvent
 
+import "./combat" for Attack
+
 class LogAction is Action {
   construct new() {
     super()
@@ -87,7 +89,8 @@ class MoveAction is Action {
         source.pos = old
       }
       if (target) {
-        result = ActionResult.alternate(AttackAction.new(source.pos + _dir))
+
+        result = ActionResult.alternate(AttackAction.new(source.pos + _dir, Attack.melee(source)))
       } else if (collectible) {
         result = ActionResult.alternate(PickupAction.new(_dir))
       }
@@ -113,30 +116,22 @@ class MoveAction is Action {
 }
 
 class AttackAction is Action {
-  construct new(location, kind) {
+  construct new(location, attack) {
     super()
     _location = location
-    _kind = kind
-  }
-  construct new(location) {
-    super()
-    _location = location
-    _kind = "basic"
+    _attack = attack
   }
 
   perform() {
     var location = _location
     var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity != source && entity.has("stats") }
     occupying.each {|target|
-      // TODO: incorporate attacker's statistics and combat calculations
-
       var currentHP = target["stats"].base("hp")
       var defence = target["stats"].get("def")
-      var attack = source["stats"].get("atk")
+      var damage = _attack.damage - defence
 
-      var damage = attack - defence
       target["stats"].decrease("hp", damage)
-      ctx.events.add(AttackEvent.new(source, target, _kind))
+      ctx.events.add(AttackEvent.new(source, target, _attack.attackType))
       ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
       ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
       if (currentHP - damage <= 0) {

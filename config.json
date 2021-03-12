@@ -83,7 +83,8 @@
       "target": "creature",
       "params": {
         "range": 3,
-        "kind": "lightning"
+        "kind": "lightning",
+        "base": 3
       }
     }
   ]
