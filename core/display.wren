@@ -20,6 +20,7 @@ class Display {
   }
 
   static print(text, settings) {
+    text = text is String ? text : text.toString
     var color = settings["color"] || Color.black
     var align = settings["align"] || "left"
     var position = settings["position"] || Vec.new()

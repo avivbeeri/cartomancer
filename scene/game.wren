@@ -93,9 +93,11 @@ class WorldScene is Scene {
         var pos = slot[1]
         if (mouse.y >= pos.y && mouse.x >= pos.x && mouse.x < pos.z) {
           hover = slot
-          if (Mouse["left"].justPressed) {
+          var shift = InputActions.shift.down
+
+          if (Mouse["left"].justPressed && !shift) {
             playCard(slots, index)
-          } else if (Mouse["right"].justPressed) {
+          } else if (Mouse["right"].justPressed || (Mouse["left"].justPressed && shift)) {
             displayCardDescription(card.id)
           }
         }

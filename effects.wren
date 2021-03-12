@@ -2,9 +2,10 @@ import "graphics" for Canvas, Color, Font
 import "math" for Vec
 import "input" for Mouse
 import "./keys" for InputActions
-import "./palette" for EDG32
+import "./palette" for EDG32, EDG32A
 import "./core/scene" for Ui
 import "./core/display" for Display
+import "./widgets" for Button
 
 import "./deck" for Card
 
@@ -80,7 +81,14 @@ class FailureMessage is Ui {
   draw() {
     Canvas.rectfill(20, 20, Canvas.width - 40, Canvas.height - 40, Color.black)
     Canvas.rect(20, 20, Canvas.width - 40, Canvas.height - 40, Red)
-    var area = Display.printCentered("You were defeated", 30, Color.white, "quiver64", Canvas.width - 50)
+    var area = Display.print("You were defeated", {
+      "position": Vec.new(30, 30),
+      "font": "quiver64",
+      "align": "center",
+      "color": EDG32[19],
+      "size": Vec.new(Canvas.width - 40, Canvas.height - 40),
+      "overflow": true
+    })
     Display.printCentered("Press START to try again.", Canvas.height - 40, Color.white, "m5x7")
   }
 }
@@ -125,30 +133,45 @@ class CardDialog is Ui {
     super(ctx)
     _card = Card[cardId]
     _done = false
+    _closeButton = Button.new("X", Vec.new(Canvas.width * (0.25 + 1/3) + 96, Canvas.height / 4 - 15), Vec.new(15, 15))
   }
   finished { _done }
   update() {
-    _done = InputActions.cancel.justPressed
+    _done = InputActions.cancel.justPressed || _closeButton.update().clicked
   }
 
   draw() {
-    var y = 0
+    Canvas.rectfill(0,0, Canvas.width, Canvas.height, EDG32A[25])
+    var x = Canvas.width / 4
+    var y0 = Canvas.height / 4
+    var y = y0
 
-    var w = Canvas.width / 4
     var h = Canvas.height / 2
-    h = Mouse.y
-    Canvas.rectfill(0, y, w, h, EDG32[19])
-    y = y + 8
-    Canvas.print(_card.name, 8, y, EDG32[25])
-    y = y + 8
-    // Canvas.print(_card.description, 8, y, EDG32[25])
-    Display.print(_card.description, {
-      "position": Vec.new(0, y),
+    var w = Canvas.width / 3
+    var windowWidth = Canvas.width / 3 + 96
+    var b = 4
+
+    Canvas.rectfill(x, y, windowWidth, h, EDG32[3])
+
+    y = y + b
+    var titleArea = Display.print(_card.name, {
+      "position": Vec.new(x + b, y),
       "font": "m5x7",
-      "align": "right",
-      "size": Vec.new(w, h),
+      "color": EDG32[24],
+      "size": Vec.new(w - b * 2, h - b * 2),
+    })
+
+    y = y + titleArea.y + b
+    var area = Display.print(_card.description, {
+      "position": Vec.new(x + b, y),
+      "font": "m5x7",
+      "align": "left",
+      "color": EDG32[24],
+      "size": Vec.new(w - b * 2, h - 8 - b * 2),
       "overflow": true
     })
+    _card.draw(area.x + x + b * 2, y0)
+    _closeButton.draw()
   }
 }
 
