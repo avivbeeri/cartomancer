@@ -24,10 +24,10 @@ var F = 0
 // Is the view static?
 var STATIC = false
 
-var SCALE = 2
-var TILE_SIZE = 8 * SCALE
+var SCALE = 1
+var TILE_SIZE = 16 * SCALE
 var CARD_UI_TOP = 224
-var X_OFFSET = 0//4
+var X_OFFSET = 0
 
 class WorldScene is Scene {
   construct new(args) {
@@ -206,8 +206,8 @@ class WorldScene is Scene {
       Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
     }
 
-    var xRange = (cx / TILE_SIZE).ceil + 1
-    var yRange = (cy / TILE_SIZE).ceil + 1
+    var xRange = M.max((cx / TILE_SIZE), (Canvas.width - cx) / TILE_SIZE).ceil + 1
+    var yRange = M.max((cy / TILE_SIZE), (Canvas.height - cy) / TILE_SIZE).ceil + 1
 
     for (dy in -yRange..yRange) {
       for (dx in -xRange..xRange) {
