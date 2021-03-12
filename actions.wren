@@ -50,21 +50,6 @@ class MoveAction is Action {
     return ctx.getEntitiesAtTile(pos.x, pos.y).where {|entity| entity != source }
   }
 
-/*
-  handleCollision(pos) {
-    var occupying = getOccupying(pos)
-    var solidEntity = false
-    for (entity in occupying) {
-      var event = entity.notify(ctx, CollisionEvent.new(this, entity, pos))
-      if (!event.cancelled) {
-        ctx.events.add(event)
-        solidEntity = true
-      }
-    }
-    return solidEntity
-  }
-  */
-
   perform() {
     var old = source.pos * 1
     source.vel = _dir
@@ -89,7 +74,6 @@ class MoveAction is Action {
         source.pos = old
       }
       if (target) {
-
         result = ActionResult.alternate(AttackAction.new(source.pos + _dir, Attack.melee(source)))
       } else if (collectible) {
         result = ActionResult.alternate(PickupAction.new(_dir))
@@ -124,7 +108,7 @@ class AttackAction is Action {
 
   perform() {
     var location = _location
-    var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity != source && entity.has("stats") }
+    var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity.has("stats") }
     occupying.each {|target|
       var currentHP = target["stats"].base("hp")
       var defence = target["stats"].get("def")
@@ -191,6 +175,7 @@ class PlayCardAction is Action {
     var selectedCard = hand.removeAt(_handIndex)
     var result = ActionResult.failure
     if (selectedCard) {
+      ctx.events.add(LogEvent.new("%(source) played the '%(selectedCard.name)' card"))
 
       if (!_target) {
         // Auto-select target
@@ -201,6 +186,7 @@ class PlayCardAction is Action {
       }
 
       result = ActionResult.alternate(CardActionFactory.prepare(selectedCard, _target))
+
       var discard = source["discard"]
       discard.add(selectedCard)
 
@@ -252,6 +238,41 @@ class ApplyModifierAction is Action {
     return ActionResult.failure
   }
 }
+
+// -------- UNTESTED PROTOTYPE ------
+// Assumes that partial failures are acceptible.
+
+class MultiAction is Action {
+  construct new(actionList) {
+    super()
+    _actionList = actionList
+  }
+
+  perform() {
+    var result = ActionResult.success
+    var failed = false
+    for (step in _actionList) {
+      while (true) {
+        step.bind(source)
+        var stepResult = step.perform()
+        if (!stepResult.succeeded) {
+          result = ActionResult.failure
+          failed = true
+          break
+        }
+        if (!stepResult.alternate) {
+          break
+        }
+        step = result.alternate
+      }
+      if (failed) {
+        break
+      }
+    }
+    return result
+  }
+}
+
 
 import "./entity/collectible" for Collectible
 import "./factory" for CardActionFactory
