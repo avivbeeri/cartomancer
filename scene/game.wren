@@ -27,6 +27,7 @@ var STATIC = false
 var SCALE = 2
 var TILE_SIZE = 8 * SCALE
 var CARD_UI_TOP = 224
+var X_OFFSET = 0//4
 
 class WorldScene is Scene {
   construct new(args) {
@@ -49,23 +50,10 @@ class WorldScene is Scene {
     _selected = null
   }
 
-  updateAllUi() {
-    var uiList
-    if (!_diageticUi.isEmpty) {
-      uiList = _diageticUi
-    } else if (!_ui.isEmpty) {
-      uiList = _ui
-    }
-    if (uiList) {
-      uiList[0].update()
-      if (uiList[0].finished) {
-        uiList.removeAt(0)
-      }
-      return true
-    }
-    return false
-  }
 
+  world { _world }
+  camera { _camera }
+  camera=(v) { _camera = v }
   update() {
     _zone = _world.active
     T = T + (1/60)
@@ -185,25 +173,43 @@ class WorldScene is Scene {
     }
   }
 
+  updateAllUi() {
+    var uiList
+    if (!_diageticUi.isEmpty) {
+      uiList = _diageticUi
+    } else if (!_ui.isEmpty) {
+      uiList = _ui
+    }
+    if (uiList) {
+      uiList[0].update()
+      if (uiList[0].finished) {
+        uiList.removeAt(0)
+      }
+      return true
+    }
+    return false
+  }
+
+
   draw() {
     _zone = _world.active
     var player = _zone.getEntityByTag("player")
-    var X_OFFSET = 0//4
     Canvas.cls(Display.bg)
 
 
-    var cx = (Canvas.width - X_OFFSET - 20) / 2
-    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
+    var cx = center.x
+    var cy = center.y
+
+
     if (!STATIC) {
       Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
     }
-    var x = Canvas.width - 20
 
-    var xRange = 14
-    var yRange = 10
+    var xRange = (cx / TILE_SIZE).ceil + 1
+    var yRange = (cy / TILE_SIZE).ceil + 1
 
-    for (dy in -yRange...yRange) {
-      for (dx in -xRange...xRange) {
+    for (dy in -yRange..yRange) {
+      for (dx in -xRange..xRange) {
         var x = _lastPosition.x + dx
         var y = _lastPosition.y + dy
         var sx = x * TILE_SIZE + X_OFFSET
@@ -264,7 +270,6 @@ class WorldScene is Scene {
             }
           }
 
-
           Canvas.print(index, sx, sy, Color.green)
 
           var list = Sprites["wall"]
@@ -309,12 +314,6 @@ class WorldScene is Scene {
     // Put a background on the player for readability
     if (player && !STATIC) {
       var tile = _zone.map[player.pos]
-      // 1-bit clarity system
-      /*
-      if (tile["floor"] || _zone["floor"]) {
-        Canvas.rectfill(cx, cy, TILE_SIZE, TILE_SIZE, Display.bg)
-      }
-      */
       // Draw player in screen center
       if (_moving) {
         Sprites["playerWalk"][F].draw(cx, cy)
@@ -324,13 +323,6 @@ class WorldScene is Scene {
     }
 
     if (player) {
-      /*
-      var inv = player["inventory"]
-      for (i in 0...inv.count) {
-        Canvas.print(inv[i], 0, i * 8, Color.white)
-      }
-      */
-
       // Draw the top bar (player stats, menu button, tabs?)
       Canvas.rectfill(0, 0, Canvas.width, 20, EDG32[28])
       var hp = player["stats"].get("hp")
@@ -361,30 +353,12 @@ class WorldScene is Scene {
          card.draw(pos.x, pos.y)
         }
       }
+
       if (_selected) {
         var card = _selected[0]
         var pos =  _selected[1]
         card.draw(pos.x, pos.y - 32)
       }
-
-/*
-      var y = Canvas.height - (hand.count + 2 + deck.count) * 8
-      Canvas.print("Hand:", 0, y - 8, Color.white)
-      var i = 1
-      for (card in hand) {
-        var text = "%(card.name)"
-        if (i < InputActions.options.count) {
-          text = "%(i): %(card.name)"
-        }
-        if (mouse.y >= y && mouse.y < y + 8 && mouse.x < (text.count) * 8) {
-          Canvas.print(text, 0, y, Color.darkgreen)
-        } else {
-          Canvas.print(text, 0, y, Color.white)
-        }
-        y = y + 8
-        i = i + 1
-      }
-      */
     }
 
     for (ui in _diageticUi) {
@@ -403,10 +377,6 @@ class WorldScene is Scene {
       }
     }
   }
-
-  world { _world }
-  camera { _camera }
-  camera=(v) { _camera = v }
 
   drawPile(pile, left, top, shade) {
     var mouse = Mouse.pos
@@ -475,9 +445,30 @@ class WorldScene is Scene {
       return slots[index]
     }
   }
+
+  center {
+    var cx = (Canvas.width - X_OFFSET - 20) / 2
+    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
+    return Vec.new(cx, cy)
+
+  }
+
+  screenToWorld(pos) {
+    var tile =  (pos - (center - _camera)) / TILE_SIZE
+    tile.x = tile.x.floor
+    tile.y = tile.y.floor
+    return tile
+  }
+
+  worldToScreen(pos) {
+    var cx = (Canvas.width - X_OFFSET - 20) / 2
+    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
+    return pos + (center - _camera)
+  }
 }
 
 // These need to be down here for safety
+// from circular dependancies
 import "./effects" for
   CameraLerp,
   SuccessMessage,

@@ -45,16 +45,14 @@ class CardTargetSelector is Ui {
       _current = _current + 1
     }
 
-    var CARD_UI_TOP = 224
-    var X_OFFSET = 0
-    var cx = (Canvas.width - X_OFFSET - 20) / 2
-    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
+    var center = _view.center
+    var xRange = (center.x / TILE_SIZE).ceil + 1
+    var yRange = (center.y / TILE_SIZE).ceil + 1
 
-    _mouseTile = mouse - (Vec.new(cx, cy) - _view.camera)
-    _mouseTile.x = (_mouseTile.x / TILE_SIZE).floor
-    _mouseTile.y = (_mouseTile.y / TILE_SIZE).floor
+    _mouseTile = _view.screenToWorld(mouse)
+
     var hover = false
-    if (ctx.map[_mouseTile]["floor"] != "void" && (_mouseTile.x - _player.pos.x).abs < 14 && (_mouseTile.y - _player.pos.y).abs < 10) {
+    if (ctx.map[_mouseTile]["floor"] != "void" && (_mouseTile.x - _player.pos.x).abs < xRange && (_mouseTile.y - _player.pos.y).abs < yRange) {
       for (i in 0..._targets.count) {
         var target = _targets[i]
         if (target.pos == _mouseTile) {
