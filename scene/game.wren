@@ -147,6 +147,7 @@ class WorldScene is Scene {
       } else if (event is MoveEvent) {
         if (event.target is Player) {
           _moving = true
+          _lastPosition = player.pos
           _ui.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
       } else if (event is AttackEvent) {
