@@ -50,29 +50,29 @@ class TileMap {
   }
 
   [x, y] {
-    var sectionX = x >> SECTION_SHIFT
-    var sectionY = y >> SECTION_SHIFT
+    var sectionX = x.sign * (x.abs >> SECTION_SHIFT)
+    var sectionY = y.sign * (y.abs >> SECTION_SHIFT)
     var pair = Elegant.pair(sectionX, sectionY)
     var section = _tiles[pair]
     if (!section) {
       section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new(_default) }.toList
       System.print("New section %(x),%(y)")
     }
-    var subX = x & SECTION_MASK
-    var subY = y & SECTION_MASK
+    var subX = x.abs & SECTION_MASK
+    var subY = y.abs & SECTION_MASK
     return section[SECTION_SIZE * subY + subX]
   }
 
   [x, y]=(tile) {
-    var sectionX = x >> SECTION_SHIFT
-    var sectionY = y >> SECTION_SHIFT
+    var sectionX = x.sign * (x.abs >> SECTION_SHIFT)
+    var sectionY = y.sign * (y.abs >> SECTION_SHIFT)
     var pair = Elegant.pair(sectionX, sectionY)
     var section = _tiles[pair]
     if (!section) {
       section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new(_default) }.toList
     }
-    var subX = x & SECTION_MASK
-    var subY = y & SECTION_MASK
+    var subX = x.abs & SECTION_MASK
+    var subY = y.abs & SECTION_MASK
     section[SECTION_SIZE * subY + subX] = tile
   }
 }
