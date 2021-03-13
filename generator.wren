@@ -22,6 +22,13 @@ Config["cards"].each {|data|
   Card.put(Card.new(data))
 }
 
+class WorldGenerator {
+  static generate() {
+    return GrowthGenerator.init().generate()
+  }
+
+}
+
 class GrowthGenerator {
   static generate() {
     return GrowthGenerator.init().generate()
@@ -36,7 +43,7 @@ class GrowthGenerator {
 
     var world = World.new(EnergyStrategy.new())
     var zone = world.pushZone(Zone.new(TileMap.init()))
-    zone.map.default = { "solid": false, "floor": "void" }
+    zone.map.default = { "solid": true, "floor": "void" }
 
     // Order is important!!
     zone.postUpdate.add(RemoveDefeated)
@@ -153,7 +160,7 @@ class GrowthGenerator {
       }
     }
     for (door in doors) {
-      zone.map[door.x, door.y] = Tile.new({ "floor": "floor" })
+      zone.map[door.x, door.y] = Tile.new({ "floor": "tile" })
     }
     var pos = null
     var start = rooms[0]
@@ -185,8 +192,8 @@ class TestGenerator {
     // -------------------
 
     zone.map.default = { "solid": false, "floor": "void" }
-    var width = 18
-    var height = 18
+    var width = 7
+    var height = 7
     for (y in 0..height) {
       for (x in 0..width) {
         if (x == 0 || x == width || y == 0 || y == width) {
