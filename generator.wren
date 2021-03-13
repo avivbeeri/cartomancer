@@ -208,15 +208,15 @@ class GrowthGenerator {
       for (y in wy...height) {
         for (x in wx...width) {
           if (x == wx || x == width - 1 || y == wy || y == height - 1) {
-            zone.map[x, y] = Tile.new({ "floor": "solid", "solid": true })
+            zone.map[x, y] = Tile.new({ "floor": "wall", "solid": true })
           } else {
-            zone.map[x, y] = Tile.new({ "floor": "void" })
+            zone.map[x, y] = Tile.new({ "floor": "tile" })
           }
         }
       }
     }
     for (door in doors) {
-      zone.map[door.x, door.y] = Tile.new({ "floor": "void" })
+      zone.map[door.x, door.y] = Tile.new({ "floor": "tile" })
     }
     var pos = null
     var start = rooms[0]
