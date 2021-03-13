@@ -14,8 +14,6 @@ import "./rng" for RNG
 
 import "./factory" for EntityFactory
 
-import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
-
 // TODO: This feels awful, handle this data better.
 Config["cards"].each {|data|
   Card.put(Card.new(data))
