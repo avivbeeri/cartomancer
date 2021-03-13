@@ -9,7 +9,7 @@ class GameEndCheck {
       // Game Over
       ctx.events.add(GameEndEvent.new(false))
       ctx.parent.gameover = true
-    } else if (!ctx.entities.any {|entity| entity is Collectible }) {
+    } else if (!ctx.entities.any {|entity| entity is Collectible || (entity is Creature && entity["types"].contains("enemy")) }) {
       ctx.events.add(GameEndEvent.new(true))
       ctx.parent.gameover = true
     }
@@ -35,3 +35,4 @@ class RemoveDefeated {
 
 import "./events" for GameEndEvent
 import "./entity/collectible" for Collectible
+import "./entity/creature" for Creature
