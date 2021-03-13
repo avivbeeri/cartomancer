@@ -12,13 +12,15 @@ import "./deck" for Card
 import "./core/config" for Config
 import "./rng" for RNG
 
+import "./factory" for EntityFactory
+
 import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
 
 // TODO: This feels awful, handle this data better.
 Config["cards"].each {|data|
   Card.put(Card.new(data))
 }
-
+var ENTITIES_COUNT = Config["entities"].count
 var ROOM_COUNT = Config["cards"].count - 3 + 1
 
 class Room is Vec {
@@ -224,15 +226,15 @@ class GrowthGenerator {
 
 
       for (i in 0...RNG.int(3)) {
-        var dummy = Dummy.new(Config["entities"][0])
-        spawnIn(zone, room, dummy)
+        var entity = EntityFactory.prepare(Config["entities"][RNG.int(ENTITIES_COUNT)])
+        spawnIn(zone, room, entity)
         enemyCount = enemyCount + 1
       }
     }
     if (enemyCount == 0) {
       var room = rooms[-1]
-      var dummy = Dummy.new(Config["entities"][0])
-      spawnIn(zone, room, dummy)
+      var entity = EntityFactory.prepare(Config["entities"][RNG.int(ENTITIES_COUNT)])
+      spawnIn(zone, room, entity)
     }
     for (door in doors) {
       zone.map[door.x, door.y] = Tile.new({ "floor": "tile" })

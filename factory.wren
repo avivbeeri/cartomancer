@@ -2,6 +2,8 @@ import "./core/action" for Action
 import "./actions" for ApplyModifierAction, AttackAction
 import "./stats" for Modifier
 
+import "./entity/all" for Sword, Shield, Creature
+
 import "./combat" for Attack, AttackType
 
 class CardActionFactory {
@@ -29,6 +31,23 @@ class CardActionFactory {
     } else {
       Fiber.abort("Could not prepare unknown action %(card.action)")
     }
+  }
+
+}
+
+class EntityFactory {
+  static prepare(config) {
+    var classType = config["classType"]
+    if (classType == "sword") {
+      return Sword.new(config)
+    }
+    if (classType == "shield") {
+      return Shield.new(config)
+    }
+    if (classType == "dummy") {
+      return Creature.new(config)
+    }
+    Fiber.abort("Unknown entity type %(classType)")
   }
 
 }

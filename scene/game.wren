@@ -12,7 +12,7 @@ import "./keys" for InputGroup, InputActions
 import "./menu" for Menu, CardTargetSelector
 import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent
 import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction, CommuneAction
-import "./entity/all" for Player, Dummy, Collectible
+import "./entity/all" for Player, Dummy, Collectible, Creature
 
 import "./sprites" for StandardSpriteSet as Sprites
 import "./log" for Log
@@ -285,10 +285,10 @@ class WorldScene is Scene {
           Sprites["playerStand"][s].draw(sx, sy)
         }
 
-      } else if (entity is Dummy) {
-        Sprites["sword"][F].draw(sx, sy)
       } else if (entity is Collectible) {
         Sprites["card"][0].draw(sx, sy - F * 2)
+      } else if (entity is Creature && entity["classType"]) {
+        Sprites[entity["classType"]][F].draw(sx, sy)
       } else {
         Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }

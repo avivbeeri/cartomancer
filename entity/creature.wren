@@ -5,6 +5,7 @@ import "./stats" for StatGroup
 class Creature is Entity {
   construct new(config) {
     super()
+    this["classType"] = config["classType"]
     this["activeEffects"] = []
     this["types"] = [ "creature" ] + config["types"]
     System.print(this["types"])
