@@ -4,6 +4,7 @@ import "./events" for CollisionEvent,
   CommuneEvent,
   MoveEvent,
   AttackEvent,
+  PickupEvent,
   LogEvent
 
 import "./combat" for Attack
@@ -191,15 +192,19 @@ class PickupAction is Action {
       var item = entity.item.split(":")
       var kind = item[0]
       var id = item[1]
+
+      var event = source.notify(PickupEvent.new(source, Card[id]))
+      ctx.events.add(event)
+
       if (kind == "card") {
-        source["hand"].add(Card[id])
-      } else {
+        if (source.has("hand")) {
+          source["hand"].add(Card[id])
+        }
+      } else if (source.has("inventory")) {
         source["inventory"].add(entity.item)
       }
       ctx.removeEntity(entity)
     }
-
-    // TODO: Fire event
 
     return ActionResult.success
   }

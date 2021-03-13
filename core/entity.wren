@@ -47,6 +47,7 @@ class Entity is DataObject {
            y <= pos.y + size.y - 1
   }
 
+  notify(event) { notify(ctx, event) }
   notify(ctx, event) { event }
   getAction() { update() }
   endTurn() {}

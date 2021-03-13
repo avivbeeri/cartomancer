@@ -4,6 +4,8 @@ import "./core/entity" for Entity
 import "./actions" for MoveAction
 import "./stats" for StatGroup
 import "./entity/creature" for Creature
+import "./events" for LogEvent, PickupEvent
+
 
 import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
 
@@ -31,6 +33,13 @@ class Dummy is Creature {
       return Action.none
     }
     return MoveAction.new(path[1] - pos, true)
+  }
+
+  notify(ctx, event) {
+    if (event is PickupEvent) {
+      ctx.events.add(LogEvent.new("%(this) picked up [%(event.item)] forever."))
+    }
+    return event
   }
 }
 

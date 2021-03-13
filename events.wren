@@ -74,3 +74,13 @@ class CommuneEvent is Event {
   source { _source }
   success { _success }
 }
+
+class PickupEvent is Event {
+  construct new(source, item) {
+    super()
+    _source = source
+    _item = item
+  }
+  source { _source }
+  item { _item }
+}

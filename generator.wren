@@ -19,7 +19,7 @@ Config["cards"].each {|data|
   Card.put(Card.new(data))
 }
 
-var ROOM_COUNT = 2
+var ROOM_COUNT = Config["cards"].count - 3 + 1
 
 class Room is Vec {
   construct new(x, y, w, h) {
@@ -224,7 +224,8 @@ class GrowthGenerator {
 
 
       for (i in 0...RNG.int(3)) {
-        spawnIn(zone, room. dummy)
+        var dummy = Dummy.new(Config["entities"][0])
+        spawnIn(zone, room, dummy)
         enemyCount = enemyCount + 1
       }
     }
