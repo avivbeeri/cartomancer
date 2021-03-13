@@ -19,6 +19,8 @@ Config["cards"].each {|data|
   Card.put(Card.new(data))
 }
 
+var ROOM_COUNT = 2
+
 class Room is Vec {
   construct new(x, y, w, h) {
     super(x, y, w, h)
@@ -58,7 +60,7 @@ class GrowthGenerator {
 
     // Order is important!!
     zone.postUpdate.add(RemoveDefeated)
-    // zone.postUpdate.add(GameEndCheck)
+    zone.postUpdate.add(GameEndCheck)
     // -------------------
 
 
@@ -72,7 +74,7 @@ class GrowthGenerator {
     // 3) A single room in the world (Library)
     var rooms = [ Room.new(0, 0, 7, 7) ]
 
-    while(rooms.count < 20) {
+    while(rooms.count < ROOM_COUNT) {
 
       // 4) Pass begins: Pick a base for this pass at random from existing rooms.
       var base = RNG.sample(rooms)
@@ -221,7 +223,7 @@ class GrowthGenerator {
       for (i in 0...RNG.int(3)) {
         var dummy = zone.addEntity(Dummy.new(Config["entities"][0]))
         var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
-        while (zone.getEntitiesAtTile(spawn).count > 1) {
+        while (zone.getEntitiesAtTile(spawn).count >= 1) {
           spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
         }
         dummy.pos = spawn
