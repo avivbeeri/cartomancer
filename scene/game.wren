@@ -470,9 +470,7 @@ class WorldScene is Scene {
   }
 
   worldToScreen(pos) {
-    var cx = (Canvas.width - X_OFFSET - 20) / 2
-    var cy = (Canvas.height - CARD_UI_TOP) / 2 + TILE_SIZE * 4
-    return pos + (center - _camera)
+    return (pos * TILE_SIZE) + (center - _camera)
   }
 }
 
