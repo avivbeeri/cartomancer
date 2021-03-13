@@ -7,7 +7,7 @@ import "./core/director" for
   RealTimeStrategy,
   TurnBasedStrategy,
   EnergyStrategy
-import "./logic" for GameEndCheck, RemoveDefeated
+import "./logic" for GameEndCheck, RemoveDefeated, AutoDraw
 import "./deck" for Card
 import "./core/config" for Config
 import "./rng" for RNG
@@ -61,6 +61,7 @@ class GrowthGenerator {
     // Order is important!!
     zone.postUpdate.add(RemoveDefeated)
     zone.postUpdate.add(GameEndCheck)
+    zone.postUpdate.add(AutoDraw)
     // -------------------
 
 

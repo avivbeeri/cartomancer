@@ -197,8 +197,8 @@ class PickupAction is Action {
       ctx.events.add(event)
 
       if (kind == "card") {
-        if (source.has("hand")) {
-          source["hand"].add(Card[id])
+        if (source.has("deck")) {
+          source["deck"].addToBottom(Card[id])
         }
       } else if (source.has("inventory")) {
         source["inventory"].add(entity.item)
@@ -250,16 +250,6 @@ class PlayCardAction is Action {
         var discard = source["discard"]
         discard.add(selectedCard)
         source["stats"].decrease("mana", 2)
-
-        // hand size should be a statistic
-        if (hand.count < 3) {
-          var deck = source["deck"]
-          var card = deck.drawCard()
-          if (card) {
-            System.print("Drew: %(card.name)")
-            hand.insert(0, card)
-          }
-        }
       }
     }
 

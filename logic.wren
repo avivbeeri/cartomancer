@@ -30,7 +30,19 @@ class RemoveDefeated {
       }
     }
   }
-
+}
+class AutoDraw {
+  static update(ctx) {
+    var player = ctx.getEntityByTag("player")
+    if (player && player["hand"].count < 3) {
+      var deck = player["deck"]
+      var card = deck.drawCard()
+      if (card) {
+        System.print("Drew: %(card.name)")
+        player["hand"].insert(0, card)
+      }
+    }
+  }
 }
 
 import "./events" for GameEndEvent
