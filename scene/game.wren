@@ -18,6 +18,7 @@ import "./sprites" for StandardSpriteSet as Sprites
 import "./log" for Log
 
 import "./widgets" for Button
+import "./scene/autotile" for AutoTile
 
 // Timer variables
 var T = 0
@@ -238,65 +239,22 @@ class WorldScene is Scene {
         var sx = x * TILE_SIZE + X_OFFSET
         var sy = y * TILE_SIZE
         var tile = _zone.map[x, y]
-        if (tile["floor"] == "blank" || tile["floor"] == "void") {
-          // Intentionally do nothing
-        } else if (tile["floor"] == "solid") {
-          Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, Display.fg)
-        } else if (tile["floor"] == "door") {
-          var list = Sprites[tile["floor"]]
-          list[0].draw(sx, sy)
-        } else if (_zone["floor"] == "void") {
-          var list = Sprites["void"]
-          list[0].draw(sx, sy)
-        } else {
-          // figure out neighbours
-          var index = 0
-          // Up
-          var testTile
 
-          testTile = _zone.map[x, y - 1]["floor"]
-          if (testTile == "wall" || testTile == "void") {
-            index = index + 1
-          }
-          // Right
-          testTile = _zone.map[x+1, y]["floor"]
-          if (testTile == "wall" || testTile == "void") {
-            index = index + 2
-          }
-          //Down
-          testTile = _zone.map[x, y+1]["floor"]
-          if (testTile == "wall" || testTile == "void") {
-            index = index + 4
-          }
-          // Left
-          testTile = _zone.map[x - 1, y]["floor"]
-          if (testTile == "wall" || testTile == "void") {
-            index = index + 8
-          }
-
-          if (index == 15) {
-            testTile = _zone.map[x - 1, y - 1]["floor"]
-            if (testTile == "tile") {
-              index = 15
-            }
-            testTile = _zone.map[x + 1, y - 1]["floor"]
-            if (testTile == "tile") {
-              index = 16
-            }
-            testTile = _zone.map[x + 1, y + 1]["floor"]
-            if (testTile == "tile") {
-              index = 17
-            }
-            testTile = _zone.map[x - 1, y + 1]["floor"]
-            if (testTile == "tile") {
-              index = 18
-            }
-          }
-
-          Canvas.print(index, sx, sy, Color.green)
+        var index = AutoTile.pick(_zone.map, x, y)
+        if (index >= 0) {
 
           var list = Sprites["wall"]
           list[index].draw(sx, sy)
+
+          if (Keyboard["left ctrl"].down) {
+            // TODO: disable before release
+            if (tile["solid"]) {
+              Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, EDG32A[25])
+            } else {
+              Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, EDG32A[12])
+            }
+            Canvas.print(index, sx, sy, EDG32[24])
+          }
         }
       }
     }
