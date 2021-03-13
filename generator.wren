@@ -12,6 +12,11 @@ import "./deck" for Card
 import "./core/config" for Config
 import "./rng" for RNG
 
+
+var n = -60
+System.print(n.sign * (n.abs >> 4))
+System.print(n & 0xF)
+
 // TODO: This feels awful, handle this data better.
 Config["cards"].each {|data|
   Card.put(Card.new(data))
@@ -31,7 +36,7 @@ class GrowthGenerator {
 
     var world = World.new(EnergyStrategy.new())
     var zone = world.pushZone(Zone.new(TileMap.init()))
-    // zone.map.default = { "solid": false, "floor": "void" }
+    zone.map.default = { "solid": false, "floor": "void" }
 
     // Order is important!!
     zone.postUpdate.add(RemoveDefeated)
@@ -47,10 +52,9 @@ class GrowthGenerator {
     var doors = []
 
     // 3) A single room in the world (Library)
-    // var rooms = [ Vec.new(0, 0, 7, 7) ]
-    var rooms = [ Vec.new(25, -1, 8, 14)]
+    var rooms = [ Vec.new(0, 0, 7, 7) ]
 
-    while(rooms.count < 1) {
+    while(rooms.count < 2) {
 
       // 4) Pass begins: Pick a base for this pass at random from existing rooms.
       var base = RNG.sample(rooms)
@@ -141,15 +145,15 @@ class GrowthGenerator {
       for (y in wy...height) {
         for (x in wx...width) {
           if (x == wx || x == width - 1 || y == wy || y == height - 1) {
-            zone.map[x, y] = Tile.new({ "floor": "solid", "solid": true })
+            zone.map[x, y] = Tile.new({ "floor": "wall", "solid": true })
           } else {
-            zone.map[x, y] = Tile.new({ "floor": "void" })
+            zone.map[x, y] = Tile.new({ "floor": "tile" })
           }
         }
       }
     }
     for (door in doors) {
-      zone.map[door.x, door.y] = Tile.new({ "floor": "void" })
+      zone.map[door.x, door.y] = Tile.new({ "floor": "floor" })
     }
     var pos = null
     var start = rooms[0]

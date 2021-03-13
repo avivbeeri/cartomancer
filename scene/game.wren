@@ -231,7 +231,6 @@ class WorldScene is Scene {
 
     var xRange = M.max((cx / TILE_SIZE), (Canvas.width - cx) / TILE_SIZE).ceil + 1
     var yRange = M.max((cy / TILE_SIZE), (Canvas.height - cy) / TILE_SIZE).ceil + 1
-
     for (dy in -yRange..yRange) {
       for (dx in -xRange..xRange) {
         var x = _lastPosition.x + dx

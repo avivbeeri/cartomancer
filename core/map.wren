@@ -1,10 +1,6 @@
 import "core/dataobject" for DataObject
 import "core/elegant" for Elegant
 
-var SECTION_SIZE = 16
-var SECTION_SHIFT = SECTION_SIZE.log2
-var SECTION_MASK = SECTION_SIZE - 1
-
 class Tile is DataObject {
   static new() {
     return Tile.new({})
@@ -50,30 +46,16 @@ class TileMap {
   }
 
   [x, y] {
-    var sectionX = x.sign * (x.abs >> SECTION_SHIFT)
-    var sectionY = y.sign * (y.abs >> SECTION_SHIFT)
-    var pair = Elegant.pair(sectionX, sectionY)
-    var section = _tiles[pair]
-    if (!section) {
-      section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new(_default) }.toList
-      System.print("New section %(x),%(y)")
+    var pair = Elegant.pair(x, y)
+    if (!_tiles[pair]) {
+      return Tile.new(_default)
     }
-    var subX = x.abs & SECTION_MASK
-    var subY = y.abs & SECTION_MASK
-    return section[SECTION_SIZE * subY + subX]
+    return _tiles[pair]
   }
 
   [x, y]=(tile) {
-    var sectionX = x.sign * (x.abs >> SECTION_SHIFT)
-    var sectionY = y.sign * (y.abs >> SECTION_SHIFT)
-    var pair = Elegant.pair(sectionX, sectionY)
-    var section = _tiles[pair]
-    if (!section) {
-      section = _tiles[pair] = (0...(SECTION_SIZE * SECTION_SIZE)).map {|i| Tile.new(_default) }.toList
-    }
-    var subX = x.abs & SECTION_MASK
-    var subY = y.abs & SECTION_MASK
-    section[SECTION_SIZE * subY + subX] = tile
+    var pair = Elegant.pair(x, y)
+    _tiles[pair] = tile
   }
 }
 
