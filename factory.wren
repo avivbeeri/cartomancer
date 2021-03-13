@@ -24,7 +24,8 @@ class CardActionFactory {
     } else if (card.action == "attack") {
       var kind = card.params["kind"] || AttackType.melee
       var base = card.params["base"] || 1
-      return AttackAction.new(target.pos, Attack.new(base, kind))
+      var mana = card.params["needsMana"] || false
+      return AttackAction.new(target.pos, Attack.new(base, kind, mana))
     } else {
       Fiber.abort("Could not prepare unknown action %(card.action)")
     }

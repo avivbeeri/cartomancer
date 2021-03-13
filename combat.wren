@@ -13,15 +13,17 @@ class AttackType {
 }
 
 class Attack {
-  construct new(damage, attackType) {
+  construct new(damage, attackType, needsMana) {
     _damage = damage
     _attackType = AttackType.verify(attackType)
+    _needsMana = needsMana
   }
 
   damage { _damage }
   attackType { _attackType }
+  needsMana { _needsMana }
 
   static melee(entity) {
-    return Attack.new(entity["stats"].get("atk"), AttackType.melee)
+    return Attack.new(entity["stats"].get("atk"), AttackType.melee, true)
   }
 }

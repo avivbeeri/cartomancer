@@ -139,8 +139,9 @@ class AttackAction is Action {
   }
 
   perform() {
-    if (source.has("stats") &&
-        source["stats"].has("mana")) {
+    if (_attack.needsMana &&
+      source.has("stats") &&
+      source["stats"].has("mana")) {
 
       if (source["stats"].get("mana") <= 0) {
         // TODO: Assert?!

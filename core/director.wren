@@ -93,14 +93,13 @@ class EnergyStrategy is Director {
 
 
     while (true) {
-
+      System.print("Trying: %(actor): %(action)")
       var result = action.bind(actor).perform()
       if (!result.succeeded) {
         // Action wasn't successful, allow retry
         return
       }
-      // System.print("%(actor): %(action)")
-
+      System.print(result)
       if (!result.alternate) {
         break
       }
