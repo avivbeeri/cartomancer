@@ -23,13 +23,12 @@ class SeekBehaviour is Behaviour {
     var map = ctx.map
     var player = ctx.getEntityByTag("player")
     var graph = WeightedZone.new(ctx)
-    var search = DijkstraSearch.search(graph, self.pos, player.pos)
-    var path = DijkstraSearch.reconstruct(search[0], self.pos, player.pos)
+    var search = AStar.search(graph, self.pos, player.pos)
+    var path = AStar.reconstruct(search[0], self.pos, player.pos)
     if (path == null) {
       return Action.none
     }
     return MoveAction.new(path[1] - self.pos, true)
-
   }
 
 }
