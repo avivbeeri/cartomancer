@@ -1,17 +1,14 @@
 import "math" for Vec
-import "./core/action" for Action
-import "./core/entity" for Entity
-import "./actions" for MoveAction
 import "./stats" for StatGroup
 import "./entity/creature" for Creature
 import "./events" for LogEvent, PickupEvent
 
-
-import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
+import "./entity/behaviour" for SeekBehaviour
 
 class Sword is Creature {
   construct new(config) {
     super(config)
+    _behaviour = SeekBehaviour.new(this)
   }
 
   construct new() {
@@ -22,16 +19,7 @@ class Sword is Creature {
   }
 
   update() {
-    var map = ctx.map
-    var player = ctx.getEntityByTag("player")
-    var graph = WeightedGrid.new(map)
-    var search = DijkstraSearch.search(graph, pos, player.pos)
-    var path = DijkstraSearch.reconstruct(search[0], pos, player.pos)
-    System.print(path)
-    if (path == null) {
-      return Action.none
-    }
-    return MoveAction.new(path[1] - pos, true)
+    return _behaviour.evaluate()
   }
 
   notify(ctx, event) {

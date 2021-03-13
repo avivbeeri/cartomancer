@@ -376,6 +376,8 @@ class WorldScene is Scene {
       }
     }
 
+    // TODO: Enforce priority for UI effects better
+
     if (_diageticUi.isEmpty) {
       for (ui in _ui) {
         var block = ui.draw()
