@@ -224,27 +224,14 @@ class GrowthGenerator {
 
 
       for (i in 0...RNG.int(3)) {
-        var dummy = zone.addEntity(Dummy.new(Config["entities"][0]))
-        var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
-        while (spawn == player.pos || zone.getEntitiesAtTile(spawn).count >= 1) {
-          spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
-        }
-        dummy.pos = spawn
-        dummy.priority = energy % 12
-        energy = energy + 1
+        spawnIn(zone, room. dummy)
         enemyCount = enemyCount + 1
       }
     }
     if (enemyCount == 0) {
-      var wx = rooms[-1].x
-      var wy = rooms[-1].y
-      var width = wx + rooms[-1].x
-      var height = wy + rooms[-1].y
-      var dummy = zone.addEntity(Dummy.new(Config["entities"][0]))
-      var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
-      while (spawn == player.pos || zone.getEntitiesAtTile(spawn).count >= 1) {
-        spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
-      }
+      var room = rooms[-1]
+      var dummy = Dummy.new(Config["entities"][0])
+      spawnIn(zone, room, dummy)
     }
     for (door in doors) {
       zone.map[door.x, door.y] = Tile.new({ "floor": "tile" })
@@ -258,6 +245,21 @@ class GrowthGenerator {
            r1.x + r1.z > r2.x &&
            r1.y < r2.y + r2.w &&
            r1.y + r1.w > r2.y
+  }
+
+  spawnIn(zone, room, entity) {
+    var wx = room.x
+    var wy = room.y
+    var width = wx + room.z
+    var height = wy + room.w
+    zone.addEntity(entity)
+    var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
+    // TODO: Can land on player?
+    while (zone.getEntitiesAtTile(spawn).count >= 1 || (zone.isSolidAt(spawn))) {
+      spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
+    }
+    entity.pos = spawn
+    entity.priority = RNG.int(13)
   }
 }
 
