@@ -112,7 +112,7 @@ class GrowthGenerator {
         // 10) Place a door in the overlapping range
         var doorTop = M.max(newRoom.y, base.y)
         var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
-        var doorRange = RNG.int(doorTop + 1, doorBottom)
+        var doorRange = RNG.int(doorTop + 1, doorBottom - 1)
         doors.add(Vec.new(base.x, doorRange))
       } else if (dir == 1) {
         // up
@@ -201,9 +201,12 @@ class GrowthGenerator {
     }
     System.print(rooms)
 
-
+    var start = rooms[0]
+    var player = zone.addEntity("player", Player.new())
+    player.pos = Vec.new(start.x + 1, start.y + 1)
 
     var energy = 0
+    var enemyCount = 0
     for (room in rooms) {
       var wx = room.x
       var wy = room.y
@@ -223,27 +226,30 @@ class GrowthGenerator {
       for (i in 0...RNG.int(3)) {
         var dummy = zone.addEntity(Dummy.new(Config["entities"][0]))
         var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
-        while (zone.getEntitiesAtTile(spawn).count >= 1) {
+        while (spawn == player.pos || zone.getEntitiesAtTile(spawn).count >= 1) {
           spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
         }
         dummy.pos = spawn
         dummy.priority = energy % 12
         energy = energy + 1
+        enemyCount = enemyCount + 1
+      }
+    }
+    if (enemyCount == 0) {
+      var wx = rooms[-1].x
+      var wy = rooms[-1].y
+      var width = wx + rooms[-1].x
+      var height = wy + rooms[-1].y
+      var dummy = zone.addEntity(Dummy.new(Config["entities"][0]))
+      var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
+      while (spawn == player.pos || zone.getEntitiesAtTile(spawn).count >= 1) {
+        spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
       }
     }
     for (door in doors) {
       zone.map[door.x, door.y] = Tile.new({ "floor": "tile" })
     }
-    var pos = null
-    var start = rooms[0]
 
-    var player = zone.addEntity("player", Player.new())
-    player.pos = Vec.new(start.x + 1, start.y + 1)
-
-    var graph = WeightedGrid.new(zone.map)
-    var search = DijkstraSearch.search(graph, player.pos, rooms[0])
-    var path = DijkstraSearch.reconstruct(search[0], player.pos, Vec.new(5, 5))
-    System.print(path)
     return world
   }
 

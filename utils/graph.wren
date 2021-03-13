@@ -143,7 +143,12 @@ class DijkstraSearch {
     var path = []
     while (current != start) {
       path.insert(0, Elegant.unpair(current))
-      current = cameFrom[current] || start
+      System.print(cameFrom[current])
+      current = cameFrom[current] // || start
+      if (current == null) {
+        // Path is unreachable
+        return null
+      }
     }
     path.insert(0, Elegant.unpair(start))
     return path
