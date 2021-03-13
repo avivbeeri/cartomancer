@@ -1,5 +1,5 @@
 import "./core/action" for Action
-import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
+import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraSearch
 
 import "./actions" for MoveAction
 
@@ -22,7 +22,7 @@ class SeekBehaviour is Behaviour {
   evaluate() {
     var map = ctx.map
     var player = ctx.getEntityByTag("player")
-    var graph = WeightedGrid.new(map)
+    var graph = WeightedZone.new(ctx)
     var search = DijkstraSearch.search(graph, self.pos, player.pos)
     var path = DijkstraSearch.reconstruct(search[0], self.pos, player.pos)
     if (path == null) {

@@ -34,7 +34,7 @@ class Queue {
 
 class Heap {
   construct new() {
-    _comparator = Fn.new {|a, b| a - b }
+    _comparator = Fn.new {|a, b| a < b }
     _list = []
     _size = 0
   }
@@ -103,7 +103,7 @@ class Heap {
       var min = pos
       var child = 2 * pos
       for (c in child .. child + 1) {
-        if (c <= last && compare(_list[c], _list[min]) < 0) {
+        if (c <= last && compare(_list[c], _list[min])) {
           min = c
         }
       }

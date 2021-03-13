@@ -7,7 +7,7 @@ import "./entity/creature" for Creature
 import "./events" for LogEvent, PickupEvent
 
 
-import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
+import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraSearch
 
 class Dummy is Creature {
   construct new(config) {
@@ -25,7 +25,7 @@ class Dummy is Creature {
   update() {
     var map = ctx.map
     var player = ctx.getEntityByTag("player")
-    var graph = WeightedGrid.new(map)
+    var graph = WeightedZone.new(ctx)
     var search = DijkstraSearch.search(graph, pos, player.pos)
     var path = DijkstraSearch.reconstruct(search[0], pos, player.pos)
     System.print(path)

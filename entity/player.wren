@@ -9,6 +9,7 @@ class Player is Creature {
   construct new() {
     super()
     _action = null
+    priority = 12
     this["stats"].set("mana", 1)
     this["stats"].set("manaMax", 5)
 
