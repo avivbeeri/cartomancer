@@ -65,6 +65,10 @@ class EnergyStrategy is Director {
     _turn = (_turn + 1) % world.entities.count
   }
 
+  currentActor {
+    return world ? world.entities[_turn] : null
+  }
+
   gainEnergy(actor) {
     actor.priority = actor.priority + (actor.speed || 1)
     actor.priority = M.min(actor.priority, threshold)
@@ -95,7 +99,7 @@ class EnergyStrategy is Director {
         // Action wasn't successful, allow retry
         return
       }
-      System.print("%(actor): %(action)")
+      // System.print("%(actor): %(action)")
 
       if (!result.alternate) {
         break
@@ -146,7 +150,7 @@ class TurnBasedStrategy is Director  {
         // Action wasn't successful, allow retry
         return
       }
-      System.print("%(actor): %(action)")
+      // System.print("%(actor): %(action)")
 
       if (!result.alternate) {
         break

@@ -123,7 +123,6 @@ class MoveAction is Action {
         result = ActionResult.failure
       }
     }
-    System.print(result)
 
     if (source.vel.length > 0) {
       source.vel = Vec.new()

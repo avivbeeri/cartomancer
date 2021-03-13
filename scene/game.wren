@@ -52,6 +52,7 @@ class WorldScene is Scene {
     _selected = null
 
     _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 12))
+    _allowInput = true
   }
 
 
@@ -66,6 +67,8 @@ class WorldScene is Scene {
     var player = _zone.getEntityByTag("player")
     if (player) {
       _lastPosition = player.pos
+      _allowInput = (_world.strategy.currentActor is Player) && _world.strategy.currentActor.priority >= 12
+      _selected = _allowInput ? _selected : null
     }
 
     if (updateAllUi()) {
@@ -76,7 +79,7 @@ class WorldScene is Scene {
 
     var pressed = false
 
-    if (player) {
+    if (player && _allowInput) {
       // Overzone menu / interaction
       if (InputActions.interact.justPressed) {
         _ui.add(Menu.new(_zone, [
@@ -262,6 +265,10 @@ class WorldScene is Scene {
     for (entity in _zone.entities) {
       var sx = entity.pos.x * TILE_SIZE + X_OFFSET
       var sy = entity.pos.y * TILE_SIZE
+      var screenPos = worldToScreen(entity.pos)
+      if (screenPos.x < 0 || screenPos.x >= Canvas.width || screenPos.y < 0 || screenPos.y >= Canvas.height) {
+        continue
+      }
       if (entity is Player) {
         if (!STATIC) {
           continue
@@ -352,6 +359,9 @@ class WorldScene is Scene {
         var card = _selected[0]
         var pos =  _selected[1]
         card.draw(pos.x, pos.y - 32)
+      }
+      if (!_allowInput) {
+        Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32A[27])
       }
     }
 

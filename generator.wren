@@ -13,13 +13,22 @@ import "./core/config" for Config
 import "./rng" for RNG
 
 
-var n = -60
-System.print(n.sign * (n.abs >> 4))
-System.print(n & 0xF)
-
 // TODO: This feels awful, handle this data better.
 Config["cards"].each {|data|
   Card.put(Card.new(data))
+}
+
+class Room is Vec {
+  construct new(x, y, w, h) {
+    super(x, y, w, h)
+    _neighbours = []
+  }
+
+  kind { _kind }
+  kind=(v) { _kind = v }
+
+  neighbours { _neighbours }
+  toString { "Room [%(super.toString)]"}
 }
 
 class WorldGenerator {
@@ -60,7 +69,7 @@ class GrowthGenerator {
     var doors = []
 
     // 3) A single room in the world (Library)
-    var rooms = [ Vec.new(0, 0, 7, 7) ]
+    var rooms = [ Room.new(0, 0, 7, 7) ]
 
     while(rooms.count < 20) {
 
@@ -69,7 +78,7 @@ class GrowthGenerator {
       // 5) Select a wall to grow from
       var dir = RNG.int(0, 4) // 0->4, left->up->right->down
       // 6)Make a new room
-      var newRoom = Vec.new(
+      var newRoom = Room.new(
         0, 0,
         RNG.int(minRoomSize, maxRoomSize),
         RNG.int(minRoomSize, maxRoomSize)
@@ -77,7 +86,7 @@ class GrowthGenerator {
       // 7) Place the room on the wall of the base
       if (dir == 0) {
         // left
-        var offset = RNG.int(2 - newRoom.w, base.w - 3)
+        var offset = RNG.int(3 - newRoom.w, base.w - 3)
         newRoom.x = base.x - newRoom.z + 1
         newRoom.y = base.y + offset
         // 8-9) Check room for valid space compared to other rooms.
@@ -95,18 +104,16 @@ class GrowthGenerator {
         if (hit) {
           continue
         }
-        rooms.add(newRoom)
 
 
         // 10) Place a door in the overlapping range
         var doorTop = M.max(newRoom.y, base.y)
         var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
-        var doorRange = RNG.int(doorTop + 1, doorBottom - 1)
-        System.print("%(doorTop) <-> %(doorBottom)")
+        var doorRange = RNG.int(doorTop + 1, doorBottom)
         doors.add(Vec.new(base.x, doorRange))
       } else if (dir == 1) {
         // up
-        var offset = RNG.int(2 - newRoom.z, base.z - 3)
+        var offset = RNG.int(3 - newRoom.z, base.z - 3)
         newRoom.x = base.x + offset
         newRoom.y = base.y - newRoom.w + 1
         // 8-9) Check room for valid space compared to other rooms.
@@ -124,18 +131,15 @@ class GrowthGenerator {
         if (hit) {
           continue
         }
-        rooms.add(newRoom)
-
 
         // 10) Place a door in the overlapping range
         var doorLeft = M.max(newRoom.x, base.x)
         var doorRight = M.min(newRoom.x + newRoom.z, base.x + base.z)
         var doorRange = RNG.int(doorLeft + 1, doorRight - 1)
-        System.print("%(doorLeft) <-> %(doorRight)")
         doors.add(Vec.new(doorRange, base.y))
       } else if (dir == 2) {
         // right
-        var offset = RNG.int(2 - newRoom.w, base.w - 3)
+        var offset = RNG.int(3 - newRoom.w, base.w - 3)
         newRoom.x = base.x + base.z - 1
         newRoom.y = base.y + offset
         // 8-9) Check room for valid space compared to other rooms.
@@ -153,18 +157,15 @@ class GrowthGenerator {
         if (hit) {
           continue
         }
-        rooms.add(newRoom)
-
 
         // 10) Place a door in the overlapping range
         var doorTop = M.max(newRoom.y, base.y)
         var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
         var doorRange = RNG.int(doorTop + 1, doorBottom - 1)
-        System.print("%(doorTop) <-> %(doorBottom)")
         doors.add(Vec.new(newRoom.x, doorRange))
       } else if (dir == 3){
         // up
-        var offset = RNG.int(2 - newRoom.z, base.z - 3)
+        var offset = RNG.int(3 - newRoom.z, base.z - 3)
         newRoom.x = base.x + offset
         newRoom.y = base.y + base.w - 1
         // 8-9) Check room for valid space compared to other rooms.
@@ -182,24 +183,24 @@ class GrowthGenerator {
         if (hit) {
           continue
         }
-        rooms.add(newRoom)
-
 
         // 10) Place a door in the overlapping range
         var doorLeft = M.max(newRoom.x, base.x)
         var doorRight = M.min(newRoom.x + newRoom.z, base.x + base.z)
         var doorRange = RNG.int(doorLeft + 1, doorRight - 1)
-        System.print("%(doorLeft) <-> %(doorRight)")
         doors.add(Vec.new(doorRange, newRoom.y))
       } else {
         // Safety assert
         Fiber.abort("Tried to grow from bad direction")
       }
+      rooms.add(newRoom)
+      base.neighbours.add(newRoom)
     }
     System.print(rooms)
 
 
 
+    var energy = 0
     for (room in rooms) {
       var wx = room.x
       var wy = room.y
@@ -213,6 +214,18 @@ class GrowthGenerator {
             zone.map[x, y] = Tile.new({ "floor": "tile" })
           }
         }
+      }
+
+
+      for (i in 0...RNG.int(3)) {
+        var dummy = zone.addEntity(Dummy.new())
+        var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
+        while (zone.getEntitiesAtTile(spawn).count > 1) {
+          spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
+        }
+        dummy.pos = spawn
+        dummy.priority = energy % 12
+        energy = energy + 1
       }
     }
     for (door in doors) {
