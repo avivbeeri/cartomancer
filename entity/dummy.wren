@@ -5,6 +5,10 @@ import "./stats" for StatGroup
 import "./entity/creature" for Creature
 
 class Dummy is Creature {
+  construct new(config) {
+    super(config)
+  }
+
   construct new() {
     super()
     this["types"].add("enemy")

@@ -3,6 +3,26 @@ import "core/dataobject" for DataObject
 import "./stats" for StatGroup
 
 class Creature is Entity {
+  construct new(config) {
+    super()
+    this["activeEffects"] = []
+    this["types"] = [ "creature" ] + config["types"]
+    System.print(this["types"])
+    this["inventory"] = config["inventory"] || []
+    this["loot"] = [] + config["loot"]
+
+    this["stats"] = StatGroup.new({
+      "atk": 1,
+      "def": 0,
+      "hp": 1,
+      "hpMax": 1,
+      "speed": 6
+    })
+
+    for (id in config["stats"].keys) {
+      this["stats"].set(id, config["stats"][id])
+    }
+  }
   construct new() {
     super()
     this["activeEffects"] = []

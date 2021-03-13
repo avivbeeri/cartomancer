@@ -218,7 +218,7 @@ class GrowthGenerator {
 
 
       for (i in 0...RNG.int(3)) {
-        var dummy = zone.addEntity(Dummy.new())
+        var dummy = zone.addEntity(Dummy.new(Config["entities"][0]))
         var spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
         while (zone.getEntitiesAtTile(spawn).count > 1) {
           spawn = Vec.new(RNG.int(wx + 1, width - 1), RNG.int(wy + 1, height - 1))
