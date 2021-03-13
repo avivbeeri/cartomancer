@@ -62,7 +62,8 @@
       "id": "shield",
       "name": "Shield",
       "description": "Few can penetrate this shield's legendary protection.",
-      "tint": 25,
+      "image": "res/img/cards/shield.png",
+      "tint": 17,
       "action": "applyModifier",
       "target": "self",
       "params": {

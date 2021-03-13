@@ -37,7 +37,7 @@ var TARGET_KEY = InputGroup.new([
   Keyboard["tab"]
 ])
 var SHIFT_KEY = InputGroup.new([
-  Keyboard["left shift"], Keyboard["right shift"]
+  Keyboard["left shift"], Keyboard["right shift"], Keyboard["left command"], Keyboard["right command"]
 ])
 
 var OPTION_KEYS = (0..9).map {|i| Keyboard[i.toString]}.toList
