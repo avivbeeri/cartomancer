@@ -152,6 +152,9 @@ class AttackAction is Action {
 
     var location = _location
     var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity.has("stats") }
+    if (occupying.count == 0) {
+      return ActionResult.failure
+    }
     occupying.each {|target|
       var currentHP = target["stats"].base("hp")
       var defence = target["stats"].get("def")
@@ -221,14 +224,10 @@ class PlayCardAction is Action {
       return ActionResult.failure
     }
 
-    source["stats"].decrease("mana", 2)
-
     var hand = source["hand"]
     var selectedCard = hand.removeAt(_handIndex)
     var result = ActionResult.failure
     if (selectedCard) {
-      ctx.events.add(LogEvent.new("%(source) played the '%(selectedCard.name)' card"))
-
       if (!_target) {
         // Auto-select target
         // based on card data
@@ -237,20 +236,29 @@ class PlayCardAction is Action {
         }
       }
 
-      result = ActionResult.alternate(CardActionFactory.prepare(selectedCard, _target))
+      var cardAction = (CardActionFactory.prepare(selectedCard, _target))
+      result = cardAction.bind(source).perform()
+      // result = ActionResult.alternate(CardActionFactory.prepare(selectedCard, _target))
+      if (result.succeeded) {
+        ctx.events.add(LogEvent.new("%(source) played the '%(selectedCard.name)' card"))
+        var discard = source["discard"]
+        discard.add(selectedCard)
+        source["stats"].decrease("mana", 2)
 
-      var discard = source["discard"]
-      discard.add(selectedCard)
-
-      // hand size should be a statistic
-      if (hand.count < 3) {
-        var deck = source["deck"]
-        var card = deck.drawCard()
-        if (card) {
-          System.print("Drew: %(card.name)")
-          hand.insert(0, card)
+        // hand size should be a statistic
+        if (hand.count < 3) {
+          var deck = source["deck"]
+          var card = deck.drawCard()
+          if (card) {
+            System.print("Drew: %(card.name)")
+            hand.insert(0, card)
+          }
         }
       }
+    }
+
+    if (!result.succeeded) {
+      hand.insert(_handIndex, selectedCard)
     }
 
     return result

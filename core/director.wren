@@ -99,7 +99,7 @@ class EnergyStrategy is Director {
         // Action wasn't successful, allow retry
         return
       }
-      // System.print("%(actor): %(action)")
+      System.print("%(actor): %(action)")
 
       if (!result.alternate) {
         break
