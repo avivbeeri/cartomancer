@@ -266,6 +266,10 @@ class WorldScene is Scene {
       var sx = entity.pos.x * TILE_SIZE + X_OFFSET
       var sy = entity.pos.y * TILE_SIZE
       var screenPos = worldToScreen(entity.pos)
+      if (Keyboard["left ctrl"].down) {
+        var r = TILE_SIZE / 2
+        Canvas.circlefill(sx + r, sy +r, r, EDG32A[10])
+      }
       if (screenPos.x < 0 || screenPos.x >= Canvas.width || screenPos.y < 0 || screenPos.y >= Canvas.height) {
         continue
       }

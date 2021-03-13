@@ -81,6 +81,7 @@
     {
       "id": "thunder",
       "name": "Thunder",
+      "description": "Bolts of lightning destroy your enemies",
       "tint": 25,
       "action": "attack",
       "target": "creature",
