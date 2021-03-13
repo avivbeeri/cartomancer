@@ -120,8 +120,6 @@ class Heap {
   count { _size }
 }
 
-var PriorityQueue = Heap
-
 class Hashable {
   hash() { this.toString }
 }

@@ -12,6 +12,7 @@ import "./deck" for Card
 import "./core/config" for Config
 import "./rng" for RNG
 
+import "./utils/graph" for WeightedGrid, BFS, AStar, DijkstraSearch
 
 // TODO: This feels awful, handle this data better.
 Config["cards"].each {|data|
@@ -237,6 +238,10 @@ class GrowthGenerator {
     var player = zone.addEntity("player", Player.new())
     player.pos = Vec.new(start.x + 1, start.y + 1)
 
+    var graph = WeightedGrid.new(zone.map)
+    var search = DijkstraSearch.search(graph, player.pos, rooms[0])
+    var path = DijkstraSearch.reconstruct(search[0], player.pos, Vec.new(5, 5))
+    System.print(path)
     return world
   }
 

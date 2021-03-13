@@ -1,17 +1,7 @@
 import "json" for Json
 import "math" for Vec
 import "input" for Keyboard
-
-var DIRS = {
-  "w": Vec.new(-1, 0),
-  "nw": Vec.new(-1, -1),
-  "n": Vec.new(0, -1),
-  "ne": Vec.new(1, -1),
-  "e": Vec.new(1, 0),
-  "se": Vec.new(1, 1),
-  "s": Vec.new(0, 1),
-  "sw": Vec.new(-1, 1)
-}
+import "./utils/dir" for Directions
 
 var RuleFile = Json.load("tileRules.json")
 
@@ -31,8 +21,8 @@ class AutoTile {
     }
 
     var neighbours = {}
-    for (dir in DIRS.keys) {
-      neighbours[dir] = map[pos + DIRS[dir]]["floor"]
+    for (dir in Directions.keys) {
+      neighbours[dir] = map[pos + Directions[dir]]["floor"]
     }
 
 
