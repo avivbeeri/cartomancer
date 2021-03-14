@@ -82,8 +82,9 @@
     {
       "id": "thunder",
       "name": "Thunder",
-      "description": "Bolts of lightning destroy your enemies",
-      "tint": 25,
+      "image": "res/img/cards/thunder.png",
+      "description": "A bolt of lightning destroys your enemies. \n\nDeals 3 damage to a target.",
+      "tint": 7,
       "action": "attack",
       "target": "creature",
       "params": {
