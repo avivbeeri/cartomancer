@@ -55,7 +55,7 @@ class WorldScene is Scene {
 
     _selectedEntityId = null
 
-    _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 12))
+    _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 16))
     _allowInput = true
   }
 
@@ -93,7 +93,8 @@ class WorldScene is Scene {
         ]))
         return
       }
-      if (_reshuffleButton.update().clicked) {
+
+      if (InputActions.commune.justPressed || _reshuffleButton.update().clicked) {
         player.action = CommuneAction.new()
       }
 

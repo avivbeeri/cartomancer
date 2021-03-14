@@ -26,6 +26,9 @@ var CONFIRM_KEY = InputGroup.new([
 var INTERACT_KEY = InputGroup.new([
   Keyboard["e"], Keyboard["space"]
 ])
+var COMMUNE_KEY = InputGroup.new([
+  Keyboard["c"]
+])
 
 var INVENTORY_KEY = InputGroup.new([
   Keyboard["i"]
@@ -62,5 +65,5 @@ class InputActions {
   static cancel { CANCEL_KEY }
   static nextTarget { TARGET_KEY }
   static shift { SHIFT_KEY }
-
+  static commune { COMMUNE_KEY }
 }
