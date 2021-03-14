@@ -21,6 +21,76 @@ class Space {
   size { Vec.new(1, 1) }
 }
 
+class CombatTargetSelector is Ui {
+  construct new(ctx, view) {
+    super(ctx)
+    _view = view
+    _player = ctx.getEntityByTag("player")
+    _targets = ctx.entities.where {|entity|
+      return entity.has("types") && view.isOnScreen(entity.pos)
+    }.toList
+    _current = (_targets.count > 1 && _targets[0].id == _player.id) ? 1 : 0
+    _closeButton = Button.new("X", Vec.new(460, 22), Vec.new(15, 15))
+  }
+
+  finished { _done }
+
+  update() {
+    if (_closeButton.update().clicked || InputActions.cancel.justPressed) {
+      _done = true
+      return
+    }
+    if (InputActions.nextTarget.justPressed) {
+      _current = _current + 1
+    }
+    _mouseTile = _view.screenToWorld(Mouse.pos)
+    for (i in 0..._targets.count) {
+      var target = _targets[i]
+      if (target.pos == _mouseTile) {
+        _current = i
+        break
+      }
+    }
+    _current = _current % _targets.count
+  }
+
+  drawDiagetic() {
+    var loc = Vec.new()
+
+    // Draw targeting recticle
+    if (_targets.count > 0) {
+      var target = _targets[_current]
+      var left = (target.pos.x) * TILE_SIZE - 5
+      var top = (target.pos.y) * TILE_SIZE - 5
+      var right = (target.pos.x + target.size.x) * TILE_SIZE + 4
+      var bottom = (target.pos.y + target.size.y) * TILE_SIZE + 4
+      var vThird = ((bottom - top) / 3).round
+      var hThird = ((bottom - top) / 3).round
+      // top left
+      Canvas.line(left, top, left + hThird, top, EDG32[7], 3)
+      Canvas.line(left, top, left, top + vThird, EDG32[7], 3)
+
+
+      // bottom left
+      Canvas.line(left, bottom, left + hThird, bottom, EDG32[7], 3)
+      Canvas.line(left, bottom, left, bottom - vThird, EDG32[7], 3)
+
+      // top right
+      Canvas.line(right, top, right - hThird, top, EDG32[7], 3)
+      Canvas.line(right, top, right, top + vThird, EDG32[7], 3)
+
+      // bottom right
+      Canvas.line(right, bottom, right - hThird, bottom, EDG32[7], 3)
+      Canvas.line(right, bottom, right, bottom - vThird, EDG32[7], 3)
+    }
+  }
+
+  draw() {
+    _closeButton.draw()
+    _view.drawEntityStats(_targets[_current])
+  }
+}
+
 class CardTargetSelector is Ui {
   construct new(ctx, view, card, handIndex) {
     super(ctx)

@@ -9,7 +9,7 @@ import "./core/scene" for Scene
 import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
-import "./menu" for Menu, CardTargetSelector
+import "./menu" for Menu, CardTargetSelector, CombatTargetSelector
 import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent, ModifierEvent
 import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction, CommuneAction
 import "./entity/all" for Player, Dummy, Collectible, Creature
@@ -94,6 +94,12 @@ class WorldScene is Scene {
       if (_reshuffleButton.update().clicked) {
         player.action = CommuneAction.new()
       }
+
+      if (InputActions.nextTarget.justPressed) {
+        _diageticUi.add(CombatTargetSelector.new(_zone, this))
+        return
+      }
+
 
       var mouse = Mouse.pos
 
@@ -398,21 +404,7 @@ class WorldScene is Scene {
     if (_selectedEntityId) {
       var selectedEntity = _zone.getEntityById(_selectedEntityId)
       if (selectedEntity && selectedEntity.has("stats")) {
-        var stats = selectedEntity["stats"]
-        var hp = stats.get("hp")
-        var hpMax = stats.get("hpMax")
-        var atk = stats.get("atk")
-        var def = stats.get("def")
-        var text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
-        var area = Font["m5x7"].getArea(text)
-
-        var width = M.max(area.x, TILE_SIZE * 3)
-        var left = Canvas.width - width - 8
-        var top = 21
-
-        Canvas.rectfill(left, top, width + 8, area.y + 8, EDG32[21])
-        Canvas.print(text, left + 4, top + 4, EDG32[27], "m5x7")
-        drawEntityMods(selectedEntity, Vec.new(left + 4, top + area.y + 4), Vec.new(left + 4, top + area.y + 4 + TILE_SIZE), false)
+        drawEntityStats(selectedEntity)
       }
     }
 
@@ -529,7 +521,7 @@ class WorldScene is Scene {
 
   isOnScreen(worldPos) {
     var screenPos = worldToScreen(worldPos)
-    return (screenPos.x >= 0 && screenPos.x < Canvas.width && screenPos.y >= 0 && screenPos.y < Canvas.height)
+    return (screenPos.x >= 0 && screenPos.x < Canvas.width && screenPos.y >= 21 && screenPos.y < CARD_UI_TOP)
   }
   drawEntityMods(entity, iconPos, descriptionPos, rightAlign) {
     var mouse = Mouse.pos
@@ -555,6 +547,27 @@ class WorldScene is Scene {
       var conditionArea = Font["m5x7"].getArea(text)
       Canvas.print(text, rightAlign ? descriptionPos.x - conditionArea.x : descriptionPos.x, descriptionPos.y, EDG32[19], "m5x7")
     }
+  }
+
+  drawEntityStats(selectedEntity) {
+    var text = "%(selectedEntity.name)"
+    if (selectedEntity.has("stats")) {
+      var stats = selectedEntity["stats"]
+      var hp = stats.get("hp")
+      var hpMax = stats.get("hpMax")
+      var atk = stats.get("atk")
+      var def = stats.get("def")
+      text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
+    }
+    var area = Font["m5x7"].getArea(text)
+
+    var width = M.max(area.x, TILE_SIZE * 3)
+    var left = 8
+    var top = 21
+
+    Canvas.rectfill(left, top, width + 8, area.y + 8 + TILE_SIZE, EDG32[21])
+    Canvas.print(text, left + 4, top + 4, EDG32[27], "m5x7")
+    drawEntityMods(selectedEntity, Vec.new(left + 4, top + area.y + 8), Vec.new(left + 4, top + area.y + 8 + TILE_SIZE), false)
   }
 }
 
