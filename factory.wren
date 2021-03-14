@@ -65,6 +65,9 @@ class EntityFactory {
     if (classType == "fireball") {
       return Fireball.new(config)
     }
+    if (classType == "shadow") {
+      return Shadow.new(config)
+    }
     if (classType == "creature") {
       return Creature.new(config)
     }
@@ -72,4 +75,10 @@ class EntityFactory {
   }
 }
 
-import "./entity/all" for Sword, Shield, Creature, Thunder, Fireball, Wizard
+import "./entity/all" for Sword,
+  Shield,
+  Creature,
+  Thunder,
+  Fireball,
+  Wizard,
+  Shadow

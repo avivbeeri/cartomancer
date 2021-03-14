@@ -66,6 +66,11 @@ class RangedBehaviour is Behaviour {
     super(self)
     _maxRange = range
   }
+  construct new(self, range, factory) {
+    super(self)
+    _maxRange = range
+    _factory = factory
+  }
 
   evaluate() {
     var map = ctx.map
@@ -88,7 +93,11 @@ class RangedBehaviour is Behaviour {
           }
           if (!solid) {
             // attack is good
-            return AttackAction.new(player.pos, Attack.new(3, AttackType.lightning, false))
+            if (!_factory) {
+              return AttackAction.new(player.pos, Attack.new(3, AttackType.lightning, false))
+            } else {
+              return _factory.call(player)
+            }
           }
         }
       }

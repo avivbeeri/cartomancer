@@ -336,7 +336,14 @@ class WorldScene is Scene {
       Canvas.print("HP: %(hp)/%(hpMax)", 2, 2, EDG32[19], "m5x7")
       var hpArea = Font["m5x7"].getArea("HP: %(hp)/%(hpMax)")
       Canvas.print("Mana: %(mana)/%(manaMax)", 2 + hpArea.x + 8, 2, EDG32[19], "m5x7")
+      var manaArea = Font["m5x7"].getArea("Mana: %(mana)/%(manaMax)")
       Canvas.line(0, 20, Canvas.width, 20, EDG32[29], 2)
+      var atk = player["stats"].get("atk")
+      Canvas.print("ATK: %(atk)", 2 + hpArea.x + manaArea.x + 16, 2, EDG32[19], "m5x7")
+      var atkArea = Font["m5x7"].getArea("ATK: %(atk)")
+      var def = player["stats"].get("def")
+      Canvas.print("DEF: %(def)", 2 + hpArea.x + manaArea.x + atkArea.x  + 24, 2, EDG32[19], "m5x7")
+      var defArea = Font["m5x7"].getArea("DEF: %(def)")
 
       // Draw the card shelf
       Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32[28])

@@ -20,7 +20,7 @@ class Director {
     processEntities()
     runPostUpdate()
 
-    world.events.sort {|a, b| a.priority < b.priority}
+    // world.events.sort {|a, b| a.priority < b.priority}
   }
 
   runPostUpdate() {

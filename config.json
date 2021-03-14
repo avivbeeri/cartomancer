@@ -24,8 +24,8 @@
       }
     },
     {
-      "id": "darkness",
-      "name": "Dark",
+      "id": "shadow",
+      "name": "Shadow",
       "image": "res/img/cards/dark.png",
       "action": "applyModifier",
       "description": "Harness the darkness to disorient your foes. \n\nTarget gets -1 ATK and -1 DEF for 2 turns.",
@@ -33,17 +33,12 @@
       "action": "applyModifier",
       "params": {
         "range": 2,
-        "id": "darkness",
+        "id": "shadow",
         "add": { "def": -1, "atk": -1 },
         "duration": 2,
         "responsible": "source"
       },
       "target": "creature"
-    },
-    {
-      "id": "light",
-      "name": "Light",
-      "tint": 25
     },
     {
       "id": "fire",
@@ -87,6 +82,12 @@
         "kind": "lightning",
         "base": 3
       }
+    },
+    {
+      "id": "light",
+      "name": "Light",
+      "enabled": false,
+      "tint": 25
     },
     {
       "id": "water",
@@ -171,6 +172,28 @@
       "loot": [
         "card:fire"
       ]
+    },
+    {
+      "id": "shadow",
+      "stats": {
+        "hp": 1,
+        "hpMax": 1,
+        "atk": 0,
+        "def": 0,
+        "speed": 2
+      },
+      "classType": "shadow",
+      "sprite": "shadow",
+      "types": [ "enemy", "spawnable" ],
+      "loot": [
+        "card:shadow"
+      ],
+      "effect": {
+        "id": "shadow",
+        "add": { "def": -1, "atk": -1 },
+        "duration": 2,
+        "responsible": "target"
+      }
     },
     {
       "id": "fireball",

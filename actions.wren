@@ -285,7 +285,7 @@ class ApplyModifierAction is Action {
     super()
     _modifier = modifier
     _target = source
-    _responsible = source
+    _responsible = true
   }
 
   construct new(modifier, target, responsible) {
@@ -297,12 +297,12 @@ class ApplyModifierAction is Action {
 
   perform() {
     if (_target.has("stats")) {
+      ctx.events.add(ModifierEvent.new(_target, _modifier.positive))
       if (_modifier.positive) {
         ctx.events.add(LogEvent.new("%(_target) gained %(_modifier.id)!"))
       } else {
         ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
       }
-      ctx.events.add(ModifierEvent.new(_target, _modifier.positive))
 
       _target["stats"].addModifier(_modifier)
       var host = _responsible ? source : _target

@@ -98,5 +98,4 @@ class ModifierEvent is Event {
   }
   target { _target }
   positive { _positive }
-
 }
