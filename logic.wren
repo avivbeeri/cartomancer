@@ -31,6 +31,8 @@ class RemoveDefeated {
     }
   }
 }
+
+
 class AutoDraw {
   static update(ctx) {
     var player = ctx.getEntityByTag("player")

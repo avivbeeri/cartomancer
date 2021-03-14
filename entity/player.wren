@@ -4,6 +4,7 @@ import "./stats" for StatGroup
 import "./deck" for Deck, Card
 import "./entity/creature" for Creature
 import "./rng" for RNG
+import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
 
 class Player is Creature {
   construct new() {
@@ -33,6 +34,8 @@ class Player is Creature {
   endTurn() {
     super.endTurn()
     this["stats"].increase("mana", 1, "manaMax")
+    var graph = WeightedZone.new(ctx)
+    this["dijkstra"] = DijkstraMap.search(graph, pos)
   }
 }
 
