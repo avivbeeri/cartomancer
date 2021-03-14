@@ -177,6 +177,7 @@ class WorldScene is Scene {
       } else if (event is CommuneEvent) {
         if (event.success) {
           System.print("You communed with the cards and their magic is restored.")
+          _diageticUi.add(Animation.new(this, event.source.pos * TILE_SIZE, Sprites["commune"], 5))
         } else {
           System.print("You cannot commune right now.")
         }

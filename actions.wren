@@ -172,7 +172,7 @@ class AttackAction is Action {
     occupying.each {|target|
       var currentHP = target["stats"].base("hp")
       var defence = target["stats"].get("def")
-      var damage = _attack.damage - defence
+      var damage = M.max(0, _attack.damage - defence)
 
       var attackEvent = AttackEvent.new(source, target, _attack)
       target.notify(attackEvent)

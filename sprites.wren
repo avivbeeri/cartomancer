@@ -10,6 +10,7 @@ var BasicAttack = (0...6).map {|i| AttackSheet.getTile(i) }.toList
 var LightningAttack = (6...12).map {|i| AttackSheet.getTile(i) }.toList
 var Buff = (12...18).map {|i| AttackSheet.getTile(i) }.toList
 var Debuff = (18...24).map {|i| AttackSheet.getTile(i) }.toList
+var Commune = (24...30).map {|i| AttackSheet.getTile(i) }.toList
 
 var PlayerStandTiles = [ CharSheet.getTile(0), CharSheet.getTile(1) ]
 var PlayerWalkTiles = [ CharSheet.getTile(2), CharSheet.getTile(3) ]
@@ -42,6 +43,7 @@ var StandardSpriteSet = {
   "debuff": Debuff,
   "buff": Buff,
   "shadow": ShadowTiles,
+  "commune": Commune,
   "lightningAttack": LightningAttack
 }
 
