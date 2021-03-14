@@ -304,11 +304,19 @@ class ApplyModifierAction is Action {
         ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
       }
 
-      _target["stats"].addModifier(_modifier)
-      var host = _responsible ? source : _target
-      host["activeEffects"].add([ _modifier, _target.id ])
-      if (host == source) {
-        _modifier.extend(1)
+      if (_target["stats"].hasModifier(_modifier.id)) {
+        var currentMod = _target["stats"].getModifier(_modifier.id)
+        if (_modifier.duration) {
+          currentMod.extend(_modifier.duration)
+        }
+      } else {
+
+        _target["stats"].addModifier(_modifier)
+        var host = _responsible ? source : _target
+        host["activeEffects"].add([ _modifier, _target.id ])
+        if (host == source) {
+          _modifier.extend(1)
+        }
       }
       return ActionResult.success
     }

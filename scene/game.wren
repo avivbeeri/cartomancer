@@ -239,6 +239,7 @@ class WorldScene is Scene {
 
 
   draw() {
+    var mouse = Mouse.pos
     _zone = _world.active
     var player = _zone.getEntityByTag("player")
     Canvas.cls(Display.bg)
@@ -356,6 +357,27 @@ class WorldScene is Scene {
       Canvas.print("DEF: %(def)", 2 + hpArea.x + manaArea.x + atkArea.x  + 24, 2, EDG32[19], "m5x7")
       var defArea = Font["m5x7"].getArea("DEF: %(def)")
 
+      var iconX = Canvas.width - 8 - TILE_SIZE
+      var mod
+      for (id in player["stats"].modifiers.keys) {
+        if (id == "shadow") {
+          Sprites["icons"][2].draw(iconX, 2)
+        } else if (id == "sword") {
+          Sprites["icons"][0].draw(iconX, 2)
+        } else if (id == "shield") {
+          Sprites["icons"][1].draw(iconX, 2)
+        }
+        var hover = mouse.x >= iconX && mouse.x < iconX + TILE_SIZE && mouse.y >= 2 && mouse.y < 2 + TILE_SIZE
+        mod = hover ? id : mod
+        iconX =  iconX - TILE_SIZE
+      }
+      if (mod) {
+        var condition = player["stats"].getModifier(mod)
+        var text = "%(condition.id) (%(condition.duration) turns)"
+        var conditionArea = Font["m5x7"].getArea(text)
+        Canvas.print(text, iconX - conditionArea.x - 2, 2, EDG32[19], "m5x7")
+      }
+
       // Draw the card shelf
       Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32[28])
       Canvas.line(0, CARD_UI_TOP, Canvas.width, CARD_UI_TOP, EDG32[29], 2)
@@ -370,11 +392,10 @@ class WorldScene is Scene {
       var handLeft = 5 + 59
       var maxHandWidth = 416 - (handLeft)
       var slots = getHandSlots(hand, handLeft, top + 8, maxHandWidth)
-      var mouse = Mouse.pos
       for (slot in slots) {
         var card = slot[0]
         var pos = slot[1]
-        if (_selected && _selected[0] == card) {
+        if (_selected && Object.same(_selected[0], card)) {
         } else {
          card.draw(pos.x, pos.y)
         }
@@ -427,6 +448,7 @@ class WorldScene is Scene {
 
   drawPile(pile, left, top, shade) {
     var mouse = Mouse.pos
+    var hover = null
     var width = 59
     var height = 89
     var border = 3

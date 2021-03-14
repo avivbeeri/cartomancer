@@ -6,10 +6,17 @@ class StatGroup {
     _mods = {}
   }
 
+  modifiers { _mods }
+
   addModifier(mod) {
     _mods[mod.id] = mod
   }
-
+  hasModifier(id) {
+    return _mods.containsKey(id)
+  }
+  getModifier(id) {
+    return _mods[id]
+  }
   removeModifier(id) {
     _mods.remove(id)
   }

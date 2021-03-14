@@ -16,6 +16,7 @@ var PlayerStandTiles = [ CharSheet.getTile(0), CharSheet.getTile(1) ]
 var PlayerWalkTiles = [ CharSheet.getTile(2), CharSheet.getTile(3) ]
 
 var FloorTile = RoomSheet.getTile(21)
+var Icons = (7..9).map {|i| RoomSheet.getTile(i) }.toList
 var WallTiles = (0...20).map {|i| RoomSheet.getTile(40 + i) }.toList
 
 var SwordTiles = (0..1).map {|i| EntitySheet.getTile(i) }.toList
@@ -44,6 +45,7 @@ var StandardSpriteSet = {
   "buff": Buff,
   "shadow": ShadowTiles,
   "commune": Commune,
-  "lightningAttack": LightningAttack
+  "lightningAttack": LightningAttack,
+  "icons": Icons
 }
 

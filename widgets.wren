@@ -37,4 +37,3 @@ class Button is Widget {
     Canvas.print(_text, _pos.x+4, _pos.y+4, EDG32[19])
   }
 }
-
