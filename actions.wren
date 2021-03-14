@@ -330,7 +330,6 @@ class SpawnAction is Action {
   construct new(entity, position) {
     super()
     _entity = entity
-    _entity.priority = 12
     _position = position
   }
 

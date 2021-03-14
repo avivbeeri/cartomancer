@@ -20,8 +20,7 @@ class Fireball is Creature {
       // one-time setup
       var source = this["source"]
       var dir = this["direction"] = (pos - this["source"]).unit
-      System.print("direction: %(source)")
-      System.print("direction: %(dir)")
+      System.print("direction: %(pos) - %(source) = %(dir)")
       _new = false
     }
 

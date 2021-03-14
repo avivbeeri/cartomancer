@@ -99,8 +99,14 @@ class RangedBehaviour is Behaviour {
 class SpawnBehaviour is RangedBehaviour {
   construct new(self, range, id) {
     super(self, range)
-    _id = id
     _cast = false
+    var entityConfig
+    for (config in Config["entities"]) {
+      if (config["id"] == id) {
+        _entityConfig = config
+        break
+      }
+    }
   }
 
   evaluate() {
@@ -112,18 +118,14 @@ class SpawnBehaviour is RangedBehaviour {
     */
     var action = super.evaluate()
     if (action is AttackAction ) {
-      var id = _id
-      var entityConfig
-      for (config in Config["entities"]) {
-        if (config["id"] == id) {
-          entityConfig = config
-          break
-        }
-      }
-      var entity = EntityFactory.prepare(entityConfig)
-      entity["source"] = self.pos
       var dir = (action.location - self.pos).unit
-      action = SpawnAction.new(entity, self.pos + dir)
+      if (ctx.getEntitiesAtTile(self.pos + dir).count > 0) {
+        action = null
+      } else {
+        var entity = EntityFactory.prepare(_entityConfig)
+        entity["source"] = self.pos * 1
+        action = SpawnAction.new(entity, self.pos + dir)
+      }
     }
     return action
   }

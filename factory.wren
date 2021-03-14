@@ -38,8 +38,8 @@ class CardActionFactory {
         }
       }
       var fireball = EntityFactory.prepare(entityConfig)
-      fireball["source"] = source.pos
-      return SpawnAction.new(fireball, target.pos)
+      fireball["source"] = source.pos * 1
+      return SpawnAction.new(fireball, target.pos * 1)
     } else {
       Fiber.abort("Could not prepare unknown action %(card.action)")
     }
