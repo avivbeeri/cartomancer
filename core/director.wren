@@ -111,13 +111,14 @@ class EnergyStrategy is Director {
     }
     actor.priority = 0
     actor.endTurn()
+    runPostUpdate()
     advance()
     return true
   }
 
   processEntities() {
     var advance = true
-    while (advance) {
+    while (advance && !world.parent.gameover) {
       advance = gameLoop()
     }
   }
@@ -169,7 +170,6 @@ class TurnBasedStrategy is Director  {
       action = result.alternate
     }
     actor.endTurn()
-    runPostUpdates()
     advance()
   }
 

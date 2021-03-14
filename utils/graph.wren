@@ -260,7 +260,7 @@ class DijkstraMap {
       current = cameFrom[current]
       if (current == null) {
         // Path is unreachable
-        return null
+        break
       }
     }
     path.add(Elegant.unpair(start))
