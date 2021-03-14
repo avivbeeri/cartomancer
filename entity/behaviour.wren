@@ -3,7 +3,8 @@ import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
 import "math" for Vec
 
 import "./combat" for Attack, AttackType
-import "./actions" for MoveAction, AttackAction, DespawnAction, MultiAction
+import "./actions" for MoveAction, AttackAction, DespawnAction, MultiAction, SpawnAction
+import "./core/config" for Config
 
 class Behaviour {
   construct new(self) {
@@ -61,8 +62,9 @@ class SeekBehaviour is Behaviour {
   }
 }
 class RangedBehaviour is Behaviour {
-  construct new(self) {
+  construct new(self, range) {
     super(self)
+    _maxRange = range
   }
 
   evaluate() {
@@ -72,7 +74,7 @@ class RangedBehaviour is Behaviour {
       if (player.pos.x == self.pos.x || player.pos.y == self.pos.y) {
         // Same x or y coordinate
         var range = (player.pos - self.pos)
-        if (range.manhattan < 3) {
+        if (range.manhattan < _maxRange) {
           // In range
           // check LOS
           var solid = false
@@ -93,3 +95,37 @@ class RangedBehaviour is Behaviour {
     }
   }
 }
+
+class SpawnBehaviour is RangedBehaviour {
+  construct new(self, range, id) {
+    super(self, range)
+    _id = id
+    _cast = false
+  }
+
+  evaluate() {
+    /*
+    _cast = !_cast
+    if (_cast) {
+      return
+    }
+    */
+    var action = super.evaluate()
+    if (action is AttackAction ) {
+      var id = _id
+      var entityConfig
+      for (config in Config["entities"]) {
+        if (config["id"] == id) {
+          entityConfig = config
+          break
+        }
+      }
+      var entity = EntityFactory.prepare(entityConfig)
+      entity["source"] = self.pos
+      var dir = (action.location - self.pos).unit
+      action = SpawnAction.new(entity, self.pos + dir)
+    }
+    return action
+  }
+}
+import "./factory" for EntityFactory

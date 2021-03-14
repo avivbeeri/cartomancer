@@ -4,13 +4,13 @@ import "./core/action" for Action
 import "./stats" for StatGroup
 import "./entity/creature" for Creature
 import "./events" for LogEvent, PickupEvent, AttackEvent
-import "./entity/behaviour" for RangedBehaviour, SeekBehaviour
+import "./entity/behaviour" for SpawnBehaviour, SeekBehaviour
 
-class Thunder is Creature {
+class Wizard is Creature {
   construct new(config) {
     super(config)
     _behaviours = [
-      RangedBehaviour.new(this, 3),
+      SpawnBehaviour.new(this, 10, "fireball"),
       SeekBehaviour.new(this)
     ]
   }
@@ -24,14 +24,6 @@ class Thunder is Creature {
       }
     }
     return action || Action.none
-  }
-
-  notify(event) {
-    event = super.notify(event)
-    if (event is AttackEvent && event.attack.attackType == AttackType.lightning) {
-      event.fail()
-    }
-    return event
   }
 }
 

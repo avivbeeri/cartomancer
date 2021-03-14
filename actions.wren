@@ -148,6 +148,8 @@ class AttackAction is Action {
     _attack = attack
   }
 
+  location { _location }
+
   perform() {
     if (_attack.needsMana &&
       source.has("stats") &&

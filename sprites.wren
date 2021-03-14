@@ -20,6 +20,7 @@ var ShieldTiles = (2..3).map {|i| EntitySheet.getTile(i) }.toList
 var CardItem = (4..5).map {|i| EntitySheet.getTile(i) }.toList
 var ThunderTiles = (6..7).map {|i| EntitySheet.getTile(i) }.toList
 var FireballTiles = (8..9).map {|i| EntitySheet.getTile(i) }.toList
+var WizardTiles = (10..11).map {|i| EntitySheet.getTile(i) }.toList
 var CardBack = ImageData.loadFromFile("res/img/card-back-small.png")
 
 var StandardSpriteSet = {
@@ -32,6 +33,7 @@ var StandardSpriteSet = {
   "shield": ShieldTiles,
   "thunder": ThunderTiles,
   "fireball": FireballTiles,
+  "wizard": WizardTiles,
   "cardback": CardBack,
   "basicAttack": BasicAttack,
   "lightningAttack": LightningAttack

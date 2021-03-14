@@ -3,7 +3,6 @@ import "./actions" for ApplyModifierAction, AttackAction, SpawnAction
 import "./stats" for Modifier
 import "./core/config" for Config
 
-import "./entity/all" for Sword, Shield, Creature, Thunder, Fireball
 
 import "./combat" for Attack, AttackType
 
@@ -60,6 +59,9 @@ class EntityFactory {
     if (classType == "thunder") {
       return Thunder.new(config)
     }
+    if (classType == "wizard") {
+      return Wizard.new(config)
+    }
     if (classType == "fireball") {
       return Fireball.new(config)
     }
@@ -68,5 +70,6 @@ class EntityFactory {
     }
     Fiber.abort("Unknown entity type %(classType)")
   }
-
 }
+
+import "./entity/all" for Sword, Shield, Creature, Thunder, Fireball, Wizard
