@@ -35,7 +35,7 @@ class CardTargetSelector is Ui {
       for (y in -_range .. _range) {
         for (x in -_range .. _range) {
           var loc =  (Vec.new(x, y) + _player.pos)
-          if ((loc - _player.pos).manhattan <= _range) {
+          if (!(x == 0 && y == 0) && (loc - _player.pos).manhattan <= _range) {
             // TODO: should we wrap location for compatibility?
             _targets.add(Space.wrap(loc))
           }

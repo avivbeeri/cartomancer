@@ -47,6 +47,7 @@
       "id": "fire",
       "image": "res/img/cards/fire.png",
       "name": "Fire",
+      "description": "Launch a ball of flame to vanquish the enemy in your path. \n\nSummons a Fireball which will travel in a direction until it hits something.",
       "tint": 7,
       "action": "spawn",
       "target": "space",
