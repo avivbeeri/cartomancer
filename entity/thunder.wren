@@ -4,12 +4,12 @@ import "./stats" for StatGroup
 import "./entity/creature" for Creature
 import "./events" for LogEvent, PickupEvent
 
-import "./entity/behaviour" for SeekBehaviour
+import "./entity/behaviour" for RangedBehaviour
 
-class Shield is Creature {
+class Thunder is Creature {
   construct new(config) {
     super(config)
-    _behaviour = SeekBehaviour.new(this)
+    _behaviour = RangedBehaviour.new(this)
   }
 
   update() {

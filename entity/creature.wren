@@ -6,6 +6,7 @@ class Creature is Entity {
   construct new(config) {
     super()
     this["classType"] = config["classType"]
+    this["sprite"] = config["sprite"]
     this["activeEffects"] = []
     this["types"] = [ "creature" ] + config["types"]
     System.print(this["types"])
@@ -59,5 +60,12 @@ class Creature is Entity {
     }
     this["stats"].tick()
   }
+  notify(ctx, event) {
+    if (event is PickupEvent) {
+      ctx.events.add(LogEvent.new("%(this) picked up [%(event.item)] forever."))
+    }
+    return event
+  }
 }
-import "./events" for LogEvent
+
+import "./events" for LogEvent, PickupEvent

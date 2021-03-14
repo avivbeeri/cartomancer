@@ -34,12 +34,5 @@ class Dummy is Creature {
     }
     return MoveAction.new(path[1] - pos, true)
   }
-
-  notify(ctx, event) {
-    if (event is PickupEvent) {
-      ctx.events.add(LogEvent.new("%(this) picked up [%(event.item)] forever."))
-    }
-    return event
-  }
 }
 

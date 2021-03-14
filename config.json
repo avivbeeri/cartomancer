@@ -106,6 +106,7 @@
       },
       "classType": "sword",
       "types": [ "enemy" ],
+      "sprite": "sword",
       "loot": [
         "card:sword"
       ]
@@ -120,9 +121,26 @@
         "speed": 1
       },
       "classType": "shield",
+      "sprite": "shield",
       "types": [ "enemy" ],
       "loot": [
         "card:shield"
+      ]
+    },
+    {
+      "id": "thunder",
+      "stats": {
+        "hp": 1,
+        "hpMax": 1,
+        "atk": 1,
+        "def": 0,
+        "speed": 2
+      },
+      "classType": "thunder",
+      "sprite": "thunder",
+      "types": [ "enemy" ],
+      "loot": [
+        "card:thunder"
       ]
     }
 

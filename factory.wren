@@ -2,7 +2,7 @@ import "./core/action" for Action
 import "./actions" for ApplyModifierAction, AttackAction
 import "./stats" for Modifier
 
-import "./entity/all" for Sword, Shield, Creature
+import "./entity/all" for Sword, Shield, Creature, Thunder
 
 import "./combat" for Attack, AttackType
 
@@ -44,7 +44,10 @@ class EntityFactory {
     if (classType == "shield") {
       return Shield.new(config)
     }
-    if (classType == "dummy") {
+    if (classType == "thunder") {
+      return Thunder.new(config)
+    }
+    if (classType == "creature") {
       return Creature.new(config)
     }
     Fiber.abort("Unknown entity type %(classType)")

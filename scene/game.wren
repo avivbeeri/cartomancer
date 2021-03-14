@@ -289,8 +289,8 @@ class WorldScene is Scene {
 
       } else if (entity is Collectible) {
         Sprites["card"][0].draw(sx, sy - F * 2)
-      } else if (entity is Creature && entity["classType"]) {
-        Sprites[entity["classType"]][F].draw(sx, sy)
+      } else if (entity is Creature && entity["sprite"]) {
+        Sprites[entity["sprite"]][F].draw(sx, sy)
       } else {
         Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }

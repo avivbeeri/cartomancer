@@ -18,6 +18,7 @@ var WallTiles = (0...20).map {|i| RoomSheet.getTile(40 + i) }.toList
 var SwordTiles = (0..1).map {|i| EntitySheet.getTile(i) }.toList
 var ShieldTiles = (2..3).map {|i| EntitySheet.getTile(i) }.toList
 var CardItem = (4..5).map {|i| EntitySheet.getTile(i) }.toList
+var ThunderTiles = (6..7).map {|i| EntitySheet.getTile(i) }.toList
 var CardBack = ImageData.loadFromFile("res/img/card-back-small.png")
 
 var StandardSpriteSet = {
@@ -28,6 +29,7 @@ var StandardSpriteSet = {
   "card": CardItem,
   "sword": SwordTiles,
   "shield": ShieldTiles,
+  "thunder": ThunderTiles,
   "cardback": CardBack,
   "basicAttack": BasicAttack,
   "lightningAttack": LightningAttack

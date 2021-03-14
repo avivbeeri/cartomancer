@@ -11,22 +11,8 @@ class Sword is Creature {
     _behaviour = SeekBehaviour.new(this)
   }
 
-  construct new() {
-    super()
-    this["types"].add("enemy")
-    this["stats"].set("def", 1)
-    this["stats"].set("speed", 1)
-  }
-
   update() {
     return _behaviour.evaluate()
-  }
-
-  notify(ctx, event) {
-    if (event is PickupEvent) {
-      ctx.events.add(LogEvent.new("%(this) picked up [%(event.item)] forever."))
-    }
-    return event
   }
 }
 
