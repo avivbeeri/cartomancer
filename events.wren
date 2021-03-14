@@ -89,3 +89,14 @@ class PickupEvent is Event {
   source { _source }
   item { _item }
 }
+
+class ModifierEvent is Event {
+  construct new(target, positive) {
+    super()
+    _target = target
+    _positive = positive
+  }
+  target { _target }
+  positive { _positive }
+
+}

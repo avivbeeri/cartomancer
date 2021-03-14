@@ -10,7 +10,7 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu, CardTargetSelector
-import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent
+import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent, ModifierEvent
 import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction, CommuneAction
 import "./entity/all" for Player, Dummy, Collectible, Creature
 
@@ -176,6 +176,11 @@ class WorldScene is Scene {
           _lastPosition = player.pos
           _diageticUi.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
+      } else if (event is ModifierEvent) {
+        if (isOnScreen(event.target.pos)) {
+          _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, event.positive ? Sprites["buff"] : Sprites["debuff"], 5))
+        }
+
       } else if (event is AttackEvent) {
         var animation = "%(event.attack.attackType)Attack"
         if (isOnScreen(event.target.pos)) {

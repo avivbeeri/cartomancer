@@ -5,6 +5,7 @@ import "./events" for CollisionEvent,
   MoveEvent,
   AttackEvent,
   PickupEvent,
+  ModifierEvent,
   LogEvent
 
 import "./combat" for Attack
@@ -301,6 +302,8 @@ class ApplyModifierAction is Action {
       } else {
         ctx.events.add(LogEvent.new("%(source) inflicted %(_modifier.id) on %(_target)"))
       }
+      ctx.events.add(ModifierEvent.new(_target, _modifier.positive))
+
       _target["stats"].addModifier(_modifier)
       var host = _responsible ? source : _target
       host["activeEffects"].add([ _modifier, _target.id ])

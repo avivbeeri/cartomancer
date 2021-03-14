@@ -26,14 +26,16 @@
     {
       "id": "darkness",
       "name": "Dark",
-      "description": "Harness the darkness to disorient your foes.",
+      "image": "res/img/cards/dark.png",
+      "action": "applyModifier",
+      "description": "Harness the darkness to disorient your foes. \n\nTarget gets -1 ATK and -1 DEF for 2 turns.",
       "tint": 25,
       "action": "applyModifier",
       "params": {
         "range": 2,
         "id": "darkness",
-        "add": { "def": -1 },
-        "duration": 1,
+        "add": { "def": -1, "atk": -1 },
+        "duration": 2,
         "responsible": "source"
       },
       "target": "creature"
@@ -57,16 +59,6 @@
       }
     },
     {
-      "id": "wind",
-      "name": "Wind",
-      "tint": 25
-    },
-    {
-      "id": "earth",
-      "name": "Earth",
-      "tint": 25
-    },
-    {
       "id": "shield",
       "name": "Shield",
       "description": "Few can penetrate this shield's legendary protection. \n\nGain +1 DEF for 3 turns.",
@@ -83,11 +75,6 @@
       }
     },
     {
-      "id": "water",
-      "name": "Water",
-      "tint": 25
-    },
-    {
       "id": "thunder",
       "name": "Thunder",
       "image": "res/img/cards/thunder.png",
@@ -100,6 +87,24 @@
         "kind": "lightning",
         "base": 3
       }
+    },
+    {
+      "id": "water",
+      "enabled": false,
+      "name": "Water",
+      "tint": 25
+    },
+    {
+      "id": "wind",
+      "name": "Wind",
+      "enabled": false,
+      "tint": 25
+    },
+    {
+      "id": "earth",
+      "enabled": false,
+      "name": "Earth",
+      "tint": 25
     }
   ],
   "entities": [

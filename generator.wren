@@ -15,7 +15,7 @@ import "./rng" for RNG
 import "./factory" for EntityFactory
 
 // TODO: This feels awful, handle this data better.
-Config["cards"].each {|data|
+Config["cards"].where{|data| !data["enabled"] || data["enabled"] == true }.each {|data|
   Card.put(Card.new(data))
 }
 var SPAWNABLES = Config["entities"].where {|config| config["types"].contains("spawnable") }.toList
