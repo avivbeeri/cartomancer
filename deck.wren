@@ -13,7 +13,7 @@ class Card {
     if (!__cards) {
       __cards = {}
     }
-    return __cards[id]
+    return __cards[id].copy
   }
 
   static put(card) {
@@ -21,7 +21,6 @@ class Card {
       __cards = {}
     }
     __cards[card.id] = card
-    System.print(card)
     return card
   }
 
@@ -53,6 +52,19 @@ class Card {
     }
   }
 
+  copy {
+    return Card.new({
+      "id": _id,
+      "name": _name,
+      "description": _description,
+      "action": _action,
+      "params": _params,
+      "image": _imagePath,
+      "tint": _tintIndex,
+      "target": _target,
+    })
+  }
+
   id { _id }
   name { _name }
   description { _description }
@@ -80,11 +92,13 @@ class Card {
       _image.draw(x, y)
     }
   }
+
+  toString { "%(name)"}
 }
 
 class Deck {
   construct new(cardList) {
-    _cards = cardList.toList || []
+    _cards = cardList.map{|card| card.copy }.toList || []
     // index 0 is the top
     // index count - 1 is the bottom
   }
