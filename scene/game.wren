@@ -150,7 +150,6 @@ class WorldScene is Scene {
     pressed = InputActions.directions.any {|key| key.down }
 
     _world.update()
-    // TODO: remove this
     for (event in _zone.events) {
       if (event is EntityAddedEvent) {
         System.print("Entity %(event.id) was added")
@@ -175,7 +174,7 @@ class WorldScene is Scene {
         if (event.target is Player) {
           _moving = true
           _lastPosition = player.pos
-          _ui.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
+          _diageticUi.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
       } else if (event is AttackEvent) {
         var animation = "%(event.kind)Attack"

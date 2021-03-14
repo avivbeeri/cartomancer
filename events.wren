@@ -7,6 +7,8 @@ class GameEndEvent is Event {
   }
 
   won { _won }
+
+  // Force later
   priority { 3 }
 }
 
@@ -54,7 +56,6 @@ class AttackEvent is Event {
   target { _target }
   kind { _kind }
   success { _success }
-
 }
 
 class LogEvent is Event {
