@@ -40,7 +40,7 @@ var SHIFT_KEY = InputGroup.new([
   Keyboard["left shift"], Keyboard["right shift"], Keyboard["left command"], Keyboard["right command"]
 ])
 
-var OPTION_KEYS = (0..9).map {|i| Keyboard[i.toString]}.toList
+var OPTION_KEYS = (0..9).map {|i| InputGroup.new(Keyboard[i.toString], i) }.toList
 var DIR_KEYS = [ UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY ]
 // Set frequency for smoother tile movement
 DIR_KEYS.each {|key| key.frequency = 1 }

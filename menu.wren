@@ -89,6 +89,14 @@ class CardTargetSelector is Ui {
       _mouseTile = null
     }
 
+    var downOptions = InputActions.options.where {|input| input.justPressed }.toList
+    if (downOptions.count > 0) {
+      _current = downOptions[0].action
+      _done = true
+      _player.action = PlayCardAction.new(_index, _targets[_current])
+      return
+    }
+
     if (InputActions.confirm.justPressed || (Mouse["left"].justPressed && hover)) {
       _done = true
       _player.action = PlayCardAction.new(_index, _targets[_current])
@@ -139,6 +147,13 @@ class CardTargetSelector is Ui {
       if (_mouseTile) {
         // Mouse selector
         Canvas.rectfill(_mouseTile.x * TILE_SIZE, _mouseTile.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, EDG32A[17])
+      }
+
+      var n = 0
+      for (target in _targets) {
+        var tile = target.pos
+        Canvas.print(n, tile.x * TILE_SIZE, tile.y * TILE_SIZE, EDG32A[19])
+        n = n + 1
       }
     }
   }
