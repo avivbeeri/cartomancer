@@ -51,6 +51,7 @@ class Entity is DataObject {
   notify(ctx, event) { event }
   getAction() { update() }
   endTurn() {}
+  name { this.type.name }
 
   update() { Action.none }
   draw() {}

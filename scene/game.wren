@@ -51,6 +51,8 @@ class WorldScene is Scene {
     _lastPosition = player.pos
     _selected = null
 
+    _selectedEntity = null
+
     _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 12))
     _allowInput = true
   }
@@ -93,9 +95,17 @@ class WorldScene is Scene {
         player.action = CommuneAction.new()
       }
 
+      var mouse = Mouse.pos
+
+      var mouseEntities = _zone.getEntitiesAtTile(screenToWorld(mouse))
+      if (mouseEntities.count > 0) {
+        _selectedEntity = mouseEntities.toList[0]
+      } else {
+        _selectedEntity = null
+      }
+
       // Play a card
       var hand = player["hand"]
-      var mouse = Mouse.pos
       var handLeft = 5 + 59
       var maxHandWidth = 416 - (handLeft)
       var slots = getHandSlots(hand, handLeft, CARD_UI_TOP + 12, maxHandWidth)
@@ -381,6 +391,18 @@ class WorldScene is Scene {
       if (!_allowInput) {
         Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32A[27])
       }
+    }
+
+    if (_selectedEntity && _selectedEntity.has("stats")) {
+      var stats = _selectedEntity["stats"]
+      var hp = stats.get("hp")
+      var hpMax = stats.get("hpMax")
+      var atk = stats.get("atk")
+      var def = stats.get("def")
+      var text = "%(_selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
+      var area = Font["m5x7"].getArea(text)
+      Canvas.rectfill(Canvas.width - area.x - 8, 21, area.x + 8, area.y + 8, EDG32[21])
+      Canvas.print(text, Canvas.width - area.x - 4, 25, EDG32[27], "m5x7")
     }
 
     for (ui in _diageticUi) {
