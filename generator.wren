@@ -15,9 +15,10 @@ import "./rng" for RNG
 import "./factory" for EntityFactory
 
 // TODO: This feels awful, handle this data better.
-Config["cards"].where{|data| !data["enabled"] || data["enabled"] == true }.each {|data|
+Config["cards"].where{|data| data["enabled"] == null || data["enabled"] != false }.each {|data|
   Card.put(Card.new(data))
 }
+
 var SPAWNABLES = Config["entities"].where {|config| config["types"].contains("spawnable") }.toList
 var ROOM_COUNT = Config["cards"].count - 3 + 1
 
