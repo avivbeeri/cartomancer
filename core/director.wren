@@ -18,9 +18,13 @@ class Director {
 
     // process entities
     processEntities()
+    runPostUpdate()
 
-    world.postUpdate.each {|hook| hook.update(world) }
     world.events.sort {|a, b| a.priority < b.priority}
+  }
+
+  runPostUpdate() {
+    world.postUpdate.each {|hook| hook.update(world) }
   }
 
   processEntities() {}
@@ -76,30 +80,30 @@ class EnergyStrategy is Director {
 
   threshold { 12 }
 
-  processEntities() {
+  gameLoop() {
     var actor = world.entities[turn]
     gainEnergy(actor)
     if (actor.priority < threshold) {
       advance()
-      return
+      return true
     }
 
     var action = actor.getAction()
 
     if (!action) {
       // No action given, retry and hope we got input
-      return
+      return false
     }
 
 
     while (true) {
-      System.print("Trying: %(actor): %(action)")
+      // System.print("Trying: %(actor): %(action)")
       var result = action.bind(actor).perform()
       if (!result.succeeded) {
         // Action wasn't successful, allow retry
-        return
+        return false
       }
-      System.print(result)
+      // System.print(result)
       if (!result.alternate) {
         break
       }
@@ -108,6 +112,14 @@ class EnergyStrategy is Director {
     actor.priority = 0
     actor.endTurn()
     advance()
+    return true
+  }
+
+  processEntities() {
+    var advance = true
+    while (advance) {
+      advance = gameLoop()
+    }
   }
 
   onEntityRemove(pos) {
@@ -157,6 +169,7 @@ class TurnBasedStrategy is Director  {
       action = result.alternate
     }
     actor.endTurn()
+    runPostUpdates()
     advance()
   }
 

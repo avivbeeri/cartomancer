@@ -179,20 +179,24 @@ class WorldScene is Scene {
         }
       } else if (event is AttackEvent) {
         var animation = "%(event.kind)Attack"
-        _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5))
-        if (event.source is Player) {
-          _tried = true
-          _moving = false
-        }
-        if (event.target is Player) {
-          _diageticUi.add(Pause.new(this, 30))
+        if (isOnScreen(event.target.pos)) {
+          _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5))
+          if (event.target is Player) {
+            _diageticUi.add(Pause.new(this, 30))
+          }
+          if (event.source is Player) {
+            _tried = true
+            _moving = false
+          }
         }
       } else if (event is LogEvent) {
         _log.print(event.text)
       } else if (event is CollisionEvent) {
-        if (event.source is Player) {
-          _tried = true
-          _moving = false
+        if (isOnScreen(event.source.pos)) {
+          if (event.source is Player) {
+            _tried = true
+            _moving = false
+          }
         }
       }
     }
@@ -265,12 +269,11 @@ class WorldScene is Scene {
     for (entity in _zone.entities) {
       var sx = entity.pos.x * TILE_SIZE + X_OFFSET
       var sy = entity.pos.y * TILE_SIZE
-      var screenPos = worldToScreen(entity.pos)
       if (Keyboard["left ctrl"].down) {
         var r = TILE_SIZE / 2
         Canvas.circlefill(sx + r, sy +r, r, EDG32A[10])
       }
-      if (screenPos.x < 0 || screenPos.x >= Canvas.width || screenPos.y < 0 || screenPos.y >= Canvas.height) {
+      if (!isOnScreen(entity.pos)) {
         continue
       }
       if (entity is Player) {
@@ -477,6 +480,11 @@ class WorldScene is Scene {
 
   worldToScreen(pos) {
     return (pos * TILE_SIZE) + (center - _camera)
+  }
+
+  isOnScreen(worldPos) {
+    var screenPos = worldToScreen(worldPos)
+    return (screenPos.x >= 0 && screenPos.x < Canvas.width && screenPos.y >= 0 && screenPos.y < Canvas.height)
   }
 }
 
