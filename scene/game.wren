@@ -177,7 +177,7 @@ class WorldScene is Scene {
           _diageticUi.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
       } else if (event is AttackEvent) {
-        var animation = "%(event.kind)Attack"
+        var animation = "%(event.attack.attackType)Attack"
         if (isOnScreen(event.target.pos)) {
           _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5))
           if (event.target is Player) {

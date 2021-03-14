@@ -162,13 +162,18 @@ class AttackAction is Action {
       var defence = target["stats"].get("def")
       var damage = _attack.damage - defence
 
-      target["stats"].decrease("hp", damage)
-      ctx.events.add(AttackEvent.new(source, target, _attack.attackType))
+      var attackEvent = AttackEvent.new(source, target, _attack)
+      target.notify(attackEvent)
+      if (attackEvent.success) {
+        target["stats"].decrease("hp", damage)
+      }
+      System.print(attackEvent.attack)
+
       ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
+      ctx.events.add(attackEvent)
       ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
       if (currentHP - damage <= 0) {
         ctx.events.add(LogEvent.new("%(target) was defeated."))
-        // ctx.removeEntity(target)
       }
     }
     return ActionResult.success
