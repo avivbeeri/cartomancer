@@ -9,7 +9,6 @@ class Creature is Entity {
     this["sprite"] = config["sprite"]
     this["activeEffects"] = []
     this["types"] = [ "creature" ] + (config["types"] || [])
-    System.print(this["types"])
     this["inventory"] = config["inventory"] || []
     this["loot"] = [] + (config["loot"] || [])
 

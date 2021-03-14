@@ -13,7 +13,6 @@ class CardActionFactory {
       return Action.none
     }
 
-    System.print(card)
     if (card.action == "applyModifier") {
       var id = card.params["id"]
       var add = card.params["add"]

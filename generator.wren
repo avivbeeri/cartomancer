@@ -201,7 +201,6 @@ class GrowthGenerator {
       rooms.add(newRoom)
       base.neighbours.add(newRoom)
     }
-    System.print(rooms)
 
     var start = rooms[0]
     var player = zone.addEntity("player", Player.new())
@@ -290,8 +289,6 @@ class TestGenerator {
         }
       }
     }
-
-    System.print(zone.map[-3, -3].data)
 
     var player = zone.addEntity("player", Player.new())
     player.pos = Vec.new(4, 4)

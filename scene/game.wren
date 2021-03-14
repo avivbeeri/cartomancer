@@ -11,7 +11,7 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu, CardTargetSelector, CombatTargetSelector
 import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent, ModifierEvent
-import "./actions" for MoveAction, SleepAction, RestAction, PlayCardAction, CommuneAction
+import "./actions" for MoveAction, RestAction, PlayCardAction, CommuneAction
 import "./entity/all" for Player, Dummy, Collectible, Creature
 
 import "./sprites" for StandardSpriteSet as Sprites
@@ -64,6 +64,9 @@ class WorldScene is Scene {
   camera { _camera }
   camera=(v) { _camera = v }
   update() {
+    if (Keyboard["l"].justPressed) {
+      _log.toggle()
+    }
     _zone = _world.active
     T = T + (1/60)
     F = (T * 2).floor % 2
@@ -84,16 +87,6 @@ class WorldScene is Scene {
     var pressed = false
 
     if (player && _allowInput) {
-      // Overzone menu / interaction
-      if (InputActions.interact.justPressed) {
-        _ui.add(Menu.new(_zone, [
-          "Cook", null,
-          "Sleep", SleepAction.new(),
-          "Cancel", "cancel"
-        ]))
-        return
-      }
-
       if (InputActions.commune.justPressed || _reshuffleButton.update().clicked) {
         player.action = CommuneAction.new()
       }
@@ -428,6 +421,8 @@ class WorldScene is Scene {
         }
       }
     }
+    _log.draw(4, CARD_UI_TOP + 2)
+
   }
 
   drawPile(pile, left, top, shade) {

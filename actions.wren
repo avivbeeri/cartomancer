@@ -10,17 +10,6 @@ import "./events" for CollisionEvent,
 
 import "./combat" for Attack
 
-class LogAction is Action {
-  construct new() {
-    super()
-  }
-
-  perform() {
-    System.print("You make journal notes")
-    return ActionResult.success
-  }
-}
-
 class CommuneAction is Action {
   construct new() {
     super()
@@ -48,17 +37,6 @@ class CommuneAction is Action {
     ctx.events.add(CommuneEvent.new(source, true))
 
     return ActionResult.success
-  }
-}
-
-class SleepAction is Action {
-  construct new() {
-    super()
-  }
-
-  perform() {
-    System.print("You sleep, and awaken refreshed.")
-    return ActionResult.alternate(LogAction.new())
   }
 }
 
@@ -180,8 +158,6 @@ class AttackAction is Action {
         if (attackEvent.success) {
           target["stats"].decrease("hp", damage)
         }
-        System.print(attackEvent.attack)
-
         ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
         ctx.events.add(attackEvent)
         ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))

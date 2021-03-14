@@ -20,8 +20,6 @@ class Shadow is Creature {
         var duration = config["effect"]["duration"]
         var positive = config["effect"]["positive"]
         var modifier = Modifier.new(id, add, mult, duration, positive)
-        System.print(modifier)
-        System.print(config)
         return ApplyModifierAction.new(modifier, target, !config["effect"]["responsible"] || false)
       },
       SeekBehaviour.new(this)
@@ -37,13 +35,6 @@ class Shadow is Creature {
       }
     }
     return action || Action.none
-  }
-
-  endTurn() {
-    var effects = this["activeEffects"]
-    System.print("Shadow Effects: %(effects)")
-    super.endTurn()
-
   }
 }
 

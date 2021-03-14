@@ -161,10 +161,12 @@ class CardTargetSelector is Ui {
 
     var downOptions = InputActions.options.where {|input| input.justPressed }.toList
     if (downOptions.count > 0) {
-      _current = downOptions[0].action
-      _done = true
-      _player.action = PlayCardAction.new(_index, _targets[_current])
-      return
+      if (downOptions[0].action < _targets.count) {
+        _current = downOptions[0].action
+        _done = true
+        _player.action = PlayCardAction.new(_index, _targets[_current])
+        return
+      }
     }
 
     if (InputActions.confirm.justPressed || (Mouse["left"].justPressed && hover)) {
