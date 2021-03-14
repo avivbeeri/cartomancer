@@ -24,6 +24,8 @@ import "./scene/autotile" for AutoTile
 var T = 0
 var F = 0
 
+var DEBUG = false
+
 // Is the view static?
 var STATIC = false
 
@@ -274,7 +276,7 @@ class WorldScene is Scene {
           var list = Sprites["wall"]
           list[index].draw(sx, sy)
 
-          if (Keyboard["left ctrl"].down) {
+          if (DEBUG && Keyboard["left ctrl"].down) {
             // TODO: disable before release
             if (tile["solid"]) {
               Canvas.rectfill(sx, sy, TILE_SIZE, TILE_SIZE, EDG32A[25])
@@ -290,7 +292,7 @@ class WorldScene is Scene {
     for (entity in _zone.entities) {
       var sx = entity.pos.x * TILE_SIZE + X_OFFSET
       var sy = entity.pos.y * TILE_SIZE
-      if (Keyboard["left ctrl"].down) {
+      if (DEBUG && Keyboard["left ctrl"].down) {
         var r = TILE_SIZE / 2
         Canvas.circlefill(sx + r, sy +r, r, EDG32A[10])
       }
