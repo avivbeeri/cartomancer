@@ -51,7 +51,7 @@ class WorldScene is Scene {
     _lastPosition = player.pos
     _selected = null
 
-    _selectedEntity = null
+    _selectedEntityId = null
 
     _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 12))
     _allowInput = true
@@ -99,9 +99,9 @@ class WorldScene is Scene {
 
       var mouseEntities = _zone.getEntitiesAtTile(screenToWorld(mouse))
       if (mouseEntities.count > 0) {
-        _selectedEntity = mouseEntities.toList[0]
+        _selectedEntityId = mouseEntities.toList[0].id
       } else {
-        _selectedEntity = null
+        _selectedEntityId = null
       }
 
       // Play a card
@@ -239,7 +239,6 @@ class WorldScene is Scene {
 
 
   draw() {
-    var mouse = Mouse.pos
     _zone = _world.active
     var player = _zone.getEntityByTag("player")
     Canvas.cls(Display.bg)
@@ -357,26 +356,7 @@ class WorldScene is Scene {
       Canvas.print("DEF: %(def)", 2 + hpArea.x + manaArea.x + atkArea.x  + 24, 2, EDG32[19], "m5x7")
       var defArea = Font["m5x7"].getArea("DEF: %(def)")
 
-      var iconX = Canvas.width - 8 - TILE_SIZE
-      var mod
-      for (id in player["stats"].modifiers.keys) {
-        if (id == "shadow") {
-          Sprites["icons"][2].draw(iconX, 2)
-        } else if (id == "sword") {
-          Sprites["icons"][0].draw(iconX, 2)
-        } else if (id == "shield") {
-          Sprites["icons"][1].draw(iconX, 2)
-        }
-        var hover = mouse.x >= iconX && mouse.x < iconX + TILE_SIZE && mouse.y >= 2 && mouse.y < 2 + TILE_SIZE
-        mod = hover ? id : mod
-        iconX =  iconX - TILE_SIZE
-      }
-      if (mod) {
-        var condition = player["stats"].getModifier(mod)
-        var text = "%(condition.id) (%(condition.duration) turns)"
-        var conditionArea = Font["m5x7"].getArea(text)
-        Canvas.print(text, iconX - conditionArea.x - 2, 2, EDG32[19], "m5x7")
-      }
+      drawEntityMods(player, Vec.new(Canvas.width - 8 - TILE_SIZE, 2), Vec.new(Canvas.width - 8 - 3 * TILE_SIZE, 2), true)
 
       // Draw the card shelf
       Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32[28])
@@ -415,16 +395,25 @@ class WorldScene is Scene {
       }
     }
 
-    if (_selectedEntity && _selectedEntity.has("stats")) {
-      var stats = _selectedEntity["stats"]
-      var hp = stats.get("hp")
-      var hpMax = stats.get("hpMax")
-      var atk = stats.get("atk")
-      var def = stats.get("def")
-      var text = "%(_selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
-      var area = Font["m5x7"].getArea(text)
-      Canvas.rectfill(Canvas.width - area.x - 8, 21, area.x + 8, area.y + 8, EDG32[21])
-      Canvas.print(text, Canvas.width - area.x - 4, 25, EDG32[27], "m5x7")
+    if (_selectedEntityId) {
+      var selectedEntity = _zone.getEntityById(_selectedEntityId)
+      if (selectedEntity && selectedEntity.has("stats")) {
+        var stats = selectedEntity["stats"]
+        var hp = stats.get("hp")
+        var hpMax = stats.get("hpMax")
+        var atk = stats.get("atk")
+        var def = stats.get("def")
+        var text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
+        var area = Font["m5x7"].getArea(text)
+
+        var width = M.max(area.x, TILE_SIZE * 3)
+        var left = Canvas.width - width - 8
+        var top = 21
+
+        Canvas.rectfill(left, top, width + 8, area.y + 8, EDG32[21])
+        Canvas.print(text, left + 4, top + 4, EDG32[27], "m5x7")
+        drawEntityMods(selectedEntity, Vec.new(left + 4, top + area.y + 4), Vec.new(left + 4, top + area.y + 4 + TILE_SIZE), false)
+      }
     }
 
     for (ui in _diageticUi) {
@@ -541,6 +530,31 @@ class WorldScene is Scene {
   isOnScreen(worldPos) {
     var screenPos = worldToScreen(worldPos)
     return (screenPos.x >= 0 && screenPos.x < Canvas.width && screenPos.y >= 0 && screenPos.y < Canvas.height)
+  }
+  drawEntityMods(entity, iconPos, descriptionPos, rightAlign) {
+    var mouse = Mouse.pos
+    var x = iconPos.x
+    var y = iconPos.y
+    var iconX = rightAlign ? Canvas.width - 8 - TILE_SIZE : x
+    var mod
+    for (id in entity["stats"].modifiers.keys) {
+      if (id == "shadow") {
+        Sprites["icons"][2].draw(iconX, y)
+      } else if (id == "sword") {
+        Sprites["icons"][0].draw(iconX, y)
+      } else if (id == "shield") {
+        Sprites["icons"][1].draw(iconX, y)
+      }
+      var hover = mouse.x >= iconX && mouse.x < iconX + TILE_SIZE && mouse.y >= y && mouse.y < y + TILE_SIZE
+      mod = hover ? id : mod
+      iconX =  iconX + (rightAlign ? -1 : 1) * TILE_SIZE
+    }
+    if (mod) {
+      var condition = entity["stats"].getModifier(mod)
+      var text = "%(condition.id) (%(condition.duration) turns)"
+      var conditionArea = Font["m5x7"].getArea(text)
+      Canvas.print(text, rightAlign ? descriptionPos.x - conditionArea.x : descriptionPos.x, descriptionPos.y, EDG32[19], "m5x7")
+    }
   }
 }
 
