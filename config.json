@@ -10,7 +10,7 @@
     {
       "id": "sword",
       "name": "Sword",
-      "description": "This mighty blade will make you more lethal.",
+      "description": "This mighty blade will make you more lethal. \n\nGain +1 ATK for 3 turns.",
       "tint": 17,
       "image": "res/img/cards/sword.png",
       "action": "applyModifier",
@@ -61,7 +61,7 @@
     {
       "id": "shield",
       "name": "Shield",
-      "description": "Few can penetrate this shield's legendary protection.",
+      "description": "Few can penetrate this shield's legendary protection. \n\nGain +1 DEF for 3 turns.",
       "image": "res/img/cards/shield.png",
       "tint": 17,
       "action": "applyModifier",
