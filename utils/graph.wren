@@ -266,6 +266,7 @@ class DijkstraMap {
     path.add(Elegant.unpair(start))
     return path
   }
+
   static heuristic(a, b) {
     var v1 = a
     var v2 = b
@@ -277,7 +278,6 @@ class DijkstraMap {
     }
     return (v1 - v2).manhattan
   }
-
 }
 
 import "./entity/creature" for Creature
