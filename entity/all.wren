@@ -5,4 +5,5 @@ import "entity/dummy" for Dummy
 import "entity/sword" for Sword
 import "entity/thunder" for Thunder
 import "entity/shield" for Shield
+import "entity/fireball" for Fireball
 import "entity/collectible" for Collectible

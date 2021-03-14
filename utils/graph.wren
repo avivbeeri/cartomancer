@@ -54,7 +54,7 @@ class WeightedZone is SquareGrid {
 
   cost(a, b) {
     var pos = Elegant.unpair(b)
-    var ok = _zone.getEntitiesAtTile(pos).where{|entity| entity is Creature }.count == 0
+    var ok = _zone.getEntitiesAtTile(pos).where{|entity| entity is Creature && !(entity is Fireball) }.count == 0
     return ok ? 1 : 10
   }
 }
@@ -281,3 +281,4 @@ class DijkstraMap {
 }
 
 import "./entity/creature" for Creature
+import "./entity/fireball" for Fireball

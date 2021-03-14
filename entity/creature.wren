@@ -8,10 +8,10 @@ class Creature is Entity {
     this["classType"] = config["classType"]
     this["sprite"] = config["sprite"]
     this["activeEffects"] = []
-    this["types"] = [ "creature" ] + config["types"]
+    this["types"] = [ "creature" ] + (config["types"] || [])
     System.print(this["types"])
     this["inventory"] = config["inventory"] || []
-    this["loot"] = [] + config["loot"]
+    this["loot"] = [] + (config["loot"] || [])
 
     this["stats"] = StatGroup.new({
       "atk": 1,

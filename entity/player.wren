@@ -17,7 +17,7 @@ class Player is Creature {
     this["discard"] = []
     this["deck"] = Deck.new(RNG.sample(Card.all, 3)).shuffle()
     this["hand"] = this["deck"].drawCards(3)
-    this["hand"].add(Card["thunder"])
+    this["hand"].add(Card["fire"])
   }
 
   action { _action }

@@ -3,7 +3,7 @@ import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
 import "math" for Vec
 
 import "./combat" for Attack, AttackType
-import "./actions" for MoveAction, AttackAction
+import "./actions" for MoveAction, AttackAction, DespawnAction, MultiAction
 
 class Behaviour {
   construct new(self) {
@@ -15,6 +15,31 @@ class Behaviour {
   notify(event) {}
   evaluate() {}
 }
+
+class ProjectileBehaviour is Behaviour {
+  construct new(self) {
+    super(self)
+  }
+
+  evaluate() {
+    var map = ctx.map
+    var dir = self["direction"]
+    var despawn = DespawnAction.new()
+    var dest = self.pos + dir
+    if (ctx.isSolidAt(dest)) {
+      return despawn
+    }
+    if (ctx.getEntitiesAtTile(dest).count > 0) {
+      return MultiAction.new([
+        AttackAction.new(dest, Attack.new(2, AttackType.fire, false)),
+        despawn
+      ], true)
+    }
+    System.print(dest)
+    return MoveAction.new(dir, true, despawn)
+  }
+}
+
 
 class SeekBehaviour is Behaviour {
   construct new(self) {
@@ -44,13 +69,10 @@ class RangedBehaviour is Behaviour {
     var map = ctx.map
     var player = ctx.getEntityByTag("player")
     if (player) {
-      System.print("ranged: player acquired")
       if (player.pos.x == self.pos.x || player.pos.y == self.pos.y) {
-        System.print("ranged: same row")
         // Same x or y coordinate
         var range = (player.pos - self.pos)
         if (range.manhattan < 3) {
-          System.print("ranged: in range")
           // In range
           // check LOS
           var solid = false
@@ -63,7 +85,6 @@ class RangedBehaviour is Behaviour {
             }
           }
           if (!solid) {
-            System.print("attacked")
             // attack is good
             return AttackAction.new(player.pos, Attack.new(3, AttackType.lightning, false))
           }

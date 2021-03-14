@@ -68,6 +68,12 @@ class RestAction is Action {
 }
 
 class MoveAction is Action {
+  construct new(dir, alwaysSucceed, alt) {
+    super()
+    _dir = dir
+    _succeed = alwaysSucceed
+    _alt = alt
+  }
   construct new(dir, alwaysSucceed) {
     super()
     _dir = dir
@@ -106,10 +112,13 @@ class MoveAction is Action {
       }
       if (solid || target || collectible) {
         source.pos = old
+        if (_alt) {
+          result = ActionResult.alternate(_alt)
+        }
       }
-      if (target) {
+      if (!_alt && target) {
         result = ActionResult.alternate(AttackAction.new(source.pos + _dir, Attack.melee(source)))
-      } else if (collectible) {
+      } else if (!_alt && collectible) {
         result = ActionResult.alternate(PickupAction.new(_dir))
       }
     }
@@ -164,16 +173,18 @@ class AttackAction is Action {
 
       var attackEvent = AttackEvent.new(source, target, _attack)
       target.notify(attackEvent)
-      if (attackEvent.success) {
-        target["stats"].decrease("hp", damage)
-      }
-      System.print(attackEvent.attack)
+      if (!attackEvent.cancelled) {
+        if (attackEvent.success) {
+          target["stats"].decrease("hp", damage)
+        }
+        System.print(attackEvent.attack)
 
-      ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
-      ctx.events.add(attackEvent)
-      ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
-      if (currentHP - damage <= 0) {
-        ctx.events.add(LogEvent.new("%(target) was defeated."))
+        ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
+        ctx.events.add(attackEvent)
+        ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
+        if (currentHP - damage <= 0) {
+          ctx.events.add(LogEvent.new("%(target) was defeated."))
+        }
       }
     }
     return ActionResult.success
@@ -247,7 +258,7 @@ class PlayCardAction is Action {
         }
       }
 
-      var cardAction = (CardActionFactory.prepare(selectedCard, _target))
+      var cardAction = (CardActionFactory.prepare(selectedCard, source, _target))
       result = cardAction.bind(source).perform()
       // result = ActionResult.alternate(CardActionFactory.prepare(selectedCard, _target))
       if (result.succeeded) {
@@ -300,13 +311,58 @@ class ApplyModifierAction is Action {
   }
 }
 
+class DespawnAction is Action {
+  construct new() {
+    super()
+    _targetId = null
+  }
+
+  perform() {
+    var target = _targetId ? ctx.getEntityById(_targetId) : source
+    ctx.removeEntity(target)
+    return ActionResult.success
+  }
+}
+
+class SpawnAction is Action {
+  construct new(entity, position) {
+    super()
+    _entity = entity
+    _entity.priority = 12
+    _position = position
+  }
+
+  getOccupying(pos) {
+    return ctx.getEntitiesAtTile(pos.x, pos.y).where {|entity| entity != source }
+  }
+
+  perform() {
+    var solid = ctx.isSolidAt(source.pos)
+    var target = false
+    if (solid) {
+      return ActionResult.failure
+    }
+    var hitLocation = getOccupying(_position).count > 0
+    if (hitLocation) {
+      // There's an entity in our spawn tile.
+      // We might want to do something about that.
+    }
+
+    var entity = ctx.addEntity(_entity)
+    entity.pos = _position
+
+    return ActionResult.success
+  }
+}
+
 // -------- UNTESTED PROTOTYPE ------
 // Assumes that partial failures are acceptible.
 
 class MultiAction is Action {
-  construct new(actionList) {
+  construct new(actionList, force) {
     super()
     _actionList = actionList
+    _force = force
   }
 
   perform() {
@@ -316,7 +372,7 @@ class MultiAction is Action {
       while (true) {
         step.bind(source)
         var stepResult = step.perform()
-        if (!stepResult.succeeded) {
+        if (!_force && !stepResult.succeeded) {
           result = ActionResult.failure
           failed = true
           break

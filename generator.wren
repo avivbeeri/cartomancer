@@ -18,7 +18,7 @@ import "./factory" for EntityFactory
 Config["cards"].each {|data|
   Card.put(Card.new(data))
 }
-var ENTITIES_COUNT = Config["entities"].count
+var SPAWNABLES = Config["entities"].where {|config| config["types"].contains("spawnable") }.toList
 var ROOM_COUNT = Config["cards"].count - 3 + 1
 
 class Room is Vec {
@@ -225,14 +225,14 @@ class GrowthGenerator {
 
 
       for (i in 0...RNG.int(3)) {
-        var entity = EntityFactory.prepare(Config["entities"][RNG.int(ENTITIES_COUNT)])
+        var entity = EntityFactory.prepare(SPAWNABLES[RNG.int(SPAWNABLES.count)])
         spawnIn(zone, room, entity)
         enemyCount = enemyCount + 1
       }
     }
     if (enemyCount == 0) {
       var room = rooms[-1]
-      var entity = EntityFactory.prepare(Config["entities"][RNG.int(ENTITIES_COUNT)])
+      var entity = EntityFactory.prepare(SPAWNABLES[RNG.int(SPAWNABLES.count)])
       spawnIn(zone, room, entity)
     }
     for (door in doors) {

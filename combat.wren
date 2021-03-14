@@ -2,10 +2,12 @@
 class AttackType {
   static melee { "basic" }
   static lightning { "lightning" }
+  static fire { "fire" }
 
   static verify(text) {
     if (text == "basic" ||
-      text == "lightning") {
+      text == "lightning" ||
+      text == "fire") {
       return text
     }
     Fiber.abort("unknown AttackType: %(text)")

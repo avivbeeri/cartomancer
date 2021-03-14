@@ -13,6 +13,14 @@ import "./widgets" for Button
 var scale = 1
 var TILE_SIZE = 16 * scale
 
+class Space {
+  construct wrap(vec) {
+    _pos = vec
+  }
+  pos { _pos }
+  size { Vec.new(1, 1) }
+}
+
 class CardTargetSelector is Ui {
   construct new(ctx, view, card, handIndex) {
     super(ctx)
@@ -22,12 +30,26 @@ class CardTargetSelector is Ui {
     _pos = _player.pos
     _view = view
     _range = card.params["range"]
-    _targets = ctx.entities.where {|entity|
-      return entity.has("types") &&
-        entity["types"].contains(card.target) &&
-        (entity.pos - _player.pos).manhattan <= _range
-    }.toList
-    _current = (_targets.count > 1 && _targets[0].id == _player.id) ? 1 : 0
+    if (card.target == "space") {
+      _targets = []
+      for (y in -_range .. _range) {
+        for (x in -_range .. _range) {
+          var loc =  (Vec.new(x, y) + _player.pos)
+          if ((loc - _player.pos).manhattan <= _range) {
+            // TODO: should we wrap location for compatibility?
+            _targets.add(Space.wrap(loc))
+          }
+        }
+      }
+      _current = 0
+    } else {
+      _targets = ctx.entities.where {|entity|
+        return entity.has("types") &&
+          entity["types"].contains(card.target) &&
+          (entity.pos - _player.pos).manhattan <= _range
+      }.toList
+      _current = (_targets.count > 1 && _targets[0].id == _player.id) ? 1 : 0
+    }
     if (_targets.count > 0) {
       _current = _current % _targets.count
     }

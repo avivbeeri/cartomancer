@@ -1,13 +1,14 @@
 import "./core/action" for Action
-import "./actions" for ApplyModifierAction, AttackAction
+import "./actions" for ApplyModifierAction, AttackAction, SpawnAction
 import "./stats" for Modifier
+import "./core/config" for Config
 
-import "./entity/all" for Sword, Shield, Creature, Thunder
+import "./entity/all" for Sword, Shield, Creature, Thunder, Fireball
 
 import "./combat" for Attack, AttackType
 
 class CardActionFactory {
-  static prepare(card, target) {
+  static prepare(card, source, target) {
     var actionClass
     if (!card.action) {
       return Action.none
@@ -28,6 +29,18 @@ class CardActionFactory {
       var base = card.params["base"] || 1
       var mana = card.params["needsMana"] || false
       return AttackAction.new(target.pos, Attack.new(base, kind, mana))
+    } else if (card.action == "spawn") {
+      var id = card.params["id"]
+      var entityConfig
+      for (config in Config["entities"]) {
+        if (config["id"] == id) {
+          entityConfig = config
+          break
+        }
+      }
+      var fireball = EntityFactory.prepare(entityConfig)
+      fireball["source"] = source.pos
+      return SpawnAction.new(fireball, target.pos)
     } else {
       Fiber.abort("Could not prepare unknown action %(card.action)")
     }
@@ -46,6 +59,9 @@ class EntityFactory {
     }
     if (classType == "thunder") {
       return Thunder.new(config)
+    }
+    if (classType == "fireball") {
+      return Fireball.new(config)
     }
     if (classType == "creature") {
       return Creature.new(config)
