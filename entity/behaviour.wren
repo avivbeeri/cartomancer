@@ -38,17 +38,19 @@ class SeekBehaviour is Behaviour {
 class RangedBehaviour is Behaviour {
   construct new(self) {
     super(self)
-    _seek = SeekBehaviour.new(self)
   }
 
   evaluate() {
     var map = ctx.map
     var player = ctx.getEntityByTag("player")
     if (player) {
+      System.print("ranged: player acquired")
       if (player.pos.x == self.pos.x || player.pos.y == self.pos.y) {
+        System.print("ranged: same row")
         // Same x or y coordinate
         var range = (player.pos - self.pos)
         if (range.manhattan < 3) {
+          System.print("ranged: in range")
           // In range
           // check LOS
           var solid = false
@@ -61,13 +63,12 @@ class RangedBehaviour is Behaviour {
             }
           }
           if (!solid) {
+            System.print("attacked")
             // attack is good
             return AttackAction.new(player.pos, Attack.new(3, AttackType.lightning, false))
           }
         }
       }
-      return _seek.evaluate()
     }
-    return Action.none
   }
 }
