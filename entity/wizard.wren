@@ -1,31 +1,12 @@
-import "math" for Vec
-import "./core/entity" for Entity
-import "./core/action" for Action
-import "./stats" for StatGroup
-import "./entity/creature" for Creature
-import "./events" for LogEvent, PickupEvent, AttackEvent
+import "./entity/stackcreature" for StackCreature
 import "./entity/behaviour" for SpawnBehaviour, SeekBehaviour, WaitBehaviour
 
-class Wizard is Creature {
+class Wizard is StackCreature {
   construct new(config) {
     super(config)
-    _behaviours = [
-      WaitBehaviour.new(this),
-      SpawnBehaviour.new(this, 10, "fireball"),
-      SeekBehaviour.new(this)
-    ]
-  }
-
-  update() {
-    var action
-    for (behaviour in _behaviours) {
-      action = behaviour.evaluate()
-      if (action) {
-        break
-      }
-    }
-    return action || Action.none
+    push(WaitBehaviour.new(this))
+    push(SpawnBehaviour.new(this, 6, "fireball"))
+    push(SeekBehaviour.new(this))
   }
 }
 
-import "./combat" for AttackType

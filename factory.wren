@@ -74,6 +74,9 @@ class EntityFactory {
     if (classType == "creature") {
       return Creature.new(config)
     }
+    if (classType == "seeker") {
+      return Seeker.new(config)
+    }
     Fiber.abort("Unknown entity type %(classType)")
   }
 }
@@ -84,4 +87,5 @@ import "./entity/all" for Sword,
   Thunder,
   Fireball,
   Wizard,
+  Seeker,
   Shadow

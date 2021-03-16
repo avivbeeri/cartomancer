@@ -1,17 +1,9 @@
-import "math" for Vec
-import "./core/entity" for Entity
-import "./core/action" for Action
-import "./stats" for StatGroup
-import "./events" for LogEvent, PickupEvent, AttackEvent
-import "./entity/creature" for Creature
-import "./entity/behaviour" for ProjectileBehaviour
+import "./entity/stackcreature" for StackCreature
 
-class Fireball is Creature {
+class Fireball is StackCreature {
   construct new(config) {
     super(config)
-    _behaviours = [
-      ProjectileBehaviour.new(this),
-    ]
+    push(ProjectileBehaviour.new(this))
     _new = true
   }
 
@@ -23,16 +15,7 @@ class Fireball is Creature {
       System.print("direction: %(pos) - %(source) = %(dir)")
       _new = false
     }
-
-
-    var action
-    for (behaviour in _behaviours) {
-      action = behaviour.evaluate()
-      if (action) {
-        break
-      }
-    }
-    return action || Action.none
+    return super.update()
   }
 
   notify(event) {
@@ -45,3 +28,5 @@ class Fireball is Creature {
 }
 
 import "./combat" for AttackType
+import "./events" for AttackEvent
+import "./entity/behaviour" for ProjectileBehaviour

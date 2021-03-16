@@ -1,30 +1,11 @@
-import "math" for Vec
-import "./core/entity" for Entity
-import "./core/action" for Action
-import "./stats" for StatGroup
-import "./entity/creature" for Creature
-import "./events" for LogEvent, PickupEvent, AttackEvent
-import "./entity/behaviour" for RangedBehaviour, SeekBehaviour, WaitBehaviour
+import "./entity/stackcreature" for StackCreature
 
-class Thunder is Creature {
+class Thunder is StackCreature {
   construct new(config) {
     super(config)
-    _behaviours = [
-      WaitBehaviour.new(this),
-      RangedBehaviour.new(this, 3),
-      SeekBehaviour.new(this)
-    ]
-  }
-
-  update() {
-    var action
-    for (behaviour in _behaviours) {
-      action = behaviour.evaluate()
-      if (action) {
-        break
-      }
-    }
-    return action || Action.none
+    push(WaitBehaviour.new(this))
+    push(RangedBehaviour.new(this, 3))
+    push(SeekBehaviour.new(this))
   }
 
   notify(event) {
@@ -37,3 +18,5 @@ class Thunder is Creature {
 }
 
 import "./combat" for AttackType
+import "./events" for AttackEvent
+import "./entity/behaviour" for RangedBehaviour, SeekBehaviour, WaitBehaviour
