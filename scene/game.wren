@@ -80,6 +80,7 @@ class WorldScene is Scene {
     }
 
     if (updateAllUi()) {
+      _allowInput = false
       return
     }
 

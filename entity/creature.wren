@@ -7,6 +7,7 @@ class Creature is Entity {
     super()
     this["classType"] = config["classType"]
     this["sprite"] = config["sprite"]
+    name = config["name"]
     this["activeEffects"] = []
     this["types"] = [ "creature" ] + (config["types"] || [])
     this["inventory"] = config["inventory"] || []

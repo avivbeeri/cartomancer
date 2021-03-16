@@ -19,6 +19,7 @@ Config["cards"].where{|data| data["enabled"] == null || data["enabled"] != false
   Card.put(Card.new(data))
 }
 
+var SPAWN_DIST = [ 0, 0, 1, 1, 1, 1, 1, 1, 2, 2]
 var SPAWNABLES = Config["entities"].where {|config| config["types"].contains("spawnable") }.toList
 var ROOM_COUNT = Config["cards"].count - 3 + 1
 
@@ -223,8 +224,9 @@ class GrowthGenerator {
         }
       }
 
+      var spawnTotal = RNG.sample(SPAWN_DIST)
 
-      for (i in 0...RNG.int(3)) {
+      for (i in 0..spawnTotal) {
         var entity = EntityFactory.prepare(SPAWNABLES[RNG.int(SPAWNABLES.count)])
         spawnIn(zone, room, entity)
         enemyCount = enemyCount + 1

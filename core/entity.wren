@@ -8,6 +8,7 @@ class Entity is DataObject {
     _pos = Vec.new()
     _size = Vec.new(1, 1)
     _vel = Vec.new()
+    _name = null
 
     // Lower is better
     _priority = 0
@@ -51,7 +52,8 @@ class Entity is DataObject {
   notify(ctx, event) { event }
   getAction() { update() }
   endTurn() {}
-  name { this.type.name }
+  name { _name || this.type.name }
+  name=(v) { _name = v }
 
   update() { Action.none }
   draw() {}

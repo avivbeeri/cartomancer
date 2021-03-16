@@ -114,6 +114,7 @@
   "entities": [
     {
       "id": "sword",
+      "name": "Swordsman",
       "stats": {
         "hp": 2,
         "hpMax": 2,
@@ -130,6 +131,7 @@
     },
     {
       "id": "shield",
+      "name": "Shield Bearer",
       "stats": {
         "hp": 1,
         "hpMax": 1,
