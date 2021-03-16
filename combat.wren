@@ -1,3 +1,9 @@
+class AttackResult {
+  static success { "success" }
+  static blocked { "blocked" }
+  static inert { "inert" }
+}
+
 
 class AttackType {
   static melee { "basic" }

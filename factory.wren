@@ -38,6 +38,10 @@ class CardActionFactory {
       }
       var fireball = EntityFactory.prepare(entityConfig)
       fireball["source"] = source.pos * 1
+      for (id in card.params["stats"].keys) {
+        System.print(id)
+        fireball["stats"].set(id, card.params["stats"][id])
+      }
       return SpawnAction.new(fireball, target.pos * 1)
     } else {
       Fiber.abort("Could not prepare unknown action %(card.action)")

@@ -57,7 +57,7 @@ class GrowthGenerator {
 
     var world = World.new(EnergyStrategy.new())
     var zone = world.pushZone(Zone.new(TileMap.init()))
-    zone.map.default = { "solid": true, "floor": "void" }
+    zone.map.default = { "solid": true, "floor": "void", "index": -1, "dirty": false }
 
     // Order is important!!
     zone.postUpdate.add(RemoveDefeated)

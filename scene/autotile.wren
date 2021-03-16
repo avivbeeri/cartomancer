@@ -7,12 +7,7 @@ var RuleFile = Json.load("tileRules.json")
 
 class AutoTile {
   static pick(map, x, y) {
-    if (Keyboard["f4"].justPressed) {
-      RuleFile = Json.load("tileRules.json")
-    }
-
     var pos = Vec.new(x, y)
-
 
     var tile = map[pos]
     var config = RuleFile[tile["floor"]]

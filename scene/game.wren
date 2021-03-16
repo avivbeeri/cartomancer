@@ -10,7 +10,8 @@ import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
 import "./menu" for Menu, CardTargetSelector, CombatTargetSelector
-import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent, ModifierEvent
+import "./combat" for AttackResult
+import "./events" for CollisionEvent, MoveEvent, GameEndEvent, AttackEvent, LogEvent, CommuneEvent, ModifierEvent, PickupEvent
 import "./actions" for MoveAction, RestAction, PlayCardAction, CommuneAction
 import "./entity/all" for Player, Dummy, Collectible, Creature
 
@@ -194,11 +195,28 @@ class WorldScene is Scene {
           _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, event.positive ? Sprites["buff"] : Sprites["debuff"], 5))
         }
 
+      } else if (event is PickupEvent) {
+        if (event.source is Player) {
+          _tried = true
+          _moving = false
+        }
       } else if (event is AttackEvent) {
-        var animation = "%(event.attack.attackType)Attack"
+        var playerIsTarget = event.target is Player
         if (isOnScreen(event.target.pos)) {
-          _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5))
-          if (event.target is Player) {
+          var animation = "%(event.attack.attackType)Attack"
+          var animate = event.target
+          var linger = 0
+          if (event.result == AttackResult.blocked) {
+            animation = "blocked"
+            linger = playerIsTarget ? 30 : linger
+          } else if (event.result == AttackResult.inert) {
+            animation = "inert"
+            animate = event.source
+            linger = playerIsTarget ? 30 : linger
+          }
+          System.print(event.result)
+          _diageticUi.add(Animation.new(this, animate.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5, linger))
+          if (playerIsTarget) {
             _diageticUi.add(Pause.new(this, 30))
           }
           if (event.source is Player) {
@@ -264,7 +282,8 @@ class WorldScene is Scene {
         var sy = y * TILE_SIZE
         var tile = _zone.map[x, y]
 
-        var index = AutoTile.pick(_zone.map, x, y)
+        var index = tile["index"] = (tile["dirty"] != false) ? AutoTile.pick(_zone.map, x, y) : tile["index"]
+        tile["dirty"] = false
         if (index >= 0) {
 
           var list = Sprites["wall"]
@@ -344,19 +363,26 @@ class WorldScene is Scene {
       Canvas.rectfill(0, 0, Canvas.width, 20, EDG32[28])
       var hp = player["stats"].get("hp")
       var hpMax = player["stats"].get("hpMax")
+      Canvas.line(0, 20, Canvas.width, 20, EDG32[29], 2)
+      var atk = player["stats"].get("atk")
+      var def = player["stats"].get("def")
+      var text = "HP: %(hp)/%(hpMax)  ATK: %(atk)  DEF: %(def)"
+      Canvas.print(text, 8, 2, EDG32[19], "m5x7")
+      /*
+      /*
       var mana = player["stats"].get("mana")
       var manaMax = player["stats"].get("manaMax")
       Canvas.print("HP: %(hp)/%(hpMax)", 2, 2, EDG32[19], "m5x7")
+      */
       var hpArea = Font["m5x7"].getArea("HP: %(hp)/%(hpMax)")
       Canvas.print("Mana: %(mana)/%(manaMax)", 2 + hpArea.x + 8, 2, EDG32[19], "m5x7")
       var manaArea = Font["m5x7"].getArea("Mana: %(mana)/%(manaMax)")
-      Canvas.line(0, 20, Canvas.width, 20, EDG32[29], 2)
-      var atk = player["stats"].get("atk")
       Canvas.print("ATK: %(atk)", 2 + hpArea.x + manaArea.x + 16, 2, EDG32[19], "m5x7")
       var atkArea = Font["m5x7"].getArea("ATK: %(atk)")
       var def = player["stats"].get("def")
       Canvas.print("DEF: %(def)", 2 + hpArea.x + manaArea.x + atkArea.x  + 24, 2, EDG32[19], "m5x7")
       var defArea = Font["m5x7"].getArea("DEF: %(def)")
+      */
 
       drawEntityMods(player, Vec.new(Canvas.width - 8 - TILE_SIZE, 2), Vec.new(Canvas.width - 8 - 3 * TILE_SIZE, 2), true)
 

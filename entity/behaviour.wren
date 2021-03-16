@@ -32,7 +32,7 @@ class ProjectileBehaviour is Behaviour {
     }
     if (ctx.getEntitiesAtTile(dest).count > 0) {
       return MultiAction.new([
-        AttackAction.new(dest, Attack.new(2, AttackType.fire, false)),
+        AttackAction.new(dest, Attack.new(self["stats"].get("atk"), AttackType.fire, false)),
         despawn
       ], true)
     }
@@ -94,7 +94,7 @@ class RangedBehaviour is Behaviour {
           if (!solid) {
             // attack is good
             if (!_factory) {
-              return AttackAction.new(player.pos, Attack.new(3, AttackType.lightning, false))
+              return AttackAction.new(player.pos, Attack.new(self["stats"].get("atk"), AttackType.lightning, false))
             } else {
               return _factory.call(player)
             }

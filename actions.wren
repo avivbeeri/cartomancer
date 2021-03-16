@@ -8,7 +8,7 @@ import "./events" for CollisionEvent,
   ModifierEvent,
   LogEvent
 
-import "./combat" for Attack
+import "./combat" for Attack, AttackResult
 
 class CommuneAction is Action {
   construct new() {
@@ -16,6 +16,7 @@ class CommuneAction is Action {
   }
 
   perform() {
+    /*
     if (source.has("stats") &&
         source["stats"].has("mana")) {
 
@@ -26,15 +27,19 @@ class CommuneAction is Action {
       }
       source["stats"].set("mana", -1)
     }
-
+    */
     var discard = source["discard"]
     var deck = source["deck"]
-    deck.addToBottom(discard)
-    deck.shuffle()
-    source["discard"] = []
+    var success = (deck.count == 0 && source["hand"].count == 0)
+    if (success) {
 
-    source["hand"] = deck.drawCards(3)
-    ctx.events.add(CommuneEvent.new(source, true))
+      deck.addToBottom(discard)
+      deck.shuffle()
+      source["discard"] = []
+
+      source["hand"] = deck.drawCards(3)
+    }
+    ctx.events.add(CommuneEvent.new(source, success))
 
     return ActionResult.success
   }
@@ -130,6 +135,8 @@ class AttackAction is Action {
   location { _location }
 
   perform() {
+    /*
+    ----- MANA DISABLE --------
     if (_attack.needsMana &&
       source.has("stats") &&
       source["stats"].has("mana")) {
@@ -140,10 +147,12 @@ class AttackAction is Action {
       }
       source["stats"].decrease("mana", 1)
     }
+    */
 
 
     var location = _location
     var occupying = ctx.getEntitiesAtTile(location.x, location.y).where {|entity| entity.has("stats") }
+
     if (occupying.count == 0) {
       return ActionResult.failure
     }
@@ -152,16 +161,22 @@ class AttackAction is Action {
       var defence = target["stats"].get("def")
       var damage = M.max(0, _attack.damage - defence)
 
-      var attackEvent = AttackEvent.new(source, target, _attack)
-      target.notify(attackEvent)
+      var attackResult = AttackResult.success
+      if (_attack.damage <= 0) {
+        attackResult = AttackResult.inert
+      } else if (damage == 0) {
+        attackResult = AttackResult.blocked
+      }
+
+      var attackEvent = AttackEvent.new(source, target, _attack, attackResult)
+      attackEvent = target.notify(attackEvent)
+
       if (!attackEvent.cancelled) {
-        if (attackEvent.success) {
-          target["stats"].decrease("hp", damage)
-        }
         ctx.events.add(LogEvent.new("%(source) attacked %(target)"))
         ctx.events.add(attackEvent)
+        target["stats"].decrease("hp", damage)
         ctx.events.add(LogEvent.new("%(source) did %(damage) damage."))
-        if (currentHP - damage <= 0) {
+        if (target["stats"].get("hp") <= 0) {
           ctx.events.add(LogEvent.new("%(target) was defeated."))
         }
       }
@@ -220,10 +235,12 @@ class PlayCardAction is Action {
   }
 
   perform() {
+    /*
     if (!source.has("hand") || source.has("stats") && source["stats"].get("mana") <= 0) {
       // TODO: Assert?!
       return ActionResult.failure
     }
+    */
 
     var hand = source["hand"]
     var selectedCard = hand.removeAt(_handIndex)
@@ -357,7 +374,7 @@ class MultiAction is Action {
     var result = ActionResult.success
     var failed = false
     for (step in _actionList) {
-      while (true) {
+      while (step) {
         step.bind(source)
         var stepResult = step.perform()
         if (!_force && !stepResult.succeeded) {

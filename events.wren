@@ -1,4 +1,5 @@
 import "./core/event" for Event
+import "./combat" for AttackResult
 
 class GameEndEvent is Event {
   construct new(won) {
@@ -42,23 +43,23 @@ class AttackEvent is Event {
     _target = target
     _source = source
     _attack = attack
-    _success = true
+    _result = true
   }
-  construct new(source, target, attack, success) {
+  construct new(source, target, attack, result) {
     super()
     _target = target
     _source = source
     _attack = attack
-    _success = success || true
+    _result = result
   }
 
   source { _source }
   target { _target }
   attack { _attack }
-  success { _success }
+  result { _result }
 
   fail() {
-    _success = false
+    _result = AttackResult.blocked
   }
 }
 

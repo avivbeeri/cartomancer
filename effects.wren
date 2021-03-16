@@ -1,5 +1,5 @@
 import "graphics" for Canvas, Color, Font
-import "math" for Vec
+import "math" for Vec, M
 import "input" for Mouse
 import "./keys" for InputActions
 import "./palette" for EDG32, EDG32A
@@ -107,25 +107,33 @@ class Pause is Ui {
 }
 
 class Animation is Ui {
+  construct new(ctx, location, sprites, frameTime, linger) {
+    _sprites = sprites
+    _frameTime = frameTime
+    _location = location
+    _linger = linger
+    _t = 0
+    _end = frameTime * _sprites.count
+  }
   construct new(ctx, location, sprites, frameTime) {
     super(ctx)
     _sprites = sprites
     _frameTime = frameTime
     _location = location
+    _linger = 0
     _t = 0
     _end = frameTime * _sprites.count
     // spritesheet/list
   }
 
-  finished { _t >= _end}
+  finished { _t >= _end + _linger }
   update() {
     _t = _t + 1
   }
   drawDiagetic() {
-    if (_t < _end) {
-      var f = (_t / _frameTime).floor
-      _sprites[f].draw(_location.x, _location.y)
-    }
+    var f = (M.min(_end - 1, _t) / _frameTime).floor
+    _sprites[f].draw(_location.x, _location.y)
+    return true
   }
 }
 class CardDialog is Ui {

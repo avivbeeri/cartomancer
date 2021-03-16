@@ -36,7 +36,7 @@
         "id": "shadow",
         "add": { "def": -1, "atk": -1 },
         "duration": 2,
-        "responsible": "source"
+        "responsible": "target"
       },
       "target": "creature"
     },
@@ -50,7 +50,10 @@
       "target": "space",
       "params": {
         "range": 1,
-        "id": "fireball"
+        "id": "fireball",
+        "stats": {
+          "atk": 2
+        }
       }
     },
     {
@@ -162,7 +165,7 @@
       "stats": {
         "hp": 1,
         "hpMax": 1,
-        "atk": 0,
+        "atk": 1,
         "def": 0,
         "speed": 4
       },
@@ -199,7 +202,6 @@
       "id": "fireball",
       "stats": {
          "speed": 3,
-         "atk": 2,
          "def": 3
       },
       "types": [],
