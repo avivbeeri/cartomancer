@@ -17,7 +17,7 @@ class Creature is Entity {
     this["stats"] = StatGroup.new({
       "atk": 1,
       "def": 0,
-      "spi": 1,
+      "spi": 0,
       "hp": 1,
       "hpMax": 1,
       "speed": 6
@@ -35,7 +35,7 @@ class Creature is Entity {
       "atk": 1,
       "def": 0,
       "hp": 1,
-      "spi": 1,
+      "spi": 0,
       "hpMax": 1,
       "speed": 6
     })

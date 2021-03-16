@@ -101,7 +101,9 @@ class MoveAction is Action {
         }
       }
       if (!_alt && target) {
-        result = ActionResult.alternate(AttackAction.new(source.pos + _dir, Attack.melee(source)))
+        if (source.has("stats") && source["stats"].base("atk") > 0) {
+          result = ActionResult.alternate(AttackAction.new(source.pos + _dir, Attack.melee(source)))
+        }
       } else if (!_alt && collectible) {
         result = ActionResult.alternate(PickupAction.new(_dir))
       }

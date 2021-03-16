@@ -205,8 +205,9 @@
     {
       "id": "fireball",
       "stats": {
-         "speed": 3,
-         "def": 3
+        "atk": 1,
+        "speed": 3,
+        "def": 3
       },
       "types": [],
       "classType": "fireball",

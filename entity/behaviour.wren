@@ -34,7 +34,7 @@ class ProjectileBehaviour is Behaviour {
     }
     if (ctx.getEntitiesAtTile(dest).count > 0) {
       return MultiAction.new([
-        AttackAction.new(dest, Attack.new(self["stats"].get("spi"), AttackType.fire, false)),
+        AttackAction.new(dest, Attack.new(self["stats"].get("atk"), AttackType.fire, false)),
         despawn
       ], true)
     }
@@ -159,12 +159,6 @@ class SpawnBehaviour is RangedBehaviour {
   }
 
   evaluate() {
-    /*
-    _cast = !_cast
-    if (_cast) {
-      return
-    }
-    */
     var action = super.evaluate()
     if (action is AttackAction ) {
       var dir = (action.location - self.pos).unit

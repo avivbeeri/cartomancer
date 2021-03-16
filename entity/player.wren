@@ -11,6 +11,7 @@ class Player is Creature {
     super()
     _action = null
     priority = 12
+    this["stats"].set("spi", 1)
     this["stats"].set("mana", 1)
     this["stats"].set("manaMax", 5)
 

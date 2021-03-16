@@ -368,7 +368,7 @@ class WorldScene is Scene {
       var atk = player["stats"].get("atk")
       var def = player["stats"].get("def")
       var spi = player["stats"].get("spi")
-      var text = "HP: %(hp)/%(hpMax)  ATK: %(atk)  DEF: %(def) SPI: %(spi)"
+      var text = "HP: %(hp)/%(hpMax)   ATK: %(atk)   DEF: %(def)   SPI: %(spi)"
       Canvas.print(text, 8, 2, EDG32[19], "m5x7")
 
       drawEntityMods(player, Vec.new(Canvas.width - 8 - TILE_SIZE, 2), Vec.new(Canvas.width - 8 - 3 * TILE_SIZE, 2), true)
@@ -568,8 +568,11 @@ class WorldScene is Scene {
       var hpMax = stats.get("hpMax")
       var atk = stats.get("atk")
       var def = stats.get("def")
-      var spi = stats.get("spi")
-      text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)\nSPI: %(spi)"
+      text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
+      if (stats.base("spi") > 0) {
+        var spi = stats.get("spi")
+        text = "%(text)\nSPI: %(spi)"
+      }
     }
     var area = Font["m5x7"].getArea(text)
 
