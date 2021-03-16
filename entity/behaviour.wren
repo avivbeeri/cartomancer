@@ -56,9 +56,20 @@ class WaitBehaviour is Behaviour {
       return null
     }
     if (room) {
-      if (player.pos.x > room.x && player.pos.x < room.x + room.width && player.pos.y > room.y && player.pos.y < room.y + room.height) {
+      if (player.pos.x > room.x &&
+          player.pos.x < room.x + room.width &&
+          player.pos.y > room.y &&
+          player.pos.y < room.y + room.height) {
         self["seenPlayer"] = true
         return null
+      } else {
+        var search = player["dijkstra"]
+        var path = DijkstraMap.reconstruct(search[0], player.pos, self.pos)
+        if (path && path.count < 2 + 2) {
+          System.print("CLOSE")
+          self["seenPlayer"] = true
+          return null
+        }
       }
     }
     var dir = RNG.sample(NSEW.values.toList)
