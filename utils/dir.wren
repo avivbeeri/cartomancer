@@ -11,3 +11,9 @@ var Directions = {
   "sw": Vec.new(-1, 1)
 }
 
+var NSEW = {
+  "w": Vec.new(-1, 0),
+  "n": Vec.new(0, -1),
+  "e": Vec.new(1, 0),
+  "s": Vec.new(0, 1)
+}

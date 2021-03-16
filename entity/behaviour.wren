@@ -1,10 +1,13 @@
-import "./core/action" for Action
-import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
 import "math" for Vec
+
+import "./core/action" for Action
+import "./core/config" for Config
+import "./utils/dir" for NSEW
+import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
 
 import "./combat" for Attack, AttackType
 import "./actions" for MoveAction, AttackAction, DespawnAction, MultiAction, SpawnAction
-import "./core/config" for Config
+import "./rng" for RNG
 
 class Behaviour {
   construct new(self) {
@@ -38,6 +41,33 @@ class ProjectileBehaviour is Behaviour {
     }
     System.print(dest)
     return MoveAction.new(dir, true, despawn)
+  }
+}
+class WaitBehaviour is Behaviour {
+  construct new(self) {
+    super(self)
+    self["seenPlayer"] = false
+  }
+
+  evaluate() {
+    var map = ctx.map
+    var player = ctx.getEntityByTag("player")
+    var room = map[self.pos]["room"]
+    if (self["seenPlayer"]) {
+      return null
+    }
+    if (room) {
+      if (player.pos.x > room.x && player.pos.x < room.x + room.width && player.pos.y > room.y && player.pos.y < room.y + room.height) {
+        self["seenPlayer"] = true
+        return null
+      }
+    }
+    var dir = RNG.sample(NSEW.values.toList)
+    if (dir) {
+      return MoveAction.new(dir, true, Action.none )
+    } else {
+      return Action.none
+    }
   }
 }
 

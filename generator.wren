@@ -34,6 +34,9 @@ class Room is Vec {
 
   neighbours { _neighbours }
   toString { "Room [%(super.toString)]"}
+
+  width { z }
+  height { w }
 }
 
 class WorldGenerator {
@@ -217,9 +220,9 @@ class GrowthGenerator {
       for (y in wy...height) {
         for (x in wx...width) {
           if (x == wx || x == width - 1 || y == wy || y == height - 1) {
-            zone.map[x, y] = Tile.new({ "floor": "wall", "solid": true })
+            zone.map[x, y] = Tile.new({ "floor": "wall", "solid": true, "room": room })
           } else {
-            zone.map[x, y] = Tile.new({ "floor": "tile" })
+            zone.map[x, y] = Tile.new({ "floor": "tile", "room": room })
           }
         }
       }

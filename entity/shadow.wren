@@ -4,13 +4,14 @@ import "./core/action" for Action
 import "./stats" for StatGroup
 import "./entity/creature" for Creature
 import "./events" for LogEvent, PickupEvent, AttackEvent
-import "./entity/behaviour" for RangedBehaviour, SeekBehaviour
+import "./entity/behaviour" for RangedBehaviour, SeekBehaviour, WaitBehaviour
 import "./actions" for ApplyModifierAction
 
 class Shadow is Creature {
   construct new(config) {
     super(config)
     _behaviours = [
+      WaitBehaviour.new(this),
       RangedBehaviour.new(this, 5) {|target|
 
         var id = config["effect"]["id"]

@@ -4,12 +4,13 @@ import "./core/action" for Action
 import "./stats" for StatGroup
 import "./entity/creature" for Creature
 import "./events" for LogEvent, PickupEvent, AttackEvent
-import "./entity/behaviour" for SpawnBehaviour, SeekBehaviour
+import "./entity/behaviour" for SpawnBehaviour, SeekBehaviour, WaitBehaviour
 
 class Wizard is Creature {
   construct new(config) {
     super(config)
     _behaviours = [
+      WaitBehaviour.new(this),
       SpawnBehaviour.new(this, 10, "fireball"),
       SeekBehaviour.new(this)
     ]
