@@ -367,23 +367,9 @@ class WorldScene is Scene {
       Canvas.line(0, 20, Canvas.width, 20, EDG32[29], 2)
       var atk = player["stats"].get("atk")
       var def = player["stats"].get("def")
-      var text = "HP: %(hp)/%(hpMax)  ATK: %(atk)  DEF: %(def)"
+      var spi = player["stats"].get("spi")
+      var text = "HP: %(hp)/%(hpMax)  ATK: %(atk)  DEF: %(def) SPI: %(spi)"
       Canvas.print(text, 8, 2, EDG32[19], "m5x7")
-      /*
-      /*
-      var mana = player["stats"].get("mana")
-      var manaMax = player["stats"].get("manaMax")
-      Canvas.print("HP: %(hp)/%(hpMax)", 2, 2, EDG32[19], "m5x7")
-      */
-      var hpArea = Font["m5x7"].getArea("HP: %(hp)/%(hpMax)")
-      Canvas.print("Mana: %(mana)/%(manaMax)", 2 + hpArea.x + 8, 2, EDG32[19], "m5x7")
-      var manaArea = Font["m5x7"].getArea("Mana: %(mana)/%(manaMax)")
-      Canvas.print("ATK: %(atk)", 2 + hpArea.x + manaArea.x + 16, 2, EDG32[19], "m5x7")
-      var atkArea = Font["m5x7"].getArea("ATK: %(atk)")
-      var def = player["stats"].get("def")
-      Canvas.print("DEF: %(def)", 2 + hpArea.x + manaArea.x + atkArea.x  + 24, 2, EDG32[19], "m5x7")
-      var defArea = Font["m5x7"].getArea("DEF: %(def)")
-      */
 
       drawEntityMods(player, Vec.new(Canvas.width - 8 - TILE_SIZE, 2), Vec.new(Canvas.width - 8 - 3 * TILE_SIZE, 2), true)
 
@@ -582,7 +568,8 @@ class WorldScene is Scene {
       var hpMax = stats.get("hpMax")
       var atk = stats.get("atk")
       var def = stats.get("def")
-      text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)"
+      var spi = stats.get("spi")
+      text = "%(selectedEntity.name)\nHP: %(hp)/%(hpMax)\nATK: %(atk)\nDEF: %(def)\nSPI: %(spi)"
     }
     var area = Font["m5x7"].getArea(text)
 

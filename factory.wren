@@ -24,7 +24,7 @@ class CardActionFactory {
       return ApplyModifierAction.new(modifier, target, !responsible || responsible == "source")
     } else if (card.action == "attack") {
       var kind = card.params["kind"] || AttackType.melee
-      var base = card.params["base"] || 1
+      var base = card.params["base"] || source["stats"].get("spi") || 1
       var mana = card.params["needsMana"] || false
       return AttackAction.new(target.pos, Attack.new(base, kind, mana))
     } else if (card.action == "spawn") {

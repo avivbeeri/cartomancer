@@ -28,6 +28,7 @@ class StatGroup {
   increase(stat, by, maxStat) { _base[stat] = M.mid(0, _base[stat] + by, _base[maxStat]) }
 
   has(stat) { _base[stat] }
+  [stat] { get(stat) }
   get(stat) {
     var value = _base[stat]
     if (value == null) {

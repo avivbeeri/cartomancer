@@ -151,8 +151,9 @@
       "stats": {
         "hp": 1,
         "hpMax": 1,
-        "atk": 1,
+        "atk": 0,
         "def": 0,
+        "spi": 1,
         "speed": 2
       },
       "classType": "thunder",
@@ -167,8 +168,9 @@
       "stats": {
         "hp": 1,
         "hpMax": 1,
-        "atk": 1,
+        "atk": 0,
         "def": 0,
+        "spi": 1,
         "speed": 4
       },
       "classType": "wizard",
