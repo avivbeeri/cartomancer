@@ -5,7 +5,7 @@ import "math" for Vec, M
 import "./palette" for EDG32, EDG32A
 
 import "./core/display" for Display
-import "./core/scene" for Scene
+import "./core/scene" for Scene, Ui
 import "./core/event" for EntityRemovedEvent, EntityAddedEvent
 
 import "./keys" for InputGroup, InputActions
@@ -35,6 +35,61 @@ var TILE_SIZE = 16 * SCALE
 var CARD_UI_TOP = 224
 var X_OFFSET = 0
 
+class EntityView is Ui {
+  construct new(ctx, view, entityId) {
+    _ctx = ctx
+    _view = view
+
+    _id = entityId
+    var entity = ctx.getEntityById(entityId)
+    _spriteType = entity["sprite"]
+    _position = entity.pos * TILE_SIZE
+    _moving = false
+  }
+
+  pos { _position }
+  goal { _entity.pos * TILE_SIZE }
+
+  update() {
+    _entity = _ctx.getEntityById(_id)
+    if (_entity) {
+      // _position.x = _entity.pos.x * TILE_SIZE
+      // _position.y = _entity.pos.y * TILE_SIZE
+      _moving = _position.x != _entity.pos.x * TILE_SIZE || _position.y != _entity.pos.y * TILE_SIZE
+    }
+  }
+
+  draw() {
+    if (!_entity || !_view.isOnScreen(_entity.pos)) {
+      return
+    }
+
+    var sx = _position.x + X_OFFSET
+    var sy = _position.y
+    if (DEBUG && Keyboard["left ctrl"].down) {
+      var r = TILE_SIZE / 2
+      Canvas.circlefill(sx + r, sy +r, r, EDG32A[10])
+    }
+
+    if (_entity is Player) {
+      // We draw this
+      if (_moving) {
+        var s = (T * 5).floor % 2
+        Sprites["playerWalk"][s].draw(sx, sy)
+      } else {
+        Sprites["playerStand"][F].draw(sx, sy)
+      }
+    } else if (_entity is Collectible) {
+      Sprites["card"][0].draw(sx, sy - F * 2)
+    } else if (_entity is Creature && _spriteType) {
+      Sprites[_spriteType][F].draw(sx, sy)
+    } else {
+      Canvas.print(_entity.type.name[0], sx, sy, Color.red)
+    }
+  }
+
+}
+
 class WorldScene is Scene {
   construct new(args) {
     // Args are currently unused.
@@ -58,6 +113,9 @@ class WorldScene is Scene {
 
     _reshuffleButton = Button.new("Commune", Vec.new(416, CARD_UI_TOP + 4), Vec.new(7 * 8 + 4, 16))
     _allowInput = true
+
+    _entityViews = {}
+    _world.active.entities.each {|entity| _entityViews[entity.id] = EntityView.new(_world.active, this, entity.id) }
   }
 
 
@@ -78,6 +136,13 @@ class WorldScene is Scene {
       _allowInput = (_world.strategy.currentActor is Player) && _world.strategy.currentActor.priority >= 12
       _selected = _allowInput ? _selected : null
     }
+
+    for (view in _entityViews.values) {
+      view.update()
+    }
+    var playerView = _entityViews[player.id]
+    _camera.x = playerView.pos.x
+    _camera.y = playerView.pos.y
 
     if (updateAllUi()) {
       _allowInput = false
@@ -167,8 +232,10 @@ class WorldScene is Scene {
     for (event in _zone.events) {
       if (event is EntityAddedEvent) {
         System.print("Entity %(event.id) was added")
+        _entityViews[event.id] = EntityView.new(_zone, this, event.id)
       } else if (event is EntityRemovedEvent) {
         System.print("Entity %(event.id) was removed")
+        _entityViews.remove(event.id)
       } else if (event is GameEndEvent) {
         var result = event.won ? "won" : "lost"
         System.print("The game has ended. You have %(result).")
@@ -189,7 +256,13 @@ class WorldScene is Scene {
         if (event.target is Player) {
           _moving = true
           _lastPosition = player.pos
-          _diageticUi.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
+         //  _diageticUi.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
+        }
+        if (isOnScreen(event.target.pos)) {
+          _diageticUi.add(EntityBulkLerp.new(this, [ _entityViews[event.target.id] ]))
+        } else {
+          _entityViews[event.target.id].pos.x = event.target.pos.x * TILE_SIZE
+          _entityViews[event.target.id].pos.y = event.target.pos.y * TILE_SIZE
         }
       } else if (event is ModifierEvent) {
         if (isOnScreen(event.target.pos)) {
@@ -303,6 +376,7 @@ class WorldScene is Scene {
       }
     }
 
+    /*
     for (entity in _zone.entities) {
       var sx = entity.pos.x * TILE_SIZE + X_OFFSET
       var sy = entity.pos.y * TILE_SIZE
@@ -333,8 +407,10 @@ class WorldScene is Scene {
         Canvas.print(entity.type.name[0], sx, sy, Color.red)
       }
     }
+    */
 
 
+    /*
     if (player && !STATIC) {
       // The player is diagetic, but we get the best draw results in
       // absolute space for the moment
@@ -349,6 +425,11 @@ class WorldScene is Scene {
       // Reset the camera
       Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
     }
+    */
+    for (view in _entityViews.values) {
+      view.draw()
+    }
+
 
     for (ui in _diageticUi) {
       var block = ui.drawDiagetic()
@@ -534,6 +615,7 @@ class WorldScene is Scene {
     var screenPos = worldToScreen(worldPos)
     return (screenPos.x >= 0 && screenPos.x < Canvas.width && screenPos.y >= 21 && screenPos.y < CARD_UI_TOP)
   }
+
   drawEntityMods(entity, iconPos, descriptionPos, rightAlign) {
     var mouse = Mouse.pos
     var x = iconPos.x
@@ -590,6 +672,7 @@ class WorldScene is Scene {
 // from circular dependancies
 import "./effects" for
   CameraLerp,
+  EntityBulkLerp,
   SuccessMessage,
   FailureMessage,
   Animation,

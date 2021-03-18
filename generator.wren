@@ -27,12 +27,14 @@ class Room is Vec {
   construct new(x, y, w, h) {
     super(x, y, w, h)
     _neighbours = []
+    _doors = []
   }
 
   kind { _kind }
   kind=(v) { _kind = v }
 
   neighbours { _neighbours }
+  doors { _doors }
   toString { "Room [%(super.toString)]"}
 
   width { z }
@@ -79,6 +81,7 @@ class GrowthGenerator {
 
     // 3) A single room in the world (Library)
     var rooms = [ Room.new(0, 0, 7, 7) ]
+    var door = null
 
     while(rooms.count < ROOM_COUNT) {
 
@@ -99,18 +102,7 @@ class GrowthGenerator {
         newRoom.x = base.x - newRoom.z + 1
         newRoom.y = base.y + offset
         // 8-9) Check room for valid space compared to other rooms.
-        var hit = false
-        for (room in rooms) {
-          if (room == base) {
-            // Colliding with the base is intentional. ignore this hit.
-            continue
-          }
-          if (overlap(newRoom, room)) {
-            hit = true
-            break
-          }
-        }
-        if (hit) {
+        if (!isSafeToPlace(rooms, base, newRoom)) {
           continue
         }
 
@@ -119,25 +111,14 @@ class GrowthGenerator {
         var doorTop = M.max(newRoom.y, base.y)
         var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
         var doorRange = RNG.int(doorTop + 1, doorBottom - 1)
-        doors.add(Vec.new(base.x, doorRange))
+        door = Vec.new(base.x, doorRange)
       } else if (dir == 1) {
         // up
         var offset = RNG.int(3 - newRoom.z, base.z - 3)
         newRoom.x = base.x + offset
         newRoom.y = base.y - newRoom.w + 1
         // 8-9) Check room for valid space compared to other rooms.
-        var hit = false
-        for (room in rooms) {
-          if (room == base) {
-            // Colliding with the base is intentional. ignore this hit.
-            continue
-          }
-          if (overlap(newRoom, room)) {
-            hit = true
-            break
-          }
-        }
-        if (hit) {
+        if (!isSafeToPlace(rooms, base, newRoom)) {
           continue
         }
 
@@ -145,25 +126,14 @@ class GrowthGenerator {
         var doorLeft = M.max(newRoom.x, base.x)
         var doorRight = M.min(newRoom.x + newRoom.z, base.x + base.z)
         var doorRange = RNG.int(doorLeft + 1, doorRight - 1)
-        doors.add(Vec.new(doorRange, base.y))
+        door = Vec.new(doorRange, base.y)
       } else if (dir == 2) {
         // right
         var offset = RNG.int(3 - newRoom.w, base.w - 3)
         newRoom.x = base.x + base.z - 1
         newRoom.y = base.y + offset
         // 8-9) Check room for valid space compared to other rooms.
-        var hit = false
-        for (room in rooms) {
-          if (room == base) {
-            // Colliding with the base is intentional. ignore this hit.
-            continue
-          }
-          if (overlap(newRoom, room)) {
-            hit = true
-            break
-          }
-        }
-        if (hit) {
+        if (!isSafeToPlace(rooms, base, newRoom)) {
           continue
         }
 
@@ -171,25 +141,14 @@ class GrowthGenerator {
         var doorTop = M.max(newRoom.y, base.y)
         var doorBottom = M.min(newRoom.y + newRoom.w, base.y + base.w)
         var doorRange = RNG.int(doorTop + 1, doorBottom - 1)
-        doors.add(Vec.new(newRoom.x, doorRange))
+        door = Vec.new(newRoom.x, doorRange)
       } else if (dir == 3){
         // up
         var offset = RNG.int(3 - newRoom.z, base.z - 3)
         newRoom.x = base.x + offset
         newRoom.y = base.y + base.w - 1
         // 8-9) Check room for valid space compared to other rooms.
-        var hit = false
-        for (room in rooms) {
-          if (room == base) {
-            // Colliding with the base is intentional. ignore this hit.
-            continue
-          }
-          if (overlap(newRoom, room)) {
-            hit = true
-            break
-          }
-        }
-        if (hit) {
+        if (!isSafeToPlace(rooms, base, newRoom)) {
           continue
         }
 
@@ -197,13 +156,17 @@ class GrowthGenerator {
         var doorLeft = M.max(newRoom.x, base.x)
         var doorRight = M.min(newRoom.x + newRoom.z, base.x + base.z)
         var doorRange = RNG.int(doorLeft + 1, doorRight - 1)
-        doors.add(Vec.new(doorRange, newRoom.y))
+        door = Vec.new(doorRange, newRoom.y)
       } else {
         // Safety assert
         Fiber.abort("Tried to grow from bad direction")
       }
       rooms.add(newRoom)
       base.neighbours.add(newRoom)
+
+      doors.add(door)
+      newRoom.doors.add(door)
+      base.doors.add(door)
     }
 
     var start = rooms[0]
@@ -252,6 +215,19 @@ class GrowthGenerator {
            r1.x + r1.z > r2.x &&
            r1.y < r2.y + r2.w &&
            r1.y + r1.w > r2.y
+  }
+
+  isSafeToPlace(rooms, base, newRoom) {
+    for (room in rooms) {
+      if (room == base) {
+        // Colliding with the base is intentional. ignore this hit.
+        continue
+      }
+      if (overlap(newRoom, room)) {
+        return false
+      }
+    }
+    return true
   }
 
   spawnIn(zone, room, entity) {

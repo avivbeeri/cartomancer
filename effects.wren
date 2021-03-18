@@ -9,6 +9,36 @@ import "./widgets" for Button
 
 import "./deck" for Card
 
+class EntityBulkLerp is Ui {
+  construct new(ctx, entities) {
+    super(ctx)
+    _alpha = 0
+    _entities = entities
+    _starts = entities.map {|entity| entity.pos * 1 }.toList
+  }
+
+  finished {
+    return _alpha >= 1
+  }
+
+  speed { 1 / 15 }
+
+  update() {
+    _alpha = _alpha + speed
+    for (i in 0..._entities.count) {
+      var entity = _entities[i]
+      var start = _starts[i]
+      var dir = (entity.goal - start)
+      if (_alpha < 1) {
+        entity.pos.x = start.x + dir.x * _alpha
+        entity.pos.y = start.y + dir.y * _alpha
+      } else {
+        entity.pos.x = entity.goal.x
+        entity.pos.y = entity.goal.y
+      }
+    }
+  }
+}
 
 class CameraLerp is Ui {
   construct new(ctx, goal) {
