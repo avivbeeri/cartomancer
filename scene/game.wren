@@ -268,7 +268,7 @@ class WorldScene is Scene {
           _diageticUi.add(EntityRemove.new(this, event.id))
           System.print("Entity %(event.id) was removed")
           if (event.id == player.id) {
-            _diageticUi.add(Pause.new(this, 120))
+            _diageticUi.add(Pause.new(this, 60))
           }
         } else if (event is GameEndEvent) {
           var result = event.won ? "won" : "lost"
@@ -312,7 +312,7 @@ class WorldScene is Scene {
             }
             _diageticUi.add(Animation.new(this, animate.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5, linger))
             if (playerIsTarget) {
-              _diageticUi.add(Pause.new(this, 30))
+              // _diageticUi.add(Pause.new(this, 15))
             }
             if (event.source is Player) {
               _tried = true
