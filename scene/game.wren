@@ -27,8 +27,6 @@ var F = 0
 
 var DEBUG = false
 
-// Is the view static?
-var STATIC = false
 
 var SCALE = 1
 var TILE_SIZE = 16 * SCALE
@@ -39,19 +37,29 @@ class EntityView is Ui {
   construct new(ctx, view, entityId) {
     _ctx = ctx
     _view = view
+    _alive = true
 
     _id = entityId
     var entity = ctx.getEntityById(entityId)
     _spriteType = entity["sprite"]
     _position = entity.pos * TILE_SIZE
+    _goal = _position
     _moving = false
   }
 
+  id { _id }
+
   pos { _position }
-  goal { _entity.pos * TILE_SIZE }
+  goal { _goal }
+
+  alive { _alive }
+  alive=(v) { _alive = v }
+  removable { !_alive && !_moving }
 
   update() {
+    _lastEntity = _entity || _lastEntity
     _entity = _ctx.getEntityById(_id)
+    _goal = (_entity || _lastEntity).pos * TILE_SIZE
     if (_entity) {
       // _position.x = _entity.pos.x * TILE_SIZE
       // _position.y = _entity.pos.y * TILE_SIZE
@@ -60,6 +68,10 @@ class EntityView is Ui {
   }
 
   draw() {
+    if (!_entity) {
+      _entity = _lastEntity
+    }
+
     if (!_entity || !_view.isOnScreen(_entity.pos)) {
       return
     }
@@ -130,19 +142,21 @@ class WorldScene is Scene {
     T = T + (1/60)
     F = (T * 2).floor % 2
 
+    for (view in _entityViews.values) {
+      view.update()
+    }
+
+
     var player = _zone.getEntityByTag("player")
     if (player) {
       _lastPosition = player.pos
       _allowInput = (_world.strategy.currentActor is Player) && _world.strategy.currentActor.priority >= 12
       _selected = _allowInput ? _selected : null
+      var playerView = _entityViews[player.id]
+      _camera.x = playerView.pos.x
+      _camera.y = playerView.pos.y
     }
 
-    for (view in _entityViews.values) {
-      view.update()
-    }
-    var playerView = _entityViews[player.id]
-    _camera.x = playerView.pos.x
-    _camera.y = playerView.pos.y
 
     if (updateAllUi()) {
       _allowInput = false
@@ -229,82 +243,90 @@ class WorldScene is Scene {
     pressed = InputActions.directions.any {|key| key.down }
 
     _world.update()
+    var lastEntityLerp = null
     for (event in _zone.events) {
-      if (event is EntityAddedEvent) {
-        System.print("Entity %(event.id) was added")
-        _entityViews[event.id] = EntityView.new(_zone, this, event.id)
-      } else if (event is EntityRemovedEvent) {
-        System.print("Entity %(event.id) was removed")
-        _entityViews.remove(event.id)
-      } else if (event is GameEndEvent) {
-        var result = event.won ? "won" : "lost"
-        System.print("The game has ended. You have %(result).")
-        if (event.won) {
-          _ui.add(SuccessMessage.new(this))
-        } else {
-          // TOOD: Add more context about cause of failure
-          _ui.add(FailureMessage.new(this))
-        }
-      } else if (event is CommuneEvent) {
-        if (event.success) {
-          System.print("You communed with the cards and their magic is restored.")
-          _diageticUi.add(Animation.new(this, event.source.pos * TILE_SIZE, Sprites["commune"], 5))
-        } else {
-          System.print("You cannot commune right now.")
-        }
-      } else if (event is MoveEvent) {
+      if (event is MoveEvent) {
         if (event.target is Player) {
           _moving = true
           _lastPosition = player.pos
-         //  _diageticUi.add(CameraLerp.new(this, event.target.pos * TILE_SIZE))
         }
         if (isOnScreen(event.target.pos)) {
-          _diageticUi.add(EntityBulkLerp.new(this, [ _entityViews[event.target.id] ]))
+          if (!lastEntityLerp) {
+            lastEntityLerp = EntityBulkLerp.new(this, [])
+            _diageticUi.add(lastEntityLerp)
+          }
+          lastEntityLerp.add(_entityViews[event.target.id])
         } else {
           _entityViews[event.target.id].pos.x = event.target.pos.x * TILE_SIZE
           _entityViews[event.target.id].pos.y = event.target.pos.y * TILE_SIZE
         }
-      } else if (event is ModifierEvent) {
-        if (isOnScreen(event.target.pos)) {
-          _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, event.positive ? Sprites["buff"] : Sprites["debuff"], 5))
-        }
+      } else {
+        lastEntityLerp = null
+        if (event is EntityAddedEvent) {
+          _diageticUi.add(EntityAdd.new(this, event.id))
+        } else if (event is EntityRemovedEvent) {
+          _diageticUi.add(EntityRemove.new(this, event.id))
+          System.print("Entity %(event.id) was removed")
+          if (event.id == player.id) {
+            _diageticUi.add(Pause.new(this, 120))
+          }
+        } else if (event is GameEndEvent) {
+          var result = event.won ? "won" : "lost"
+          System.print("The game has ended. You have %(result).")
+          if (event.won) {
+            _ui.add(SuccessMessage.new(this))
+          } else {
+            // TOOD: Add more context about cause of failure
+            _ui.add(FailureMessage.new(this))
+          }
+        } else if (event is CommuneEvent) {
+          if (event.success) {
+            System.print("You communed with the cards and their magic is restored.")
+            _diageticUi.add(Animation.new(this, event.source.pos * TILE_SIZE, Sprites["commune"], 5))
+          } else {
+            System.print("You cannot commune right now.")
+          }
+        } else if (event is ModifierEvent) {
+          if (isOnScreen(event.target.pos)) {
+            _diageticUi.add(Animation.new(this, event.target.pos * TILE_SIZE, event.positive ? Sprites["buff"] : Sprites["debuff"], 5))
+          }
 
-      } else if (event is PickupEvent) {
-        if (event.source is Player) {
-          _tried = true
-          _moving = false
-        }
-      } else if (event is AttackEvent) {
-        var playerIsTarget = event.target is Player
-        if (isOnScreen(event.target.pos)) {
-          var animation = "%(event.attack.attackType)Attack"
-          var animate = event.target
-          var linger = 0
-          if (event.result == AttackResult.blocked) {
-            animation = "blocked"
-            linger = playerIsTarget ? 30 : linger
-          } else if (event.result == AttackResult.inert) {
-            animation = "inert"
-            animate = event.source
-            linger = playerIsTarget ? 30 : linger
-          }
-          System.print(event.result)
-          _diageticUi.add(Animation.new(this, animate.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5, linger))
-          if (playerIsTarget) {
-            _diageticUi.add(Pause.new(this, 30))
-          }
+        } else if (event is PickupEvent) {
           if (event.source is Player) {
             _tried = true
             _moving = false
           }
-        }
-      } else if (event is LogEvent) {
-        _log.print(event.text)
-      } else if (event is CollisionEvent) {
-        if (isOnScreen(event.source.pos)) {
-          if (event.source is Player) {
-            _tried = true
-            _moving = false
+        } else if (event is AttackEvent) {
+          var playerIsTarget = event.target is Player
+          if (isOnScreen(event.target.pos)) {
+            var animation = "%(event.attack.attackType)Attack"
+            var animate = event.target
+            var linger = 0
+            if (event.result == AttackResult.blocked) {
+              animation = "blocked"
+              linger = playerIsTarget ? 30 : linger
+            } else if (event.result == AttackResult.inert) {
+              animation = "inert"
+              animate = event.source
+              linger = playerIsTarget ? 30 : linger
+            }
+            _diageticUi.add(Animation.new(this, animate.pos * TILE_SIZE, Sprites[animation] || Sprites["basicAttack"], 5, linger))
+            if (playerIsTarget) {
+              _diageticUi.add(Pause.new(this, 30))
+            }
+            if (event.source is Player) {
+              _tried = true
+              _moving = false
+            }
+          }
+        } else if (event is LogEvent) {
+          _log.print(event.text)
+        } else if (event is CollisionEvent) {
+          if (isOnScreen(event.source.pos)) {
+            if (event.source is Player) {
+              _tried = true
+              _moving = false
+            }
           }
         }
       }
@@ -331,6 +353,15 @@ class WorldScene is Scene {
     return false
   }
 
+  addEntityView(id) {
+    System.print("Entity %(id) was added")
+    _entityViews[id] = EntityView.new(_zone, this, id)
+  }
+
+  removeEntityView(id) {
+    _entityViews.remove(id)
+    System.print("removing %(id) from view")
+  }
 
   draw() {
     _zone = _world.active
@@ -342,9 +373,7 @@ class WorldScene is Scene {
     var cy = center.y
 
 
-    if (!STATIC) {
-      Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
-    }
+    Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
 
     var xRange = M.max((cx / TILE_SIZE), (Canvas.width - cx) / TILE_SIZE).ceil + 1
     var yRange = M.max((cy / TILE_SIZE), (Canvas.height - cy) / TILE_SIZE).ceil + 1
@@ -376,56 +405,6 @@ class WorldScene is Scene {
       }
     }
 
-    /*
-    for (entity in _zone.entities) {
-      var sx = entity.pos.x * TILE_SIZE + X_OFFSET
-      var sy = entity.pos.y * TILE_SIZE
-      if (DEBUG && Keyboard["left ctrl"].down) {
-        var r = TILE_SIZE / 2
-        Canvas.circlefill(sx + r, sy +r, r, EDG32A[10])
-      }
-      if (!isOnScreen(entity.pos)) {
-        continue
-      }
-      if (entity is Player) {
-        if (!STATIC) {
-          continue
-        }
-        // We draw this
-        if (_moving) {
-          var s = (T * 5).floor % 2
-          Sprites["playerWalk"][s].draw(sx, sy)
-        } else {
-          Sprites["playerStand"][s].draw(sx, sy)
-        }
-
-      } else if (entity is Collectible) {
-        Sprites["card"][0].draw(sx, sy - F * 2)
-      } else if (entity is Creature && entity["sprite"]) {
-        Sprites[entity["sprite"]][F].draw(sx, sy)
-      } else {
-        Canvas.print(entity.type.name[0], sx, sy, Color.red)
-      }
-    }
-    */
-
-
-    /*
-    if (player && !STATIC) {
-      // The player is diagetic, but we get the best draw results in
-      // absolute space for the moment
-      Canvas.offset()
-      var tile = _zone.map[player.pos]
-      // Draw player in screen center
-      if (_moving) {
-        Sprites["playerWalk"][F].draw(cx, cy)
-      } else {
-        Sprites["playerStand"][F].draw(cx, cy)
-      }
-      // Reset the camera
-      Canvas.offset((cx-_camera.x -X_OFFSET).floor, (cy-_camera.y).floor)
-    }
-    */
     for (view in _entityViews.values) {
       view.draw()
     }
@@ -673,6 +652,8 @@ class WorldScene is Scene {
 import "./effects" for
   CameraLerp,
   EntityBulkLerp,
+  EntityRemove,
+  EntityAdd,
   SuccessMessage,
   FailureMessage,
   Animation,

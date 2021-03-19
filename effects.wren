@@ -9,12 +9,36 @@ import "./widgets" for Button
 
 import "./deck" for Card
 
+class EntityAdd is Ui {
+  construct new(ctx, id) {
+    super(ctx)
+    _id = id
+  }
+  finished { true }
+  update() {
+    ctx.addEntityView(_id)
+  }
+}
+class EntityRemove is Ui {
+  construct new(ctx, id) {
+    super(ctx)
+    _id = id
+  }
+  finished { true }
+  update() {
+    ctx.removeEntityView(_id)
+  }
+}
 class EntityBulkLerp is Ui {
   construct new(ctx, entities) {
     super(ctx)
     _alpha = 0
     _entities = entities
-    _starts = entities.map {|entity| entity.pos * 1 }.toList
+    _starts = null
+  }
+
+  add(entityView) {
+    _entities.add(entityView)
   }
 
   finished {
@@ -24,6 +48,9 @@ class EntityBulkLerp is Ui {
   speed { 1 / 15 }
 
   update() {
+    if (!_starts) {
+      _starts = _entities.map {|entity| entity.pos * 1 }.toList
+    }
     _alpha = _alpha + speed
     for (i in 0..._entities.count) {
       var entity = _entities[i]
