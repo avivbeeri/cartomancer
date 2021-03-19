@@ -65,6 +65,8 @@ class EntityBulkLerp is Ui {
       }
     }
   }
+  draw() { true }
+  drawDiagetic() { true }
 }
 
 class CameraLerp is Ui {
@@ -97,6 +99,8 @@ class CameraLerp is Ui {
     _camera.x = cam.x
     _camera.y = cam.y
   }
+  draw() { true }
+  drawDiagetic() { true }
 }
 
 
