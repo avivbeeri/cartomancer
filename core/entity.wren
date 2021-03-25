@@ -58,6 +58,6 @@ class Entity is DataObject {
   update() { Action.none }
   draw() {}
 
-  toString { "%(this.type.name) (id: %(_id))" }
+  toString { "%(name) (id: %(_id))" }
 }
 

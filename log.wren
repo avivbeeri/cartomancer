@@ -13,6 +13,7 @@ class Log {
   }
 
   toggle() { _hidden = !_hidden }
+  hidden { _hidden }
 
   log { _log }
 

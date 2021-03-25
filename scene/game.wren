@@ -151,16 +151,15 @@ class WorldScene is Scene {
     if (player) {
       _lastPosition = player.pos
       _allowInput = (_world.strategy.currentActor is Player) && _world.strategy.currentActor.priority >= 12
-      _selected = _allowInput ? _selected : null
       var playerView = _entityViews[player.id]
       _camera.x = playerView.pos.x
       _camera.y = playerView.pos.y
     }
 
+    _selected = _allowInput && _log.hidden ? _selected : null
 
     if (updateAllUi()) {
       _allowInput = false
-      _selected = null
       return
     }
 
@@ -219,7 +218,8 @@ class WorldScene is Scene {
         }
         index = index + 1
       }
-      _selected = _allowInput ? hover : null
+      _selected = _allowInput && _log.hidden ? hover : null
+
 
       // Allow movement
       if (!player.action && !_tried) {
@@ -466,6 +466,9 @@ class WorldScene is Scene {
         var card = _selected[0]
         var pos =  _selected[1]
         card.draw(pos.x, pos.y - 32)
+        if (!_allowInput) {
+          Canvas.rectfill(pos.x, pos.y - 32, 96, CARD_UI_TOP - (pos.y - 32), EDG32A[27])
+        }
       }
       if (!_allowInput) {
         Canvas.rectfill(0, CARD_UI_TOP, Canvas.width, Canvas.height - CARD_UI_TOP, EDG32A[27])
@@ -479,6 +482,7 @@ class WorldScene is Scene {
       }
     }
 
+
     for (ui in _diageticUi) {
       var block = ui.draw()
       if (block) {
@@ -487,6 +491,7 @@ class WorldScene is Scene {
     }
 
     // TODO: Enforce priority for UI effects better
+    _log.draw(4, CARD_UI_TOP + 2)
 
     if (_diageticUi.isEmpty) {
       for (ui in _ui) {
@@ -496,8 +501,6 @@ class WorldScene is Scene {
         }
       }
     }
-    _log.draw(4, CARD_UI_TOP + 2)
-
   }
 
   drawPile(pile, left, top, shade) {
