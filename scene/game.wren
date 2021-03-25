@@ -160,6 +160,7 @@ class WorldScene is Scene {
 
     if (updateAllUi()) {
       _allowInput = false
+      _selected = null
       return
     }
 
@@ -179,12 +180,13 @@ class WorldScene is Scene {
 
 
       var mouse = Mouse.pos
-
-      var mouseEntities = _zone.getEntitiesAtTile(screenToWorld(mouse))
-      if (mouseEntities.count > 0) {
-        _selectedEntityId = mouseEntities.toList[0].id
-      } else {
-        _selectedEntityId = null
+      if (mouse.y < CARD_UI_TOP) {
+        var mouseEntities = _zone.getEntitiesAtTile(screenToWorld(mouse))
+        if (mouseEntities.count > 0) {
+          _selectedEntityId = mouseEntities.toList[0].id
+        } else {
+          _selectedEntityId = null
+        }
       }
 
       // Play a card
@@ -217,7 +219,7 @@ class WorldScene is Scene {
         }
         index = index + 1
       }
-      _selected = hover
+      _selected = _allowInput ? hover : null
 
       // Allow movement
       if (!player.action && !_tried) {
