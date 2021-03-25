@@ -65,7 +65,7 @@ class Creature is Entity {
   }
   notify(ctx, event) {
     if (event is PickupEvent) {
-      ctx.events.add(LogEvent.new("%(this) picked up [%(event.item)] forever."))
+      ctx.events.add(LogEvent.new("%(this) picked up [%(event.item)]."))
     }
     return event
   }
