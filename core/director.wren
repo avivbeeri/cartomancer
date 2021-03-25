@@ -19,8 +19,6 @@ class Director {
     // process entities
     processEntities()
     runPostUpdate()
-
-    // world.events.sort {|a, b| a.priority < b.priority}
   }
 
   runPostUpdate() {
@@ -32,7 +30,7 @@ class Director {
   onEntityRemove(entity) {}
 }
 
-class RealTimeStrategy is Director {
+class ActionStrategy is Director {
   construct new() { super() }
   processEntities() {
     var actions = world.entities.map {|entity|
@@ -55,7 +53,10 @@ class RealTimeStrategy is Director {
     }
   }
   onEntityAdd(entity) {
-    _entities.sort {|a, b| a.priority < b.priority}
+    if (!world) {
+      Fiber.abort("no world!?!")
+    }
+    world.entities.sort {|a, b| a.priority < b.priority}
   }
 }
 

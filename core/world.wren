@@ -15,6 +15,7 @@ class World is DataObject {
   pushZone(world) {
     world.parent = this
     _worlds.insert(0, world)
+    _strategy.bind(active)
     return world
   }
   popZone() {

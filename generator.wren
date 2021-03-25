@@ -4,7 +4,7 @@ import "core/elegant" for Elegant
 import "./core/world" for World, Zone
 import "./core/map" for TileMap, Tile
 import "./core/director" for
-  RealTimeStrategy,
+  ActionStrategy,
   TurnBasedStrategy,
   EnergyStrategy
 import "./logic" for GameEndCheck, RemoveDefeated, AutoDraw
