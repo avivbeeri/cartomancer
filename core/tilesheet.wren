@@ -22,6 +22,7 @@ class Tilesheet {
     }
     _width = _image.width / _tSize
     _scale = scale
+    _cache = {}
   }
 
   draw(s, x, y) { draw(s, x, y, null, null) }
@@ -29,17 +30,22 @@ class Tilesheet {
 
   getTile(s) { getTile(s, null, null) }
   getTile(s, fg, bg) {
-    var sy = (s / _width).floor * _tSize
-    var sx = (s % _width).floor * _tSize
+    if (!_cache[s]) {
+      var sy = (s / _width).floor * _tSize
+      var sx = (s % _width).floor * _tSize
 
-    return _image.transform({
-      "srcX": sx, "srcY": sy,
-      "srcW": _tSize, "srcH": _tSize,
-      "mode": fg ? "MONO" : "RGBA",
-      "scaleX": _scale,
-      "scaleY": _scale,
-      "foreground": fg,
-      "background": bg
-    })
+      var transform = _image.transform({
+        "srcX": sx, "srcY": sy,
+        "srcW": _tSize, "srcH": _tSize,
+        "mode": fg ? "MONO" : "RGBA",
+        "scaleX": _scale,
+        "scaleY": _scale,
+        "foreground": fg,
+        "background": bg
+      })
+      _cache[s] = transform
+    }
+
+    return _cache[s]
   }
 }
