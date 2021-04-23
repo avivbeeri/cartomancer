@@ -2,7 +2,7 @@ import "math" for Vec
 
 import "./core/action" for Action
 import "./core/config" for Config
-import "./utils/dir" for NSEW
+import "./core/dir" for NSEW
 
 import "./combat" for Attack, AttackType
 import "./actions" for MoveAction, AttackAction, DespawnAction, MultiAction, SpawnAction
@@ -174,4 +174,4 @@ class SpawnBehaviour is RangedBehaviour {
   }
 }
 import "./factory" for EntityFactory
-import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
+import "./core/graph" for WeightedZone, BFS, AStar, DijkstraMap

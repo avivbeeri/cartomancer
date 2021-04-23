@@ -1,10 +1,10 @@
 import "core/entity" for Entity
 import "core/dataobject" for DataObject
+import "core/graph" for WeightedZone, BFS, AStar, DijkstraMap
 import "./stats" for StatGroup
 import "./deck" for Deck, Card
 import "./entity/creature" for Creature
 import "./rng" for RNG
-import "./utils/graph" for WeightedZone, BFS, AStar, DijkstraMap
 
 class Player is Creature {
   construct new() {

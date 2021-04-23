@@ -1,7 +1,7 @@
 import "math" for Vector
 import "./core/elegant" for Elegant
-import "./utils/adt" for Queue, Heap
-import "./utils/dir" for Directions
+import "./core/adt" for Queue, Heap
+import "./core/dir" for Directions
 
 
 class Location {}
@@ -54,7 +54,7 @@ class WeightedZone is SquareGrid {
 
   cost(a, b) {
     var pos = Elegant.unpair(b)
-    var ok = _zone.getEntitiesAtTile(pos).where{|entity| entity is Creature && !(entity is Fireball) }.count == 0
+    var ok = _zone.getEntitiesAtTile(pos).count == 0
     return ok ? 1 : 10
   }
 }
@@ -147,7 +147,7 @@ class DijkstraSearch {
     var path = []
     while (current != start) {
       path.insert(0, Elegant.unpair(current))
-      current = cameFrom[current] // || start
+      current = cameFrom[current]
       if (current == null) {
         // Path is unreachable
         return null
@@ -279,6 +279,3 @@ class DijkstraMap {
     return (v1 - v2).manhattan
   }
 }
-
-import "./entity/creature" for Creature
-import "./entity/fireball" for Fireball

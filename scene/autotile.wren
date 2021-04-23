@@ -1,7 +1,7 @@
 import "json" for Json
 import "math" for Vec
 import "input" for Keyboard
-import "./utils/dir" for Directions
+import "./core/dir" for Directions
 
 var RuleFile = Json.load("tileRules.json")
 
